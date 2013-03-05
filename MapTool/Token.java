@@ -7,10 +7,11 @@ import MapTool.Tile;
 
 public class Token {
 	
-	Map map;
-	Image pic;
-	ArrayList<Tile> tiles;
-	int tokenX, tokenY, width;
+	Map map; 
+	Image pic; 
+	boolean hidden; 
+	ArrayList<Tile> tiles; 
+	int tokenX,	tokenY, width;
 
 	public Token(Image pic) {
 
@@ -44,8 +45,11 @@ public class Token {
 		tiles.clear();
 	}
 
-	public static void main(String[] args) {
-
+	public boolean isHidden() {
+		return hidden;
 	}
 
+	public void toggleHidden() {
+		hidden = !hidden;
+	}
 }

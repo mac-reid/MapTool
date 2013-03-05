@@ -6,8 +6,8 @@ import MapTool.Map;
 public class Tile {
 	
 	int x, y;
-	boolean occupied;
 	Token unit;
+	boolean occupied;
 
 	public Tile() {
 
@@ -46,10 +46,6 @@ public class Tile {
 
 	public int Y() {
 		return y;
-	}
-
-	public static void main(String[] args) {
-		
 	}
 
 }

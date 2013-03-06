@@ -1,19 +1,21 @@
 package MapTool;
 
-import org.newdawn.slick.Image;
-import java.util.ArrayList;
 import MapTool.Map;
 import MapTool.Tile;
+import java.util.ArrayList;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Vector2f;
 
 public class Token {
 	
 	Map map; 
 	Image pic; 
 	boolean hidden; 
+	Vector2f location;
 	ArrayList<Tile> tiles; 
 	int tokenX,	tokenY, width;
 
-	public Token(Image pic) {
+	public Token(Image pic, int pixelX, int pixelY) {
 
 		this.pic = pic;
 		tokenX = pic.getWidth();
@@ -51,5 +53,13 @@ public class Token {
 
 	public void toggleHidden() {
 		hidden = !hidden;
+	}
+
+	public Image getImage() {
+		return pic;
+	}
+
+	public Vector2f getLocation() {
+		return location;
 	}
 }

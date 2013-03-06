@@ -1,7 +1,7 @@
 package MapTool;
 
-import MapTool.Token;
 import MapTool.Map;
+import MapTool.Token;
 
 public class Tile {
 	

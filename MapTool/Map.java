@@ -6,11 +6,22 @@ import java.util.ArrayList;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
+/**
+ * This class is the basis for the storage of units on the grid based
+ * map that is being displayed on the client's screen. This revision
+ * assumes all data passed in uses ints for x,y coordinates on screen
+ * 
+ * @author Mac Reid
+ */
 public class Map {
 
 	Tile[][] tiles;
 	Image background;
 	ArrayList<Token> tokens;
+
+	// the background variables are the size of the background image
+	// the token variables are the size of the tiles
+	// the tile variables are the number of tiles the map conists of
 	int backgroundX, backgroundY, tokenX, tokenY, tileX, tileY;
 
 	/**
@@ -20,7 +31,7 @@ public class Map {
 	 * @param mapX The width of the background image
 	 * @param mapY The height of the background image
 	 * @param tokenX the width of the tokens
-	 * @param tokenY the hight of the tokens
+	 * @param tokenY the height of the tokens
 	 */
 	public Map(int mapX, int mapY, int tokenX, int tokenY) {
 
@@ -35,28 +46,11 @@ public class Map {
 
 		tiles = new Tile[tileX][tileY];
 		tokens = new ArrayList<Token>();
-	}
 
-	/**
-	 * Returns the tile at the given x,y pair that is in the map
-	 *
-	 * @param tileX The x coordinate of the wanted tile
-	 * @param tileY The y coordinate of the wanted tile
-	 * @return      The tile at the given x,y pair in the map
-	 */
-	public Tile get(int tileX, int tileY) {
-		return tiles[tileX][tileY];
-	}
-
-	/**
-	 * Wrapper method for the private move method
-	 *
-	 * @param t The token in question to move
-	 * @param pixelX The x coordinate on screen that the token goes on
-	 * @param pixelY The y coordinate on screen that the token goes on
-	 */
-	public void move(Token t, int pixelX, int pixelY) {
-		move(t, pixelX, pixelY, false);
+		// initializes all of the tiles to unoccupied tiles
+		for (int i = 0; i < tileX; i++) 
+			for (int j = 0; j < tileY; j++) 
+				tiles[i][j] = new Tile();
 	}
 
 	/** 
@@ -74,11 +68,6 @@ public class Map {
 		move(tokens.get(tokens.size() - 1), pixelX, pixelY, true);
 	}
 
-	public Token removeToken(Token t) {
-		// remove the token here
-		return null;
-	}
-
 	/**
 	 * Wrapper method for toggleHideArea
 	 * 
@@ -92,6 +81,46 @@ public class Map {
 	}
 
 	/**
+	 * Returns the list of tokens stored in the map
+	 *
+	 * @return The list of tokens stored in the map
+	 */
+	public ArrayList<Token> getTokens() {
+		return tokens;
+	}
+
+	/**
+	 * Wrapper method for the private move method
+	 *
+	 * @param t The token in question to move
+	 * @param pixelX The x coordinate on screen that the token goes on
+	 * @param pixelY The y coordinate on screen that the token goes on
+	 * @return       If the token was able to move
+	 */
+	public boolean move(Token t, int pixelX, int pixelY) {
+		return move(t, pixelX, pixelY, false);
+	}
+
+	/**
+	 * Removes a given token from the map; if the token exists this returns the 
+	 * removed token, otherwise this returns null 
+	 *
+	 * @param t The token to be removed from the map
+	 * @return  Whether the token was removed
+	 */
+	public boolean removeToken(Token t) {
+		
+		if (tokens.remove(t))
+			for (int i = 0; i < t.getTiles().size(); i++) {
+				t.getTiles().get(i).toggleOccupation();
+				t.getTiles().get(i).setToken(null);
+			}
+		else 
+			return false;
+		return true;
+	} 
+
+	/**
 	 * Wrapper method for toggleHideArea
 	 * 
 	 * @param startX The x coordinate of the starting box for selecting tokens
@@ -101,6 +130,49 @@ public class Map {
 	 */
 	public void unHideArea(int startX, int startY, int endX, int endY) {
 		toggleHideArea(false, startX, startY, endX, endY);
+	}
+
+	/**
+	 * This method moves tokens by determining their tile size (1x1, 2x2, etc)
+	 * and removes the tile from its current location on the map and moves it 
+	 * to the appropriate tile location, given the coordinates. 
+	 *
+	 * @param t The token in question to move
+	 * @param pixelX The x coordinate on screen that the token goes on
+	 * @param pixelY The y coordinate on screen that the token goes on
+	 * @return       If the token was able to move
+	 */
+	private boolean move(Token t, int pixelX, int pixelY, boolean first) {
+
+		// the pair x,y is the pixel coordinate to move to
+		int x = pixelX / tokenX;
+		int y = pixelY / tokenY;
+
+		// check if destination is occupied
+		for (int i = 0; i < t.getWidth(); i++)
+			for (int j = 0; j < t.getWidth(); j++)
+				if (tiles[x + i][y + i].isOccupied())
+					return false;
+
+		// remove token from its current position
+		if (!first) {
+			for (int i = 0; i < t.getTiles().size(); i++) {
+				t.getTiles().get(i).toggleOccupation();
+				t.getTiles().get(i).setToken(null);
+			}
+			t.clearTiles();
+		}	
+
+		// add the token to the destination tiles
+		for (int i = 0; i <= t.getWidth(); i++) {
+			for (int j = 0; j <= t.getWidth(); j++) {
+				t.addTile(tiles[x + i][y + j]);
+				tiles[x + i][y + j].toggleOccupation();
+				tiles[x + i][y + j].setToken(t);
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -120,8 +192,8 @@ public class Map {
 		int x2 = endX / tileX;
 		int y2 = endY / tileY;
 
-		for (int i = 0; i < tiles.length; i++) {
-			for (int j = 0; j < tiles[i].length; j++) {
+		for (int i = 0; i < tileX; i++) {
+			for (int j = 0; j < tileY; j++) {
 				if (i >= x1 && i <= x2 && j >= y1 && j <= y2) {
 					if (tiles[i][j].isOccupied()) {
 						if (hide && !tiles[i][j].getToken().isHidden()) 
@@ -130,37 +202,6 @@ public class Map {
 							tiles[i][j].getToken().toggleHidden();
 					} 
 				}
-			}
-		}
-	}
-
-	/**
-	 * This method moves tokens by determining their tile size (1x1, 2x2, etc)
-	 * and removes the tile from its current location on the map and moves it 
-	 * to the appropriate tile location, given the coordinates. 
-	 *
-	 * @param t The token in question to move
-	 * @param pixelX The x coordinate on screen that the token goes on
-	 * @param pixelY The y coordinate on screen that the token goes on
-	 */
-	private void move(Token t, int pixelX, int pixelY, boolean first) {
-
-		if (!first) {
-			for (int i = 0; i < t.getTiles().size(); i++) {
-				t.getTiles().get(i).toggleOccupation();
-				t.getTiles().get(i).setToken(null);
-			}
-			t.clearTiles();
-		}	
-
-		int x = pixelX / tokenX;
-		int y = pixelY / tokenY;
-
-		for (int i = 0; i <= t.getWidth(); i++) {
-			for (int j = 0; j <= t.getWidth(); j++) {
-				t.addTile(get(x + i, y + j));
-				get(x + i, y + j).toggleOccupation();
-				get(x + i, y + j).setToken(t);
 			}
 		}
 	}

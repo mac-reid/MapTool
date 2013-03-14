@@ -13,12 +13,13 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class Token {
 	
-	Map map; 
-	Image pic; 
-	boolean hidden; 
-	Vector2f location;
-	ArrayList<Tile> tiles; 
-	int tokenX,	tokenY, width;
+	private Map map; 
+	private Image pic; 
+	private String name;
+	private Vector2f location;
+	private ArrayList<Tile> tiles; 
+	private int tokenX,	tokenY, width;
+	private boolean hidden, notToggled; 
 
 	/**
 	 * Constructor that takes a representative image for the token and the 
@@ -28,12 +29,19 @@ public class Token {
 	 * @param pixelX The x coordinate on screen that the token goes on
 	 * @param pixelY The y coordinate on screen that the token goes on
 	 */
-	public Token(Image pic, int pixelX, int pixelY) {
+	public Token(Image pic, int pixelX, int pixelY, int tokenX, String name) {
 
+		this.tokenX = 48;
 		this.pic = pic;
-		tokenX = pic.getWidth();
-		tokenY = pic.getHeight();
-		width = tokenX / map.tokenX;
+		this.name = name;
+		width = tokenX / this.tokenX;
+		tiles = new ArrayList<Tile>();
+		notToggled = true;
+
+		if (pic != null) {
+			tokenX = pic.getWidth();
+			tokenY = pic.getHeight();
+		}
 	}
 
 	/**
@@ -68,6 +76,10 @@ public class Token {
 	 */
 	public Vector2f getLocation() {
 		return location;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -113,6 +125,14 @@ public class Token {
 	 */
 	public boolean isHidden() {
 		return hidden;
+	}
+
+	public boolean notToggled(){
+		return notToggled;
+	}
+
+	public void toggleToggle(boolean b) {
+		notToggled = b;
 	}
 
 	/**

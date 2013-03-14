@@ -11,9 +11,9 @@ import MapTool.Token;
  */
 public class Tile {
 	
-	int x, y;
-	Token unit;
-	boolean occupied;
+	private int x, y;
+	private Token unit;
+	private boolean occupied;
 
 	/**
 	 * Basic constructor that makes an unoccupied tile

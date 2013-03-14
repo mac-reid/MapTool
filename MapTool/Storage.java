@@ -1,6 +1,8 @@
 package MapTool;
 
 import java.io.*;
+import java.util.ArrayList;
+import MapTool.Pair;
 
 public class Storage {
 
@@ -27,6 +29,11 @@ public class Storage {
 			System.out.println("Error: Failed to write chat log. " + 
 			                   e.getMessage());
 		}
+	}
+
+	public boolean writeOutUserChat(ArrayList<Pair> toWrite) {
+
+		return true;
 	}
 
 	public static void main(String[] args) {

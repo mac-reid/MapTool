@@ -1,51 +1,72 @@
 package MapTool;
 
-import MapTool.Pair;
-import MapTool.Storage;
+import MapTool.*;
 import java.util.ArrayList;
+import org.newdawn.slick.Image;
 
 public class Control {
 
+	private Map map;
 	private Storage store;
-	private int count, timer;
-	private ArrayList<Pair> userChatBuffer;
 
 	public Control() {
 
-		userChatBuffer = new ArrayList<Pair>();
-		count = 0;
+		map = new Map(0, 0, 0, 0, 48);
 		store = new Storage();
-
-		// this value determines how often to write to the chat log file
-		timer = 5;
 	}
 
-	public void sentChat(String user, String text) {
-
-		addText(user, text);
-
-	}
-
-	private void addText(String user, String text) {
+	public void addText(String user, String text) {
 
 		// search for user in current chat buffer
-		for (Pair p : userChatBuffer) 
+		for (Pair p : store.getUsers()) 
 			if (p.getUser().equals(user))
 				p.addText(text);
 		
-		// make user in the chat buffer
-		userChatBuffer.add(new Pair(user, text));
+		if (store.writeUserChat(user, text))
+			return;
+		else 
+			System.out.println("We got a srs problem");
 
-		// check if it is time to write to the chat log file
-		if (count == timer) {
+	}
 
-			if (store.writeOutUserChat(userChatBuffer))
-				userChatBuffer.clear();
-			else 
-				// need a way to force writing chat logs
-				System.out.println("We got a srs problem");
+	public void addToken(Image pic, int pixelX, int pixelY, String name) {
 
-		} else count++;
+	}
+
+	public Token getToken(int x, int y) {
+		return null;
+	}
+
+	public ArrayList<Token> getTokenList() {
+		return null;
+	}
+
+	public void hideMapArea(int startX, int startY, int endX, int endY) {
+
+	}
+
+	public void loadGame(String saveFilePath) {
+
+	}
+
+	public boolean moveToken(Token t, int tileX, int tileY) {
+		return false;
+	}
+
+	public void removeToken(String name) {
+
+	}
+
+	public void removeToken(Token t) {
+
+	}
+
+	public void saveGame(String saveFilePath) {
+
+	}
+
+	public void showMapArea(int startX, int startY, int endX, int endY) {
+
 	}
 
 }

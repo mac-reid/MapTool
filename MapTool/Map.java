@@ -20,9 +20,9 @@ public class Map {
 	private ArrayList<Token> tokens;
 
 	// the background variables are the size of the background image
-	// the token variables are the size of the tiles
 	// the tile variables are the number of tiles the map conists of
-	private int backgroundX, backgroundY, tokenX, tokenY, tileX, tileY;
+	// the tokenWidth variable is the width of the tokens
+	private int backgroundX, backgroundY, tileX, tileY, tokenWidth;
 
 	/**
 	 * Constructor that takes the x,y coordinates of the background
@@ -33,24 +33,20 @@ public class Map {
 	 * @param tokenX the width of the tokens
 	 * @param tokenY the height of the tokens
 	 */
-	public Map(int mapX, int mapY, int tokenX, int tokenY) {
+	public Map(int mapX, int mapY, int tokenX, int tokenY, int tokenWidth) {
 
 		backgroundX = mapX;
 		backgroundY = mapY;
-
-		this.tokenX = tokenX;
-		this.tokenY = tokenY;
-
+		this.tokenWidth = tokenWidth;
 		tileX = backgroundX / tokenX;
 		tileY = backgroundY / tokenY;
-
 		tiles = new Tile[tileX][tileY];
 		tokens = new ArrayList<Token>();
 
 		// initializes all of the tiles to unoccupied tiles
 		for (int i = 0; i < tileX; i++) 
 			for (int j = 0; j < tileY; j++) 
-				tiles[i][j] = new Tile();
+				tiles[i][j] = new Tile(i, j);
 	}
 
 	/** 
@@ -59,24 +55,42 @@ public class Map {
 	 * properly place the token in the appopriate tile locations
 	 *
 	 * @param pic The Slick2d Image file that the token displays
-	 * @param pixelX The x coordinate on screen that the token goes on
-	 * @param pixelY The y coordinate on screen that the token goes on
+	 * @param x The x coordinate on screen that the token goes on
+	 * @param y The y coordinate on screen that the token goes on
+	 * @param name The name given to the token being added
 	 */
-	public void addToken(Image pic, int pixelX, int pixelY, String name) {
+	public void addToken(Image pic, int x, int y, String name) {
 
-		tokens.add(new Token(pic, pixelX, pixelY, tokenX, name));
-		move(tokens.get(tokens.size() - 1), pixelX, pixelY, true);
+		tokens.add(new Token(pic, x, y, pic.getWidth() / tokenWidth, name));
+		move(tokens.get(tokens.size() - 1), x, y, true);
 	}
 
-	public void addToken(Image pic, int pixelX, int pixelY, String name, int m) {
+	/** 
+	 * Adds a new token to the map with a given Slick2d Image File
+	 * and an x & y location on the Map. This uses the move method to 
+	 * properly place the token in the appopriate tile locations
+	 *
+	 * @param pic The Slick2d Image file that the token displays
+	 * @param x The x coordinate on screen that the token goes on
+	 * @param y The y coordinate on screen that the token goes on
+	 * @param tokX The width of the token being added - used for test purposes
+	 * @param name The name given to the token being added
+	 */
+	public void addToken(Image pic, int x, int y, int tokX, String name) {
 
-		tokens.add(new Token(pic, pixelX, pixelY, tokenX * m, name));
-		move(tokens.get(tokens.size() - 1), pixelX, pixelY, true);
+		tokens.add(new Token(pic, x, y, tokX, name));
+		move(tokens.get(tokens.size() - 1), x, y, true);
 	}
 
-
+	/**
+	 * Returns the token at the given x,y coordinate of the map
+	 *
+	 * @param x The x coordinate of the tile in question
+	 * @param y The y coordinate of the tile in question
+	 * @return  The token at the given x,y coordinate of the map
+	 */ 
 	public Token getToken(int x, int y) {
-		return tiles[x / tokenX][y / tokenY].getToken();
+		return tiles[x][y].getToken();
 	}
 
 	/**
@@ -104,12 +118,12 @@ public class Map {
 	 * Wrapper method for the private move method
 	 *
 	 * @param t The token in question to move
-	 * @param pixelX The x coordinate on screen that the token goes on
-	 * @param pixelY The y coordinate on screen that the token goes on
+	 * @param x The x coordinate on map that the token goes on
+	 * @param y The y coordinate on map that the token goes on
 	 * @return       If the token was able to move
 	 */
-	public boolean move(Token t, int pixelX, int pixelY) {
-		return move(t, pixelX, pixelY, false);
+	public boolean move(Token t, int x, int y) {
+		return move(t, x, y, false);
 	}
 
 	// test only
@@ -178,15 +192,11 @@ public class Map {
 	 * to the appropriate tile location, given the coordinates. 
 	 *
 	 * @param t The token in question to move
-	 * @param pixelX The x coordinate on screen that the token goes on
-	 * @param pixelY The y coordinate on screen that the token goes on
+	 * @param x The x coordinate on the map that the token goes on
+	 * @param y The y coordinate on the map that the token goes on
 	 * @return       If the token was able to move
 	 */
-	private boolean move(Token t, int pixelX, int pixelY, boolean first) {
-
-		// the pair x,y is the pixel coordinate to move to
-		int x = pixelX / tokenX;
-		int y = pixelY / tokenY;
+	private boolean move(Token t, int x, int y, boolean first) {
 
 		// check if destination is occupied
 		for (int i = 0; i < t.getWidth() - 1; i++)
@@ -219,31 +229,25 @@ public class Map {
 	 * This method hides or shows all the tokens in a given rectangle 
 	 * 
 	 * @param hide The determining factor if the area will hide or show tokens
-	 * @param startX The x coordinate of the starting box for selecting tokens
-	 * @param startY The y coordinate of the starting box for selecting tokens
-	 * @param endX The x coordinate of the end of the box for selecting tokens
-	 * @param endY The y coordinate of the end of the box for selecting tokens
+	 * @param x1 The x coordinate of the starting box for selecting tokens
+	 * @param y1 The y coordinate of the starting box for selecting tokens
+	 * @param x2 The x coordinate of the end of the box for selecting tokens
+	 * @param y2 The y coordinate of the end of the box for selecting tokens
 	 */
-	private void toggleHideArea(boolean hide, int startX, int startY, int endX,
-			int endY){
-
-		int x1 = startX / tokenX;
-		int y1 = startY / tokenY;
-		int x2 = endX / tokenX;
-		int y2 = endY / tokenY;
+	private void toggleHideArea(boolean hide, int x1, int y1, int x2, int y2) {
 
 		for (int i = 0; i < tileX; i++) {
 			for (int j = 0; j < tileY; j++) {
 				if (i >= x1 && i <= x2 && j >= y1 && j <= y2) {
 					if (tiles[i][j].isOccupied()) {
-						if (tiles[i][j].getToken().notToggled()) {
+						if (!tiles[i][j].getToken().hasBeenHidden()) {
 							if (hide && !tiles[i][j].getToken().isHidden()) {
 								tiles[i][j].getToken().toggleHidden();
-								tiles[i][j].getToken().toggleToggle(false);
+								tiles[i][j].getToken().setHasBeenHidden(true);
 							}
 							else if (tiles[i][j].getToken().isHidden()) {
 								tiles[i][j].getToken().toggleHidden();
-								tiles[i][j].getToken().toggleToggle(false);
+								tiles[i][j].getToken().setHasBeenHidden(true);
 							}
 						}
 					} 
@@ -252,7 +256,7 @@ public class Map {
 		}
 
 		for (Token t : tokens) 
-			t.toggleToggle(true);
+			t.setHasBeenHidden(false);
 	}
 
 	/**
@@ -260,29 +264,29 @@ public class Map {
 	 */
 	public static void main(String[] args) {
 
-	/*
+	
 		System.out.println("--------------------------------------------------");
 
 		Map m = new Map(480, 480, 48, 48);
-		m.addToken(null, 48, 48, "abc");
-		m.addToken(null, 96, 96, "fff");
+		m.addToken(null, 1, 1, 1, "abc");
+		m.addToken(null, 2, 2, 1, "fff");
 
-		m.move(m.getToken(48, 48), 96, 48);
+		m.move(m.getToken(1, 1), 2, 1);
 		m.printMap();
 		System.out.println("--------------------------------------------------");
-		m.addToken(null, 144, 144, "dig", 2);
+		m.addToken(null, 3, 3, 2, "dig");
 		m.printMap();
 		System.out.println("--------------------------------------------------");
-		m.move(m.getToken(192, 192), 0, 192);
+		m.move(m.getToken(4, 4), 0, 4);
 		m.printMap();
 		System.out.println("--------------------------------------------------");
-		m.hideArea(0, 0, 192, 192);
+		m.hideArea(0, 0, 4, 4);
 		m.printMap();
 		System.out.println("--------------------------------------------------");
-		m.unHideArea(0, 0, 144, 144);
+		m.unHideArea(0, 0, 3, 3);
 		m.printMap();
 		System.out.println("--------------------------------------------------");
-	*/
+	
 	}
 
 }

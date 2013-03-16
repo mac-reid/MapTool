@@ -1,6 +1,5 @@
 package MapTool;
 
-import MapTool.Map;
 import MapTool.Token;
 
 /**
@@ -18,10 +17,12 @@ public class Tile {
 	/**
 	 * Basic constructor that makes an unoccupied tile
 	 */
-	public Tile() {
+	public Tile(int x, int y) {
 
-		occupied = false;
+		this.x = x;
+		this.y = y;
 		unit = null;
+		occupied = false;
 	}
 
 	/**

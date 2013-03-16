@@ -16,32 +16,28 @@ public class Token {
 	private Map map; 
 	private Image pic; 
 	private String name;
-	private Vector2f location;
+	private int x, y, width;
 	private ArrayList<Tile> tiles; 
-	private int tokenX,	tokenY, width;
-	private boolean hidden, notToggled; 
+	private boolean hidden, hasBeenHidden; 
 
 	/**
 	 * Constructor that takes a representative image for the token and the 
 	 * pixel coordinates that the token is being added at
 	 *
 	 * @param pic The image that this object represents
-	 * @param pixelX The x coordinate on screen that the token goes on
-	 * @param pixelY The y coordinate on screen that the token goes on
+	 * @param x The x coordinate on the map that the token goes on
+	 * @param y The y coordinate on the map that the token goes on
+	 * @param name The name of this token
 	 */
-	public Token(Image pic, int pixelX, int pixelY, int tokenX, String name) {
+	public Token(Image pic, int x, int y, int width, String name) {
 
-		this.tokenX = 48;
+		this.x = x;
+		this.y = y;
 		this.pic = pic;
 		this.name = name;
-		width = tokenX / this.tokenX;
+		this.width = width;
+		hasBeenHidden = false;
 		tiles = new ArrayList<Tile>();
-		notToggled = true;
-
-		if (pic != null) {
-			tokenX = pic.getWidth();
-			tokenY = pic.getHeight();
-		}
 	}
 
 	/**
@@ -67,15 +63,6 @@ public class Token {
 	 */ 
 	public Image getImage() {
 		return pic;
-	}
-
-	/**
-	 * Returns the location of the token on the map
-	 *
-	 * @return The location of the token on the map
-	 */
-	public Vector2f getLocation() {
-		return location;
 	}
 
 	public String getName() {
@@ -106,7 +93,7 @@ public class Token {
 	 * @return The y coordinate of the token in the map
 	 */
 	public int getX() {
-		return tokenX;
+		return x;
 	}
 
 	/**
@@ -115,7 +102,7 @@ public class Token {
 	 * @return The y coordinate of the token in the map
 	 */
 	public int getY() {
-		return tokenY;
+		return y;
 	}
 
 	/**
@@ -127,12 +114,26 @@ public class Token {
 		return hidden;
 	}
 
-	public boolean notToggled(){
-		return notToggled;
+	/**
+	 * Returns whether or not this token has been hidden. Only applies to 
+	 * tokens of size 2x2 or greater
+	 *
+	 * @return Whether or not this tokens has been hidden
+	 */
+	public boolean hasBeenHidden(){
+		return hasBeenHidden;
 	}
 
-	public void toggleToggle(boolean b) {
-		notToggled = b;
+	/**
+	 * Sets this token's hidden this pass value. Pertains to tokens of size 
+	 * 2x2 or greater as the toggleHidden function in map hits all tiles,
+	 * including multiple parts of the same token. This ensures the token 
+	 * stays hidden or stays visible.
+	 *
+	 * @param b The change whether this token has been hidden
+	 */
+	public void setHasBeenHidden(boolean b) {
+		hasBeenHidden = b;
 	}
 
 	/**

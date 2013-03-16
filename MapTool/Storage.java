@@ -8,36 +8,47 @@ public class Storage {
 
 	File chatLog;
 	String filePath;
+	PrintWriter out;
+	ArrayList<Pair> users;
 
 	public Storage() {
 
-		// temp shit
 		try {
 
 			filePath = "MapTool/logs/chat.MapTool";
-
 			chatLog = new File(filePath);
 			if (!chatLog.exists())
 				chatLog.createNewFile();
 
-			PrintWriter out = new PrintWriter(new BufferedWriter(
-			                      new FileWriter(filePath, true)));
-			out.println("ffff");
-			out.close();
+			out = new PrintWriter(new BufferedWriter(
+			            new FileWriter(filePath, true)));
 
 		} catch (IOException e) {
-			System.out.println("Error: Failed to write chat log. " + 
-			                   e.getMessage());
+			
 		}
 	}
 
-	public boolean writeOutUserChat(ArrayList<Pair> toWrite) {
+	public void closeFile() {
+		out.close();
+	}
+
+	public ArrayList<Pair> getUsers() {
+		return users;
+	}
+
+	public boolean writeUserChat(String user, String text) {
 
 		return true;
+	}
+
+	private void readChatLogs() {
+
 	}
 
 	public static void main(String[] args) {
 
 		Storage s = new Storage();
+
+		s.closeFile();
 	} 
 }

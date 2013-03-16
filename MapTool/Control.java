@@ -1,14 +1,14 @@
 package MapTool;
 
-import java.util.ArrayList;
 import MapTool.Pair;
 import MapTool.Storage;
+import java.util.ArrayList;
 
 public class Control {
 
-	private ArrayList<Pair> userChatBuffer;
-	private int count, timer;
 	private Storage store;
+	private int count, timer;
+	private ArrayList<Pair> userChatBuffer;
 
 	public Control() {
 
@@ -24,14 +24,6 @@ public class Control {
 
 		addText(user, text);
 
-		// send chat to network manager to give to all users
-	}
-
-	public void receiveChat(String user, String text) {
-
-		addText(user, text);
-
-		// send chat to screen to display
 	}
 
 	private void addText(String user, String text) {

@@ -1,8 +1,8 @@
 package MapTool;
 
 import java.io.*;
-import java.util.ArrayList;
 import MapTool.Pair;
+import java.util.ArrayList;
 
 public class Storage {
 

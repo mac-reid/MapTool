@@ -11,11 +11,14 @@ public class Control {
 
 	public Control() {
 
-		map = new Map(0, 0, 0, 0, 48);
-		store = new Storage();
 	}
 
 	public void addText(String user, String text) {
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
 
 		// search for user in current chat buffer
 		for (Pair p : store.getUsers()) 
@@ -29,44 +32,111 @@ public class Control {
 
 	}
 
-	public void addToken(Image pic, int pixelX, int pixelY, String name) {
+	public void addToken(Image pic, int x, int y, String name) {
 
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+		map.addToken(pic, x, y, name);
 	}
 
 	public Token getToken(int x, int y) {
-		return null;
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return null;
+		}
+		return map.getToken(x,y);
 	}
 
 	public ArrayList<Token> getTokenList() {
-		return null;
+		
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return null;
+		}
+		return map.getTokens();
 	}
 
 	public void hideMapArea(int startX, int startY, int endX, int endY) {
 
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+		map.hideArea(startX, startY, endX, endY);
 	}
 
-	public void loadGame(String saveFilePath) {
+	public void loadSave(String saveFilePath) {
 
+		map = new Map(480, 480, 48, null);
+		store = new Storage();
 	}
 
 	public boolean moveToken(Token t, int tileX, int tileY) {
+		
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return false;
+		}
+		return map.move(t, tileX, tileY);
+	}
+
+	public boolean removeToken(String name) {
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return false;
+		}
+		for (Token t : map.getTokens()) 
+			if (t.getName().equals(name)) 
+				return removeToken(t);
 		return false;
 	}
 
-	public void removeToken(String name) {
+	public boolean removeToken(Token t) {
 
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return false;
+		}
+		return map.removeToken(t);
 	}
 
-	public void removeToken(Token t) {
+	public void saveMap(String saveFilePath) {
 
-	}
-
-	public void saveGame(String saveFilePath) {
-
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
 	}
 
 	public void showMapArea(int startX, int startY, int endX, int endY) {
 
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+
+		map.unHideArea(startX, startY, endX, endY);
+	}
+
+	private boolean gameLoaded() {
+
+		if (map == null)
+			return false;
+		if (store == null)
+			return false;
+		return true;
+	}
+
+	public static void main(String[] args) {
+
+		Control c = new Control();
+
+		c.getTokenList();
+		c.loadSave("");
 	}
 
 }

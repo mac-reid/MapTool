@@ -4,7 +4,6 @@ import MapTool.Tile;
 import MapTool.Token;
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  * This class is the basis for the storage of units on the grid based
@@ -30,16 +29,17 @@ public class Map {
 	 * 
 	 * @param mapX The width of the background image
 	 * @param mapY The height of the background image
-	 * @param tokenX the width of the tokens
-	 * @param tokenY the height of the tokens
+	 * @param tokenX The width of the tokens in number of pixels
+	 * @param tokenWidth The width of the token in number of tiles
 	 */
-	public Map(int mapX, int mapY, int tokenX, int tokenY, int tokenWidth) {
+	public Map(int mapX, int mapY, int tokenX, Image pic) {
 
+		background = pic;
 		backgroundX = mapX;
 		backgroundY = mapY;
-		this.tokenWidth = tokenWidth;
+		tokenWidth = tokenX;
 		tileX = backgroundX / tokenX;
-		tileY = backgroundY / tokenY;
+		tileY = backgroundY / tokenX;
 		tiles = new Tile[tileX][tileY];
 		tokens = new ArrayList<Token>();
 
@@ -80,6 +80,15 @@ public class Map {
 
 		tokens.add(new Token(pic, x, y, tokX, name));
 		move(tokens.get(tokens.size() - 1), x, y, true);
+	}
+
+	/**
+	 * Returns the background image to display for this map
+	 *
+	 * @return The background image to display for this map
+	 */
+	public Image getBackground() {
+		return background;
 	}
 
 	/**
@@ -257,36 +266,6 @@ public class Map {
 
 		for (Token t : tokens) 
 			t.setHasBeenHidden(false);
-	}
-
-	/**
-	 * Test method
-	 */
-	public static void main(String[] args) {
-
-	
-		System.out.println("--------------------------------------------------");
-
-		Map m = new Map(480, 480, 48, 48);
-		m.addToken(null, 1, 1, 1, "abc");
-		m.addToken(null, 2, 2, 1, "fff");
-
-		m.move(m.getToken(1, 1), 2, 1);
-		m.printMap();
-		System.out.println("--------------------------------------------------");
-		m.addToken(null, 3, 3, 2, "dig");
-		m.printMap();
-		System.out.println("--------------------------------------------------");
-		m.move(m.getToken(4, 4), 0, 4);
-		m.printMap();
-		System.out.println("--------------------------------------------------");
-		m.hideArea(0, 0, 4, 4);
-		m.printMap();
-		System.out.println("--------------------------------------------------");
-		m.unHideArea(0, 0, 3, 3);
-		m.printMap();
-		System.out.println("--------------------------------------------------");
-	
 	}
 
 }

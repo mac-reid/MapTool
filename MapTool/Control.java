@@ -135,7 +135,6 @@ public class Control {
 
 		Control c = new Control();
 
-		c.getTokenList();
 		c.loadSave("");
 	}
 

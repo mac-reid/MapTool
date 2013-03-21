@@ -48,7 +48,7 @@ public class Storage {
 	public static void main(String[] args) {
 
 		Storage s = new Storage();
-
+		// change
 		s.closeFile();
 	} 
 }

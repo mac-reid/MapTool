@@ -2,33 +2,31 @@ package MapTool;
 
 import java.io.*;
 import MapTool.Pair;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 public class Storage {
 
-	File chatLog;
 	String filePath;
 	PrintWriter out;
 	ArrayList<Pair> users;
 
-	public Storage() {
+	public Storage(String saveFilePath) {
+
+		filePath = saveFilePath;
 
 		try {
-
-			filePath = "MapTool/logs/chat.MapTool";
-			chatLog = new File(filePath);
-			if (!chatLog.exists())
-				chatLog.createNewFile();
-
 			out = new PrintWriter(new BufferedWriter(
-			            new FileWriter(filePath, true)));
-
-		} catch (IOException e) {
-			
+			        new FileWriter(filePath, true)));
+		} catch (IOException io) {
+			System.out.println("Something is whacked bro");
 		}
+
+		readChatLogs();
 	}
 
 	public void closeFile() {
+		
 		out.close();
 	}
 
@@ -36,19 +34,47 @@ public class Storage {
 		return users;
 	}
 
-	public boolean writeUserChat(String user, String text) {
+	public void writeMapData() {
 
-		return true;
+	}
+
+	public void writeUserChat(String user, String text) {
+
+		out.println("u|" + user + "|" + text);	
 	}
 
 	private void readChatLogs() {
 
+		try {
+
+			LineNumberReader lnr = new LineNumberReader(new FileReader(filePath));
+			HashMap<String, ArrayList<String>> tempList = 
+				new HashMap<String, ArrayList<String>>();
+
+			String line = lnr.readLine();
+			while (line != null) {
+
+				String[] parts = line.split("\\|");
+
+				String user = parts[1];
+				String text = parts[2];
+
+				if (tempList.get(user) != null) {
+					// user exists, add the string to the list
+					tempList.get(user).add(text);
+				} else {
+					// user does not exist, initialize arraylist, and add text
+					tempList.put(user, new ArrayList<String>());
+					tempList.get(user).add(text);
+				}
+
+				line = lnr.readLine(); 
+			}
+
+		} catch (FileNotFoundException f) {
+			System.out.println("You lost your file br0");
+		} catch (IOException io) {
+			System.out.println("shit man");
+		} 
 	}
-
-	public static void main(String[] args) {
-
-		Storage s = new Storage();
-		// change
-		s.closeFile();
-	} 
 }

@@ -7,7 +7,7 @@ import org.newdawn.slick.Image;
 public class Control {
 
 	private Map map;
-	private Storage store;
+	Storage store;
 
 	public Control() {
 
@@ -25,11 +25,7 @@ public class Control {
 			if (p.getUser().equals(user))
 				p.addText(text);
 		
-		if (store.writeUserChat(user, text))
-			return;
-		else 
-			System.out.println("We got a srs problem");
-
+		store.writeUserChat(user, text);
 	}
 
 	public void addToken(Image pic, int x, int y, String name) {
@@ -68,10 +64,10 @@ public class Control {
 		map.hideArea(startX, startY, endX, endY);
 	}
 
-	public void loadSave(String saveFilePath) {
+	public Storage loadSave(String saveFilePath) {
 
 		map = new Map(480, 480, 48, null);
-		store = new Storage();
+		return store = new Storage(saveFilePath);
 	}
 
 	public boolean moveToken(Token t, int tileX, int tileY) {
@@ -135,7 +131,10 @@ public class Control {
 
 		Control c = new Control();
 
-		c.loadSave("");
+		String mydir = System.getProperty("user.dir") + "\\MapTool\\";
+		Storage s = c.loadSave(mydir + "saves/default.sav");
+
+		s.closeFile();
 	}
 
 }

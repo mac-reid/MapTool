@@ -19,6 +19,7 @@ public class genUI extends StateBasedGame{
 	private static final int menu = 0;
 	private static final int editor = 1;
 	private static final int FRAME_BORDER = 13;
+	private String mapFile;
 	public genUI(String name) {
 		super(gamename);
 		this.addState(new Menu(menu));
@@ -28,23 +29,21 @@ public class genUI extends StateBasedGame{
 	public void initStatesList(GameContainer gc) throws SlickException {
 		this.getState(menu).init(gc, this);
 		this.getState(editor).init(gc, this);
-		this.enterState(editor);
+		this.enterState(menu);
 	}
 
+	public void setMapFile(String file){
+		mapFile = file;
+	}
+	
+	public String getMapFile(){
+		return mapFile;
+	}
 	public static void main(String[] args){		
 		AppGameContainer app;
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		int maxWidth = (int)kit.getScreenSize().getWidth();
-		int maxHeight = (int)kit.getScreenSize().getHeight();
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] gs = ge.getScreenDevices();
-        Insets in = kit.getScreenInsets(gs[0].getDefaultConfiguration());
-		int screenWidth = maxWidth - in.left - in.right - FRAME_BORDER;
-		int screenHeight = maxHeight - in.bottom - in.top - 15 - 50;
 		try{
 			app = new AppGameContainer(new genUI(gamename));
-			app.setDisplayMode(screenWidth, screenHeight, false);
-			app.setResizable(true);
+			app.setDisplayMode(1280, 800, false);
 			app.start();
 		}catch(SlickException e){
 			e.printStackTrace();

@@ -26,7 +26,7 @@ public class Editor extends BasicGameState{
 	//int values used to determine object positioning
 	public final int BUFFER = 10;
 	public final int CHAT_WIDTH = 250;
-	public final int VIDEOCHAT_HEIGHT = 200;
+	public int videoChatHeight = 200;
 	//mapTool specific values
 	private int mapTopX;
 	private int mapTopY;
@@ -44,8 +44,9 @@ public class Editor extends BasicGameState{
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
 		//find the best height and width of the map
+		videoChatHeight = gc.getHeight()/5;
 		mapTileWidth = (gc.getWidth() - BUFFER*3 - CHAT_WIDTH)/48;
-		mapTileHeight = (gc.getHeight() - BUFFER*3 - VIDEOCHAT_HEIGHT)/48;
+		mapTileHeight = (gc.getHeight() - BUFFER*3 - videoChatHeight)/48;
 		mapTool = new MapPane("Resources/Dwarfort.png", mapTileWidth, mapTileHeight);
 		mapTool.renderMap(BUFFER, BUFFER, getTileWidth(gc), getTileHeight(gc));
 		mapTopX = BUFFER;
@@ -64,8 +65,8 @@ public class Editor extends BasicGameState{
 		
 		chatBox.renderChat(gc.getWidth() - CHAT_WIDTH - BUFFER, BUFFER, CHAT_WIDTH, gc.getHeight() - BUFFER*2, g);
 		
-		videoChat.renderVideoPane(BUFFER, gc.getHeight() - VIDEOCHAT_HEIGHT - BUFFER,
-				gc.getWidth() - 3*BUFFER - CHAT_WIDTH, VIDEOCHAT_HEIGHT, g);
+		videoChat.renderVideoPane(BUFFER, gc.getHeight() - videoChatHeight - BUFFER,
+				gc.getWidth() - 3*BUFFER - CHAT_WIDTH, videoChatHeight, g);
 	}
 
 
@@ -133,13 +134,13 @@ public class Editor extends BasicGameState{
 	public int[] mapBottomRight(GameContainer gc){
 		int[] coords = new int[2];
 		coords[0] = gc.getWidth() - 2*BUFFER - CHAT_WIDTH;
-		coords[1] = gc.getHeight() - 2*BUFFER - VIDEOCHAT_HEIGHT;
+		coords[1] = gc.getHeight() - 2*BUFFER - videoChatHeight;
 		
 		return coords;
 	}
 	
 	public int getTileHeight(GameContainer gc){
-		return (gc.getHeight() - VIDEOCHAT_HEIGHT - BUFFER * 3)/48;
+		return (gc.getHeight() - videoChatHeight - BUFFER * 3)/48;
 	}
 	
 	public int getTileWidth(GameContainer gc){

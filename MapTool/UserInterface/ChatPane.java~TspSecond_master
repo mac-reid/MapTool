@@ -1,6 +1,6 @@
-package UserInterface;
-
+package Andrews;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
@@ -66,29 +66,30 @@ public class ChatPane {
     
     
     // Draws current background and tiles
-    public void renderChat(float x, float y, int width, int height, Graphics g) {
-    	
-    	// Fill a background pattern
-    	g.fillRect(x, y, (float)width, (float)height, fillpattern, 0, 0);
+    public void renderChat(float x, float y, float width, float height, Graphics g) throws SlickException {
+    	Image img = new Image("Resources/parchment.png");
+    	Image scaled = img.getScaledCopy((int)width, (int)height + 5);
+    	scaled.draw(x, y);
     	g.setColor(Color.black);
-    	g.drawRect(x + 3, y + height - 45, width - 6, lineheight + 15);
+    	g.drawRect(x + 5, y + height - 45, width - 10, lineheight + 5);
     	
     	
     	// Draw chat history
     	for(int i = 1; i <= chatlog.size(); i++) {
     		if (i * lineheight + 50 > height)
     			break;
-    		ttfont.drawString(x + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - i));
+    		ttfont.drawString(x + 10, ((y + height) - 55 - (i * lineheight)), chatlog.get(chatlog.size() - i), Color.black);
     	}
     	
     	// Draw entry line
-    	ttfont.drawString(x + 5, y + height - (lineheight + 20), entryline);
+    	ttfont.drawString(x + 10, y + height - (lineheight + 25), entryline,  Color.black);
     	
     	
     	// Draw caret
-    	if(showcaret)
-    		textcaret.draw((float)(x + 2 + ttfont.getWidth(entryline)), y + height - (lineheight + 25));
-    	
+    	if(showcaret) {
+    		ttfont.drawString(x + 10 + ttfont.getWidth(entryline), y + height - (lineheight + 25), "|", Color.black);
+    		ttfont.drawString(x + 10 + ttfont.getWidth(entryline), y + height - (lineheight + 30), "|", Color.black);
+    	}
     	lastX = (int)x;
     	lastY = (int)y;
     	graphics = g;
@@ -126,12 +127,10 @@ public class ChatPane {
    
     public void Activate(){
     	isActivated = true;
-    	System.out.println("ACTIVATED!");
     }
     
     public void Deactivate(){
     	isActivated = false;
-    	System.out.println("DEACTIVATED");
     }
     
     public int getLineHeight(){

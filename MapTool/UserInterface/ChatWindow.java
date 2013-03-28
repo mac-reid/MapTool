@@ -1,3 +1,5 @@
+package UserInterface;
+
 import java.awt.Toolkit;
 
 import org.newdawn.slick.Color;

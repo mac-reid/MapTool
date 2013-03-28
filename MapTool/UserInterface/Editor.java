@@ -1,3 +1,5 @@
+package UserInterface;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
@@ -8,9 +10,6 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-
-import Andrews.ChatPane;
-import Andrews.MapPane;
 
 import java.awt.Toolkit;
 import java.awt.font.*;

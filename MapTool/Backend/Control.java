@@ -13,6 +13,10 @@ public class Control {
 
 	}
 
+	public void sendTextToGUI(String user, String message) {
+
+	}
+
 	public void addText(String user, String text) {
 
 		if (!gameLoaded()) { 
@@ -35,6 +39,10 @@ public class Control {
 			return;
 		}
 		map.addToken(pic, x, y, name);
+	}
+
+	public void addToken(String s, int x, int y, String name) {
+
 	}
 
 	public Token getToken(int x, int y) {
@@ -64,10 +72,18 @@ public class Control {
 		map.hideArea(startX, startY, endX, endY);
 	}
 
-	public Storage loadSave(String saveFilePath) {
+	public void loadGame(String s) {
+
+	}
+
+	private Storage loadSave(String saveFilePath) {
 
 		map = new Map(480, 480, 48, null);
 		return store = new Storage(saveFilePath);
+	}
+
+	public boolean moveToken(String s, int tileX, int tileY) {
+
 	}
 
 	public boolean moveToken(Token t, int tileX, int tileY) {

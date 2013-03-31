@@ -1,13 +1,12 @@
 package Backend;
 
-import Backend.*;
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
 
-public class Control {
+class Control {
 
 	private Map map;
-	Storage store;
+	private Storage store;
 
 	public Control() {
 
@@ -15,21 +14,6 @@ public class Control {
 
 	public void sendTextToGUI(String user, String message) {
 
-	}
-
-	public void addText(String user, String text) {
-
-		if (!gameLoaded()) { 
-			System.out.println("Some error here"); 
-			return;
-		}
-
-		// search for user in current chat buffer
-		for (Pair p : store.getUsers()) 
-			if (p.getUser().equals(user))
-				p.addText(text);
-		
-		store.writeUserChat(user, text);
 	}
 
 	public void addToken(Image pic, int x, int y, String name) {
@@ -43,6 +27,20 @@ public class Control {
 
 	public void addToken(String s, int x, int y, String name) {
 
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+		map.addToken(null, x, y, name);
+	}
+
+	public void addToken(String s, int x, int y, int tokX, String name) {
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+		map.addToken(null, x, y, tokX, name);
 	}
 
 	public Token getToken(int x, int y) {
@@ -72,18 +70,22 @@ public class Control {
 		map.hideArea(startX, startY, endX, endY);
 	}
 
-	public void loadGame(String s) {
-
-	}
-
-	private Storage loadSave(String saveFilePath) {
+	public void loadGame() {
 
 		map = new Map(480, 480, 48, null);
-		return store = new Storage(saveFilePath);
+		store = new Storage(this);
+	}
+
+	public void loadSave(String saveFilePath) {
+
+		map = new Map(480, 480, 48, null);
+		store = new Storage(this);
+		store.readMapData(saveFilePath);
 	}
 
 	public boolean moveToken(String s, int tileX, int tileY) {
 
+		return false;
 	}
 
 	public boolean moveToken(Token t, int tileX, int tileY) {
@@ -116,6 +118,11 @@ public class Control {
 		return map.removeToken(t);
 	}
 
+	public void saveGame() {
+		String mydir = System.getProperty("user.dir");
+		store.writeMapData(mydir + "/saves/default.sav");
+	}
+
 	public void saveMap(String saveFilePath) {
 
 		if (!gameLoaded()) { 
@@ -134,6 +141,10 @@ public class Control {
 		map.unHideArea(startX, startY, endX, endY);
 	}
 
+	protected Map getMap() {
+		return map;
+	}
+
 	private boolean gameLoaded() {
 
 		if (map == null)
@@ -147,10 +158,11 @@ public class Control {
 
 		Control c = new Control();
 
-		String mydir = System.getProperty("user.dir") + "\\MapTool\\";
-		Storage s = c.loadSave(mydir + "saves/default.sav");
+		String mydir = System.getProperty("user.dir");
+		c.loadSave(mydir + "/saves/default.sav");
 
-		s.closeFile();
+		c.addToken("", 2, 2, 1, "Carl");
+
+		c.saveGame();		
 	}
-
 }

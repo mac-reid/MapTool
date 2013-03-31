@@ -1,14 +1,12 @@
 package Backend;
 
-import Backend.Token;
-
 /**
  * This class represents a tile on the map and only serves as a storage
  * place for any tokens that may appear on the Map
  * 
  * @author Mac Reid
  */
-public class Tile {
+class Tile {
 	
 	private int x, y;
 	private Token unit;

@@ -19,7 +19,7 @@ for %%f in (Backend\*.java) do (
 	javac -cp .;%topdir%\lwjgl-2.8.5\jar\*;%topdir% .\%%f
 )
 
-java -cp .;%topdir%\lwjgl-2.8.5\jar\*;.\UserInterface\ -Djava.library.path=%topdir%\lwjgl-2.8.5\native\windows\ %1
+java -cp .;%topdir%\lwjgl-2.8.5\jar\*;.\Backend\;.\UserInterface\ -Djava.library.path=%topdir%\lwjgl-2.8.5\native\windows\ Backend/Control
 
 del /f Backend\*.class
 del /f UserInterface\*.class

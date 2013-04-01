@@ -1,7 +1,5 @@
 package Backend;
 
-import Backend.Tile;
-import Backend.Token;
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
 
@@ -12,7 +10,7 @@ import org.newdawn.slick.Image;
  * 
  * @author Mac Reid
  */
-public class Map {
+class Map {
 
 	private Tile[][] tiles;
 	private Image background;

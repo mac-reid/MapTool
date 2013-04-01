@@ -1,7 +1,5 @@
 package Backend;
 
-import Backend.Map;
-import Backend.Tile;
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
@@ -11,7 +9,7 @@ import org.newdawn.slick.geom.Vector2f;
  *
  * @author Mac Reid
  */
-public class Token {
+class Token {
 	
 	private Map map; 
 	private Image pic; 
@@ -141,5 +139,14 @@ public class Token {
 	 */
 	public void toggleHidden() {
 		hidden = !hidden;
+	}
+
+	@Override
+	public String toString() {
+		return Integer.toString(x)   + "|"
+		     + Integer.toString(y)   + "|" 
+		     + String.valueOf(width) + "|"
+		     + hidden                + "|"
+		     + name;
 	}
 }

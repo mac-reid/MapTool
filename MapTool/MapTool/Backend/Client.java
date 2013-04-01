@@ -75,6 +75,7 @@ public class Client  {
 	 * To send a message to the server
 	 */
 	void sendMessage(ChatMessage msg) {
+
 		try {
 			sOutput.writeObject(msg);
 		} catch(IOException e) {
@@ -111,7 +112,6 @@ public class Client  {
 	 * > java Client 
 	 * is equivalent to
 	 * > java Client Anonymous 8192 localhost 
-	 * are equivalent
 	 */
 	public static void main(String[] args) {
 		// default values
@@ -161,9 +161,7 @@ public class Client  {
 				client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
 				// break to do the disconnect
 				break;
-			}
-			else if(msg.equalsIgnoreCase("WHOISIN")) // message WhoIsIn 
-				client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));				
+			}			
 			else 	                                 // default to ordinary message
 				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
 			

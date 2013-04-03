@@ -100,6 +100,14 @@ class Map {
 		return tiles[x][y].getToken();
 	}
 
+	public Token getToken(String s) {
+		
+		for(Token t : tokens) 
+			if (t.getName().equals(s))
+				return t;
+		return null;
+	}
+
 	/**
 	 * Wrapper method for toggleHideArea
 	 * 
@@ -228,7 +236,7 @@ class Map {
 				tiles[x + i][y + j].setToken(t);
 			}
 		}
-
+		
 		return true;
 	}
 

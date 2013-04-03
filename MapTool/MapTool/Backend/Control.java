@@ -85,6 +85,13 @@ class Control {
 
 	public boolean moveToken(String s, int tileX, int tileY) {
 
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return false;
+		}
+		Token t;
+		if ((t = map.getToken(s)) != null)
+			return map.move(t, tileX, tileY);
 		return false;
 	}
 
@@ -103,9 +110,9 @@ class Control {
 			System.out.println("Some error here"); 
 			return false;
 		}
-		for (Token t : map.getTokens()) 
-			if (t.getName().equals(name)) 
-				return removeToken(t);
+		Token t;
+		if ((t = map.getToken(name)) != null)
+			return map.removeToken(t);
 		return false;
 	}
 
@@ -119,6 +126,7 @@ class Control {
 	}
 
 	public void saveGame() {
+
 		String mydir = System.getProperty("user.dir");
 		store.writeMapData(mydir + "/saves/default.sav");
 	}
@@ -137,7 +145,6 @@ class Control {
 			System.out.println("Some error here"); 
 			return;
 		}
-
 		map.unHideArea(startX, startY, endX, endY);
 	}
 

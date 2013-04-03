@@ -30,8 +30,9 @@ class Map {
 	 * @param tokenX The width of the tokens in number of pixels
 	 * @param tokenWidth The width of the token in number of tiles
 	 */
-	public Map(int mapX, int mapY, int tokenX) {
+	public Map(int mapX, int mapY, int tokenX, Image pic) {
 
+		background = pic;
 		backgroundX = mapX;
 		backgroundY = mapY;
 		tokenWidth = tokenX;
@@ -97,14 +98,6 @@ class Map {
 	 */ 
 	public Token getToken(int x, int y) {
 		return tiles[x][y].getToken();
-	}
-
-	public Token getToken(String s) {
-		
-		for(Token t : tokens) 
-			if (t.getName().equals(s))
-				return t;
-		return null;
 	}
 
 	/**
@@ -188,10 +181,6 @@ class Map {
 		return true;
 	} 
 
-	public void setBackground(Image image) {
-		this.background = image;
-	}
-
 	/**
 	 * Wrapper method for toggleHideArea
 	 * 
@@ -239,7 +228,7 @@ class Map {
 				tiles[x + i][y + j].setToken(t);
 			}
 		}
-		
+
 		return true;
 	}
 

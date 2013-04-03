@@ -6,50 +6,34 @@ import java.util.ArrayList;
 
 class Storage {
 
-	Control control;
+	Control c;
+	PrintWriter out;
 
-	public Storage(Control control) {
-		this.control = control;
+	public Storage(Control c) {
+		this.c = c;
 	}
 
 	public void writeMapData(String filePath) {
 
-		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new BufferedWriter(
 			        new FileWriter(filePath, false)));
-		} catch(IOException io) {
+		} catch (IOException io) {
 			System.out.println("File " + filePath + " not found.");
 			return;
 		}
 
-		Map m = control.getMap();
-		ArrayList<Token> t = control.getTokenList();
+		Map m = c.getMap();
+		ArrayList<Token> t = c.getTokenList();
 		out.println(m.getBackground());
 
 		for (Token token : t)
-			out.println("tok|" + token);
+			out.println(token);
+
 		out.close();
 	}
 
-	public void readMapData(String filePath) {
+	public void readMapData(String s) {
 
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new FileReader(filePath));
-		} catch (IOException ioe) {
-			System.out.println("File " + filePath + " not found.");
-			return;
-		}
-
-		// read map data stuff
-		String line = "";
-		try {
-			while ((line = in.readLine()) != null) {
-				System.out.println(line);
-			}
-		} catch (IOException ioe) {
-			System.out.println(ioe);
-		}
 	}
 }

@@ -8,16 +8,13 @@ import java.text.SimpleDateFormat;
 /*
  * The server as a console application
  */
-public class Server extends Thread {
+public class Server {
 
 	// a unique ID for each connection
 	private static int uniqueId;
 
 	// an ArrayList to keep the list of the Client
 	private ArrayList<ClientThread> al;
-
-	// to display time
-	private SimpleDateFormat sdf;
 
 	// the port number to listen for connection
 	private int port;
@@ -30,7 +27,6 @@ public class Server extends Thread {
 		this.port = port;
 		keepGoing = true;
 		al = new ArrayList<ClientThread>();
-		sdf = new SimpleDateFormat("HH:mm:ss");
 	}
 	
 	public void start() {
@@ -87,16 +83,13 @@ public class Server extends Thread {
 	 *  to broadcast a message to all Clients
 	 */
 	private synchronized void broadcast(String message) {
-		// add HH:mm:ss and \n to the message
-		String time = sdf.format(new Date());
-		String messageLf = time + " " + message;
 		
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
 		for(int i = al.size(); --i >= 0;) {
 			ClientThread ct = al.get(i);
 			// try to write to the Client if it fails remove it from the list
-			if(!ct.writeMsg(messageLf)) {
+			if(!ct.writeMsg(message)) {
 				al.remove(i);
 				display("Disconnected Client " + ct.username + " removed from list.");
 			}
@@ -145,7 +138,7 @@ public class Server extends Thread {
 		server.start();
 	}
 
-	//  instance of this thread will run for each client
+	//  instance of this thread will run for each clipublicent
 	class ClientThread extends Thread {
 		// the socket where to listen/talk
 		Socket socket;
@@ -205,7 +198,7 @@ public class Server extends Thread {
 				switch(cm.getType()) {
 
 				case ChatMessage.MESSAGE:
-					broadcast(username + ": " + message);
+					broadcast(message);
 					break;
 				case ChatMessage.LOGOUT:
 					display(username + " disconnected with a LOGOUT message.");

@@ -19,8 +19,7 @@ public class Client  {
 	private Control c;
 	private String server, username;
 
-	/*
-	 *  Constructor called by console mode
+	/*  Constructor called by console mode
 	 *  server: the server address
 	 *  port: the port number
 	 *  username: the username
@@ -91,6 +90,14 @@ public class Client  {
 		} catch(IOException e) {
 			System.out.println("Exception writing to server: " + e);
 		}
+	}
+
+	public void sendChatMessage(String message) {
+		try {
+			sOutput.writeObject(new ChatMessage(1, username + "~" + message));
+		} catch(IOException e) {
+			System.out.println("Exception writing to server: " + e);
+		}		
 	}
 
 	/*
@@ -178,13 +185,16 @@ public class Client  {
 	class ListenFromServer extends Thread {
 
 		public void run() {
+
 			while(true) {
+
 				try {
 					String msg = (String) sInput.readObject();
 					String[] splits = msg.split("~");
 					if (splits[0].equals("ChatMessage")) {
 						// Print the message
-						System.out.println(username + ": " + splits[1]);
+						c.sendTextToGUI(splits[1], splits[2]);
+						System.out.println(splits[1] + ": " + splits[2]);
 					}
 					else if (splits[0].equals("AddToken")) {
 						// Get the parameters

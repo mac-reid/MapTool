@@ -1,25 +1,19 @@
 package Backend;
 
 import java.util.ArrayList;
+import UserInterface.genUI;
 import org.newdawn.slick.Image;
 
 public class Control {
 
 	private Map map;
 	private genUI genUI;
+	private Client client;
 	private Server server;
 	private Storage store;
 
 	public Control(genUI genUI) {
-		this genUI = genUI;
-	}
-
-	public void joinGame(String host) {
-		client = new Client(host, 8192, "Anonymous", this);
-	}
-	
-	public void sendTextToGUI(String user, String message) {
-
+		this.genUI = genUI;
 	}
 
 	public void addToken(Image pic, int x, int y, String name) {
@@ -41,15 +35,6 @@ public class Control {
 		String string = "AddToken~" + s + "~" + Integer.toString(x) + "~" + Integer.toString(y) + "~" + name;
 		client.broadcast(string);
 	}
-	
-	public void addTokenB(String s, int x, int y, String name) {
-
-		if (!gameLoaded()) { 
-			System.out.println("Some error here"); 
-			return;
-		}
-		map.addToken(null, x, y, name);
-	}
 
 	public void addToken(String s, int x, int y, int tokX, String name) {
 
@@ -58,6 +43,20 @@ public class Control {
 			return;
 		}
 		map.addToken(null, x, y, tokX, name);
+	}
+	
+	void addTokenB(String s, int x, int y, String name) {
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+		map.addToken(null, x, y, name);
+	}
+
+	public void broadcastMessage(String message) {
+		
+		client.sendChatMessage(message);
 	}
 
 	public Token getToken(int x, int y) {
@@ -90,13 +89,38 @@ public class Control {
 		client.broadcast(string);
 	}
 	
-	public void hideMapAreaB(int startX, int startY, int endX, int endY) {
+	void hideMapAreaB(int startX, int startY, int endX, int endY) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
 		map.hideArea(startX, startY, endX, endY);
+	}
+
+
+	public void hostGame() {
+
+		Server server = new Server(8192);
+		server.start();
+	}
+
+	public void hostGame(int port) {
+
+		Server server = new Server(port);
+		server.start();
+	}
+
+	public void joinGame(String alias, int port, String hostname) {
+		client = new Client(hostname, port, alias, this);
+	}
+
+	public void joinGame(String alias, String hostname) {
+		client = new Client(hostname, 8192, alias, this);
+	}
+
+	public void joinGame(String host) {
+		client = new Client(host, 8192, "Anonymous", this);
 	}
 
 	public void loadGame() {
@@ -115,16 +139,11 @@ public class Control {
 	public boolean moveToken(String s, int tileX, int tileY) {
 
 		if (!gameLoaded()) { 
-			Systme.out.println("Some error here"); 
+			System.out.println("Some error here"); 
 			return false;
 		}		
 		String string = "Move~" + s + "~" + Integer.toString(tileX) + "~" + Integer.toString(tileY);
 		client.broadcast(string);
-		return false;
-	}
-	
-	public boolean moveTokenB(String s, int tileX, int tileY) {
-
 		return false;
 	}
 
@@ -135,6 +154,11 @@ public class Control {
 			return false;
 		}
 		return map.move(t, tileX, tileY);
+	}
+
+	boolean moveTokenB(String s, int tileX, int tileY) {
+
+		return false;
 	}
 
 	public boolean removeToken(String name) {
@@ -150,20 +174,6 @@ public class Control {
 		for (Token t : map.getTokens()) 
 			if (t.getName().equals(name)) 
 				return removeToken(t);
-		
-		
-		return false;
-	}
-	
-	public boolean removeTokenB(String name) {
-
-		if (!gameLoaded()) { 
-			System.out.println("Some error here"); 
-			return false;
-		}
-		for (Token t : map.getTokens()) 
-			if (t.getName().equals(name)) 
-				return removeToken(t);
 		return false;
 	}
 
@@ -176,7 +186,20 @@ public class Control {
 		return map.removeToken(t);
 	}
 
+	boolean removeTokenB(String name) {
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return false;
+		}
+		for (Token t : map.getTokens()) 
+			if (t.getName().equals(name)) 
+				return removeToken(t);
+		return false;
+	}
+
 	public void saveGame() {
+
 		String mydir = System.getProperty("user.dir");
 		store.writeMapData(mydir + "/saves/default.sav");
 	}
@@ -189,24 +212,7 @@ public class Control {
 		}
 	}
 
-	public void hostGame() {
-
-		Server server = new Server(8192);
-		server.start();
-	}
-
-	public void hostGame(int port) {
-
-		Server server = new Server(port);
-		server.start();
-	}
-
-	public void joinGame(String alias, int port, String hostname) {
-
-	}
-
-	public void joinGame(String alias, String hostname) {
-		
+	public void sendTextToGUI(String user, String message) {
 
 	}
 
@@ -222,7 +228,7 @@ public class Control {
 		client.broadcast(string);
 	}
 	
-	public void showMapAreaB(int startX, int startY, int endX, int endY) {
+	void showMapAreaB(int startX, int startY, int endX, int endY) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 

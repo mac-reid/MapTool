@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 /*
  * The server as a console application
  */
-public class Server {
+public class Server extends Thread { 
 
 	// a unique ID for each connection
 	private static int uniqueId;
@@ -66,18 +66,13 @@ public class Server {
 			}
 		}
 		// something went bad
-		catch (IOException e) {
-            String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
-			display(msg);
-		}
+		catch (IOException e) {}
 	}		
 
 	/*
 	 * Display an event (not a message) to the console
 	 */
-	private void display(String msg) {
-		String time = sdf.format(new Date()) + " " + msg;
-	}
+	private void display(String msg) {}
 
 	/*
 	 *  to broadcast a message to all Clients
@@ -205,7 +200,7 @@ public class Server {
 					keepGoing = false;
 					break;
 				case ChatMessage.WHOISIN:
-					writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
+					writeMsg("List of the users connected:");
 					// scan al the users connected
 					for(int i = 0; i < al.size(); ++i) {
 						ClientThread ct = al.get(i);

@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 /*
  * The server as a console application
  */
-public class Server {
+public class Server extends Thread {
 
 	// a unique ID for each connection
 	private static int uniqueId;

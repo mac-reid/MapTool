@@ -6,6 +6,7 @@ import org.newdawn.slick.Image;
 class Control {
 
 	private Map map;
+	private Server server;
 	private Storage store;
 
 	public Control() {
@@ -70,15 +71,31 @@ class Control {
 		map.hideArea(startX, startY, endX, endY);
 	}
 
-	public void loadGame() {
+	public void hostGame() {
 
-		map = new Map(480, 480, 48, null);
+		Server server = new Server(8192);
+		server.start();
+	}
+
+	public void hostGame(int port) {
+
+		Server server = new Server(port);
+		server.start();
+	}
+
+	public void joinGame() {
+		
+	}
+
+	private void loadGame() {
+
+		map = new Map(480, 480, 48);
 		store = new Storage(this);
 	}
 
-	public void loadSave(String saveFilePath) {
+	private void loadSave(String saveFilePath) {
 
-		map = new Map(480, 480, 48, null);
+		map = new Map(480, 480, 48);
 		store = new Storage(this);
 		store.readMapData(saveFilePath);
 	}
@@ -168,7 +185,9 @@ class Control {
 		String mydir = System.getProperty("user.dir");
 		c.loadSave(mydir + "/saves/default.sav");
 
+		c.hostGame();
 		c.addToken("", 2, 2, 1, "Carl");
+		c.addToken("", 2, 3, 1, "Caleb");
 
 		c.saveGame();		
 	}

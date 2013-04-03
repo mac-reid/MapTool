@@ -30,9 +30,8 @@ class Map {
 	 * @param tokenX The width of the tokens in number of pixels
 	 * @param tokenWidth The width of the token in number of tiles
 	 */
-	public Map(int mapX, int mapY, int tokenX, Image pic) {
+	public Map(int mapX, int mapY, int tokenX) {
 
-		background = pic;
 		backgroundX = mapX;
 		backgroundY = mapY;
 		tokenWidth = tokenX;
@@ -188,6 +187,10 @@ class Map {
 			return false;
 		return true;
 	} 
+
+	public void setBackground(Image image) {
+		this.background = image;
+	}
 
 	/**
 	 * Wrapper method for toggleHideArea

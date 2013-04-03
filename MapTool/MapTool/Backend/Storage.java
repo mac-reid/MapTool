@@ -1,4 +1,4 @@
-package Bacontrolkend;
+package Backend;
 
 import java.io.*;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 class Storage {
 
-	Contol control;
+	Control control;
 
 	public Storage(Control control) {
 		this.control = control;
@@ -18,7 +18,7 @@ class Storage {
 		try {
 			out = new PrintWriter(new BufferedWriter(
 			        new FileWriter(filePath, false)));
-		} catch(IOExcontroleption io) {
+		} catch(IOException io) {
 			System.out.println("File " + filePath + " not found.");
 			return;
 		}
@@ -28,11 +28,28 @@ class Storage {
 		out.println(m.getBackground());
 
 		for (Token token : t)
-			out.println(token);
+			out.println("tok|" + token);
 		out.close();
 	}
 
-	public void readMapData(String s) {
+	public void readMapData(String filePath) {
 
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(filePath));
+		} catch (IOException ioe) {
+			System.out.println("File " + filePath + " not found.");
+			return;
+		}
+
+		// read map data stuff
+		String line = "";
+		try {
+			while ((line = in.readLine()) != null) {
+				System.out.println(line);
+			}
+		} catch (IOException ioe) {
+			System.out.println(ioe);
+		}
 	}
 }

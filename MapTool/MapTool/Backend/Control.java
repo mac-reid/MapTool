@@ -3,14 +3,15 @@ package Backend;
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
 
-class Control {
+public class Control {
 
 	private Map map;
+	private genUI genUI;
 	private Server server;
 	private Storage store;
 
-	public Control() {
-
+	public Control(genUI genUI) {
+		this genUI = genUI;
 	}
 
 	public void sendTextToGUI(String user, String message) {
@@ -83,8 +84,13 @@ class Control {
 		server.start();
 	}
 
-	public void joinGame() {
+	public void joinGame(String alias, int port, String hostname) {
+
+	}
+
+	public void joinGame(String alias, String hostname) {
 		
+
 	}
 
 	private void loadGame() {
@@ -180,7 +186,7 @@ class Control {
 
 	public static void main(String[] args) {
 
-		Control c = new Control();
+		Control c = new Control(null);
 
 		String mydir = System.getProperty("user.dir");
 		c.loadSave(mydir + "/saves/default.sav");

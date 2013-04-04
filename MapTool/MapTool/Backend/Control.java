@@ -25,18 +25,18 @@ public class Control {
 		map.addToken(pic, x, y, name);
 	}
 
-	public void addToken(String s, int x, int y, String name) {
+	public void addToken(String fileName, int x, int y, String name) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
-		map.addToken(null, x, y, name);
-		String string = "AddToken~" + s + "~" + Integer.toString(x) + "~" + Integer.toString(y) + "~" + name;
+		map.addToken(fileName, x, y, name);
+		String string = "AddToken~" + fileName + "~" + Integer.toString(x) + "~" + Integer.toString(y) + "~" + name;
 		client.broadcast(string);
 	}
 
-	public void addToken(String s, int x, int y, int tokX, String name) {
+	public void addToken(String fileName, int x, int y, int tokX, String name) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
@@ -45,13 +45,13 @@ public class Control {
 		map.addToken(null, x, y, tokX, name);
 	}
 	
-	void addTokenB(String s, int x, int y, String name) {
+	void addTokenB(String fileName, int x, int y, String name) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
-		map.addToken(null, x, y, name);
+		map.addToken(fileName, x, y, name);
 	}
 
 	public void broadcastMessage(String message) {

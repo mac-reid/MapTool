@@ -2,6 +2,7 @@ package Backend;
 
 import java.util.ArrayList;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 
 /**
  * This class is the basis for the storage of units on the grid based
@@ -61,6 +62,20 @@ class Map {
 
 		tokens.add(new Token(pic, x, y, pic.getWidth() / tokenWidth, name));
 		move(tokens.get(tokens.size() - 1), x, y, true);
+	}
+
+	public void addToken(String fileName, int x, int y, String name) {
+
+		Image image = null;
+
+		try { 
+			image = new Image(fileName);
+		} catch (SlickException s) {
+			System.out.println("File not found.");
+		}
+
+		tokens.add(new Token(image, x, y, image.getWidth() / tokenWidth, name));
+		move(tokens.get(tokens.size() - 1), x, y, true);	
 	}
 
 	/** 

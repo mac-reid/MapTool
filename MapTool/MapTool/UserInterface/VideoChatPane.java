@@ -56,7 +56,9 @@ public class VideoChatPane {
 		int y = Y + (height - faceSize)/2;
 		for (int i  = 0; i < num; i++){
 			g.setColor(Color.black);
-			g.drawRect(x - 1, y - 1, faceSize + 2, faceSize + 2);
+			g.drawRect(x - 1, y - 1, faceSize + 1, faceSize + 1);
+			g.setColor(Color.darkGray);
+			g.fillRect(x, y, faceSize, faceSize);
 			avatars[i] = avatars[i].getScaledCopy(faceSize, faceSize);
 			avatars[i].draw(x, y);
 			x = x + leftover + faceSize;

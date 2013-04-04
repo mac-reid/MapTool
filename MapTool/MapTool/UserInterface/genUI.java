@@ -1,6 +1,7 @@
 package UserInterface;
 
 import java.awt.GraphicsConfiguration;
+import Backend.Control;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
@@ -22,11 +23,13 @@ public class genUI extends StateBasedGame{
 	private static final int editor = 1;
 	private static final int FRAME_BORDER = 13;
 	private String mapFile;
+	private Control control;
 	
 	public genUI(String name) {
 		super(gamename);
 		this.addState(new Menu(menu));
 		this.addState(new Editor(editor));
+		control = new Control(this);
 	}
 
 	public void initStatesList(GameContainer gc) throws SlickException {

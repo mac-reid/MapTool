@@ -12,24 +12,29 @@ public class VideoChatPane {
 
 	private GameContainer game;
 	Image fillpattern;
-	Image face;
 	float scale;
 	private int numFaces = 5;
 	private int faceSize = 175;
+	private Image[] avatars;
 	
 	public VideoChatPane(GameContainer gc){
 		game = gc;
 		faceSize = gc.getHeight()/5 - 20;
+		avatars = new Image[numFaces];
 		try {
-			fillpattern = new Image("Resources/parchment.png");
-			face = new Image("Resources/goomba.png");
-			scale = ((float)faceSize)/(float)face.getWidth();
+		fillpattern = new Image("Resources/parchment.png");
+			avatars[0] = new Image("Resources/Tokens/Elf.png").getScaledCopy(faceSize, faceSize);
+			avatars[1] = new Image("Resources/Tokens/Hero.png").getScaledCopy(faceSize, faceSize);
+			avatars[2] = new Image("Resources/Tokens/Mage.png").getScaledCopy(faceSize, faceSize);
+			avatars[3] = new Image("Resources/Tokens/Mystic.png").getScaledCopy(faceSize, faceSize);
+			avatars[4] = new Image("Resources/Tokens/Troll.png").getScaledCopy(faceSize, faceSize);
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-	}
+		}
+		
 	
 	public void renderVideoPane(int x, int y, int width, int height, Graphics g){
 		Image img = fillpattern.getScaledCopy(width, height);
@@ -40,7 +45,6 @@ public class VideoChatPane {
 		if (faceSize * 5 + 30 > width){
 			faceSize = width/5 - 30;
 		}
-		scale = (float)faceSize/(float)face.getWidth();
 		addFaceBoxes(x, y, width, height, numFaces, g);
 	}
 	
@@ -53,7 +57,8 @@ public class VideoChatPane {
 		for (int i  = 0; i < num; i++){
 			g.setColor(Color.black);
 			g.drawRect(x - 1, y - 1, faceSize + 2, faceSize + 2);
-			face.draw(x, y, scale);
+			avatars[i] = avatars[i].getScaledCopy(faceSize, faceSize);
+			avatars[i].draw(x, y);
 			x = x + leftover + faceSize;
 		}
 	}

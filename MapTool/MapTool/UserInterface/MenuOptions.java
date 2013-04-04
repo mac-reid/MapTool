@@ -1,3 +1,5 @@
+package UserInterface;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
@@ -10,22 +12,29 @@ public class MenuOptions {
 	
 	//decides which options (host or join) to load
 	private int state;
-	private final int startX = 735;
-	private final int startY = 420;
-	private final int yChange = 60;
+	private int startX = 0;
+	private int startY = 0;
+	private int yChange = 60;
 	private String targetIP;
 	private String name;
 	//the possible option fields that can be generated
 	private OptionField[] fields;
 	private Image cancelContinue;
 	
+	private double scale;
+	
 	private boolean isActive;
 	private MenuButton control;
 	
-	public MenuOptions(int state, MenuButton control) throws SlickException{
+	public MenuOptions(int state, MenuButton control, GameContainer gc) throws SlickException{
 		this.control = control;
 		this.state = state;
-		cancelContinue = new Image("Resources/cancelORcontinue.png");
+		//make the cancelcontinue button different
+		cancelContinue = new Image("Resources/cancelORcontinue.png")
+			.getScaledCopy(gc.getWidth()/3, gc.getHeight()/6);
+		yChange = 60;
+		startX = gc.getWidth()*5/8;
+		startY = gc.getHeight()/2;
 		switch(state){
 		case 0: {
 			fields = new OptionField[3];
@@ -62,16 +71,19 @@ public class MenuOptions {
 			
 			int mouseX = in.getMouseX();
 			int mouseY = in.getMouseY();
+			int continueTop = gc.getHeight() - cancelContinue.getHeight() - 15;
+			int separation = gc.getHeight() - cancelContinue.getHeight()/2 - 15;
+			int cancelBot = gc.getHeight() - 15;
 			//if the mouse gets pressed
 			if (in.isMouseButtonDown(0)){
-				if (mouseX >= 745 && mouseX <= 1105){
+				if (mouseX >= startX && mouseX <= startX + cancelContinue.getWidth()){
 					//continue
-					if (mouseY >= 662 && mouseY <= 689){
+					if (mouseY <= separation && mouseY >= continueTop){
 						sbg.enterState(1);
 						((AppGameContainer) gc).setResizable(true);
 					}
 					//cancel
-					if (mouseY >= 715 && mouseY <= 742){
+					if (mouseY <= cancelBot && mouseY > separation){
 						control.deActivate();
 					}
 				}

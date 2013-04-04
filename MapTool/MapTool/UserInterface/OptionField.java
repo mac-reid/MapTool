@@ -1,4 +1,9 @@
+package UserInterface;
+
 import java.awt.Font;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
@@ -37,6 +42,7 @@ public class OptionField {
 	private int YSize;
 	//if the field opens up a file
 	private boolean opensFiles;
+	private boolean isShowing = false;
 	private FileChooser fc;
 	
 	//general constructor for non 
@@ -95,8 +101,9 @@ public class OptionField {
 		int mouseY = in.getMouseY();
 		//if you click on it, activate it/open the file
 		if (mouseX >= XPos && mouseX <= (XPos + XSize) && mouseY >= YPos && mouseY <= (YPos + YSize)){
-			if (in.isMouseButtonDown(0)){
+			if (in.isMousePressed(0)){
 				isActive = true;
+				//this is super buggy right now!
 				if(opensFiles){
 					fc = new FileChooser();
 					value = fc.getFilename();
@@ -131,6 +138,14 @@ public class OptionField {
 				}	
 			}
 			lastchar = entrychar;
+		}
+	}
+	
+	public void showChooser(boolean isShowing){
+		if(isShowing) return;
+		else {
+			new FileChooser();
+			isShowing = true;
 		}
 	}
 }

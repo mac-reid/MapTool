@@ -1,3 +1,5 @@
+package UserInterface;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
@@ -16,9 +18,20 @@ public class MenuButton {
 	private boolean isDecreasing;
 	private boolean isActive;
 	private double whenActivated;
+
 	
-	public MenuButton(String imgLocation, int locX, int locY) throws SlickException{
+	public MenuButton(String imgLocation, int locX, int locY, float scale) throws SlickException{
 		img = new Image(imgLocation);
+		img = img.getScaledCopy(scale);
+		X = locX;
+		Y = locY;
+		XSize = img.getWidth();
+		YSize = img.getHeight();
+	}
+	
+	public MenuButton(Image img, int locX, int locY, float scale) throws SlickException{
+		this.img = img;
+		this.img = img.getScaledCopy(scale);
 		X = locX;
 		Y = locY;
 		XSize = img.getWidth();

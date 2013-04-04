@@ -20,6 +20,7 @@ public class ChatPane {
 	int windowwidth = 0;
 	int windowheight = 0;
 	int lineheight = 0;
+	int scrolladjust = 0;
 	
 	//Used to erase the old chatbox when resizing the window
 	int lastX = 0;
@@ -75,10 +76,10 @@ public class ChatPane {
     	
     	
     	// Draw chat history
-    	for(int i = 1; i <= chatlog.size(); i++) {
+    	for(int i = 1; (i + scrolladjust) <= chatlog.size(); i++) {
     		if (i * lineheight + 50 > height)
     			break;
-    		ttfont.drawString(x + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - i));
+    		ttfont.drawString(x + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - (i + scrolladjust)));
     	}
     	
     	// Draw entry line
@@ -106,8 +107,11 @@ public class ChatPane {
     	if ((entrychar != lastchar) && (entrychar != 0) && isActivated) {
     		// If ENTER, send message to log
     		if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
-    			chatlog.add(entryline);
-    			entryline = "";
+    			if (entryline.length() != 0) {
+    				chatlog.add(parseEntry(entryline));
+    				entryline = "";
+    			}
+    			
     		}
     		// If Backspace, delete a character
     		else if (Keyboard.getEventKey() == Keyboard.KEY_BACK) {
@@ -121,17 +125,60 @@ public class ChatPane {
     		}	
     	}
     	lastchar = entrychar;
-    	
     }
+    
+    
+    /* Scrolls the chat up/down.  Positive/negative value displays newer/older lines
+    	May modify later to retain at least a screen's worth of chat in the pane, if possible */
+    public void scrollChat(int adjustment) {
+    	scrolladjust += (adjustment / 20);
+    	if (scrolladjust < 0)
+    		scrolladjust = 0;
+    	else if (scrolladjust >= chatlog.size())
+    		scrolladjust = chatlog.size() - 1;
+    }
+    
+    private String parseEntry(String addstring) {
+    	//If the line is lead by a command
+    	if (addstring.charAt(0) == '/') {
+    		// Send a message
+    		if (addstring.length() >= 8) {
+    			if (addstring.substring(1, 5).equals("msg ")) {
+    				String message = addstring.substring(5);
+    				chatSend(message.substring(0, message.indexOf(' ')), message.substring(message.indexOf(' ') + 1, message.length()));
+    				return("(msg->" + message.substring(0, message.indexOf(' ')) + "):" + message.substring(message.indexOf(' ') + 1, message.length()));
+    			}
+    			else if (addstring.substring(1, 6).equals("roll ")) {
+    				// I need to speak with Mac about the structure of dice roll strings
+    				System.out.println("A diceroll happens!");
+    			}
+    		}
+    	}
+    	return addstring;
+    }
+    
+    public void chatReceive(String inline) {
+    	chatlog.add(inline);
+    }
+    
+    // Broadcasts a string, int should indicate which, if not all, users
+    public void chatSend(String user, String outline) {
+    	System.out.println("NETWORK MESSAGE TO (" + user + ") : " + outline);
+    }
+    
    
     public void Activate(){
     	isActivated = true;
-    	System.out.println("ACTIVATED!");
+    	//System.out.println("ACTIVATED!");
     }
     
     public void Deactivate(){
     	isActivated = false;
-    	System.out.println("DEACTIVATED");
+    	//System.out.println("DEACTIVATED");
+    }
+    
+    public boolean isActivated() {
+    	return isActivated;
     }
     
     public int getLineHeight(){

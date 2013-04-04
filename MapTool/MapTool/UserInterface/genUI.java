@@ -22,6 +22,7 @@ public class genUI extends StateBasedGame{
 	private static final int editor = 1;
 	private static final int FRAME_BORDER = 13;
 	private String mapFile;
+	
 	public genUI(String name) {
 		super(gamename);
 		this.addState(new Menu(menu));
@@ -44,8 +45,12 @@ public class genUI extends StateBasedGame{
 	public static void main(String[] args){		
 		AppGameContainer app;
 		try{
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			int width = (int)(.8*kit.getScreenSize().getWidth());
+			//the original image was 1280/800 res, so thats what those numbers are for
+			int height = (int)(800*width/1280);
 			app = new AppGameContainer(new genUI(gamename));
-			app.setDisplayMode(1280, 800, false);
+			app.setDisplayMode(width, height, false);
 			app.start();
 		}catch(SlickException e){
 			e.printStackTrace();

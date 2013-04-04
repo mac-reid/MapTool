@@ -1,6 +1,7 @@
 package UserInterface;
 
 import java.awt.Font;
+import java.awt.Frame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -105,6 +106,20 @@ public class OptionField {
 				isActive = true;
 				//this is super buggy right now!
 				if(opensFiles){
+					
+					
+					// Force Slick to give up focus
+					Frame frame = new Frame();
+					frame.setUndecorated(true);
+					frame.setOpacity(0);
+					frame.setLocationRelativeTo(null);
+					frame.setVisible(true);
+					frame.toFront();
+					frame.setVisible(false);
+					frame.dispose();
+					// End force
+					
+					
 					fc = new FileChooser();
 					value = fc.getFilename();
 					//if this is the map

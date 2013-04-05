@@ -5,6 +5,7 @@ import java.awt.Frame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
@@ -104,9 +105,26 @@ public class OptionField {
 		if (mouseX >= XPos && mouseX <= (XPos + XSize) && mouseY >= YPos && mouseY <= (YPos + YSize)){
 			if (in.isMousePressed(0)){
 				isActive = true;
-				//this is super buggy right now!
+				//this is super buggy right now (only works on PC)
 				if(opensFiles){
-					
+					//makes it look better
+					try {
+						// Set System L&F
+						UIManager.setLookAndFeel(
+								UIManager.getSystemLookAndFeelClassName());
+					} 
+					catch (UnsupportedLookAndFeelException e) {
+						// handle exception
+					}
+					catch (ClassNotFoundException e) {
+						// handle exception
+					}
+					catch (InstantiationException e) {
+						// handle exception
+					}
+					catch (IllegalAccessException e) {
+						// handle exception
+					}
 					
 					// Force Slick to give up focus
 					Frame frame = new Frame();

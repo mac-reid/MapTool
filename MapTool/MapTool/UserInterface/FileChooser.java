@@ -69,6 +69,7 @@ public class FileChooser {
     JFileChooser fc;
     String filename = "";
     String fileLocation = "";
+    File selectedFile = null;
     public FileChooser() {
     	
     	JFrame frame = new JFrame();
@@ -81,9 +82,9 @@ public class FileChooser {
         int returnVal = fc.showOpenDialog(new JFrame());
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            	filename = file.getName();
-            	fileLocation = file.getAbsolutePath();
+            selectedFile = fc.getSelectedFile();
+            	filename = selectedFile.getName();
+            	fileLocation = selectedFile.getAbsolutePath();
         } else {
         }
  
@@ -95,5 +96,9 @@ public class FileChooser {
     
     public String getFilename(){
     	return filename;
+    }
+    
+    public File getSelectedFile(){
+    	return selectedFile;
     }
 }

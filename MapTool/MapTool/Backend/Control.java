@@ -52,6 +52,7 @@ public class Control {
 			return;
 		}
 		map.addToken(fileName, x, y, name);
+		map.printMap();
 	}
 
 	public void broadcastMessage(String message) {
@@ -96,8 +97,8 @@ public class Control {
 			return;
 		}
 		map.hideArea(startX, startY, endX, endY);
+		map.printMap();
 	}
-
 
 	public void hostGame() {
 
@@ -158,7 +159,8 @@ public class Control {
 
 	boolean moveTokenB(String s, int tileX, int tileY) {
 
-		return false;
+		Token t = map.getToken(s);
+		return moveToken(t, tileX, tileY);
 	}
 
 	public boolean removeToken(String name) {
@@ -188,14 +190,17 @@ public class Control {
 
 	boolean removeTokenB(String name) {
 
+		boolean yeah = false;
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return false;
 		}
 		for (Token t : map.getTokens()) 
 			if (t.getName().equals(name)) 
-				return removeToken(t);
-		return false;
+				yeah = removeToken(t);
+
+		map.printMap();		
+		return yeah;
 	}
 
 	public void saveGame() {
@@ -236,6 +241,7 @@ public class Control {
 		}
 
 		map.unHideArea(startX, startY, endX, endY);
+		map.printMap();
 	}
 
 	protected Map getMap() {

@@ -15,6 +15,12 @@ public class CharacterTile {
 		locationy = tiley;
 	}
 	
+	public CharacterTile(Image image, int tilex, int tiley) throws SlickException {
+		tileimage = image;
+		locationx = tilex;
+		locationy = tiley;
+	}
+	
 	public void renderTile(float offx, float offy) {
 		tileimage.draw(offx + (locationx * 48), offy + (locationy * 48));
 	}

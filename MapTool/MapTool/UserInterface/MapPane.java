@@ -145,7 +145,7 @@ public class MapPane {
     	Input in = gc.getInput();
     	int mouseX = in.getMouseX();
     	int mouseY = in.getMouseY();
-    	options.update(gc);
+    	if(options.isActive()) options.update(gc);
     	//The constant 5 right now is the buffer from editor
     	if ((mouseX >= mXoffset && mouseX <= mXoffset + mapxsize*48) && (mouseY >= mYoffset && mouseY <= mYoffset + mapysize*48)) {
         	
@@ -155,13 +155,14 @@ public class MapPane {
 	        if (in.isMousePressed(1)){
 	        	for(CharacterTile tile : tiles){
 	        		//if both if statements are true, a token is there
-	        		if(tile.getX() == mouseX - 5){
-	        			if(tile.getY() == mouseY - 5){
-	        				//ADD GENERATE CHARACTER MENU
-	        				break;
+	        		if(tile.getX() == mouseX/48 + mapoffsetx){
+	        			if(tile.getY() == mouseY/48 + mapoffsety){
+	        				System.out.println("You have clicked on a token");
+	        				return;
 	        			}
 	        		}
 	        	}
+	        	options.resetPort();
 	        	options.setX(mouseX);
 	        	options.setY(mouseY);
 	        	options.setActive(true);
@@ -172,6 +173,12 @@ public class MapPane {
 	        if (in.isMousePressed(2))
 	        	removeTileCoord(mouseX - 5, mouseY - 5);
         }
+    }
+    
+    //Testing this, moves the map immediately
+    public void move(float tileX, float tileY){
+    	mapoffsetx = tileX * 48;
+    	mapoffsety = tileY * 48;
     }
     
     public void resize(int tileWidth,int tileHeight){
@@ -193,6 +200,11 @@ public class MapPane {
     // Add a tile by map coordinate
     public void addTileCoord(String imglocation, int x, int y) throws SlickException {
     	tiles.add(new CharacterTile(imglocation, (int)((x + mapoffsetx) / 48), (int)((y + mapoffsety) / 48)));
+    }
+    
+    // Add a tile by map coordinate (using an image)
+    public void addTileCoord(Image image, int x, int y) throws SlickException {
+    	tiles.add(new CharacterTile(image, (int)((x + mapoffsetx) / 48), (int)((y + mapoffsety) / 48)));
     }
     
     // Add a tile by grid location

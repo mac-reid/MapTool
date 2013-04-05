@@ -1,9 +1,12 @@
 package UserInterface;
 
+import java.awt.Frame;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -25,9 +28,18 @@ public class MapOptions {
 	private final int height = 60;
 	//used to tell the options what is being hovered over
 	private int hoverArea = 0;
-	private boolean moveBox = false;
-	private final int moveBoxWidth = 400;
-	private final int moveBoxHeight = 300;
+	private boolean showminimap = false;
+	private final float minimapsize = 400;
+	private float miniMapScale = 0;
+	private int minimapwidth = 400;
+	private int minimapheight = 300;
+	public int minimapx = 0;
+	public int minimapy = 0;
+	//ints used for the size of the little rectangle
+	private float portHeight, portWidth;
+	private float portX, portY;
+	private boolean showPort = false;
+	
 	private int inputX;
 	private int inputY;
 	
@@ -48,7 +60,13 @@ public class MapOptions {
 		
 		//create the mapBox sizes
 		if(map.mappxheight > map.mappxwidth){
-			
+			miniMapScale = minimapsize/map.mappxheight;
+			minimapheight = (int) (miniMapScale * map.mappxheight);
+			minimapwidth = (int) (miniMapScale * map.mappxwidth);
+		} else {
+			miniMapScale = minimapsize/map.mappxwidth;
+			minimapheight = (int) (miniMapScale * map.mappxheight);
+			minimapwidth = (int) (miniMapScale * map.mappxwidth);
 		}
 	}
 	
@@ -82,37 +100,136 @@ public class MapOptions {
 			g.drawString("Insert Token", x + 3, y + 3);
 			g.drawString("Move", x + 3, y + (height/3) + 3);
 			g.drawString("Ping", x + 3, y + (2*height/3) + 3);
-			if(moveBox){
-				showMoveBox(g, x + width + 5, inputY);
+			if(showminimap){
+				//check to make sure map is kept on screen (11 is size of buffers and borders)
+				if(x + 11 + minimapwidth + width < (map.mapxsize * 48)) {
+					minimapx = x + width + 5;
+					if(y + height + minimapheight + 10 > map.mapysize*48) {
+						minimapy = y - minimapheight - 5;
+					} else {
+						minimapy = y + height + 5;
+					}
+					showMiniMap(g, minimapx, minimapy);
+					if(showPort) {
+						g.setColor(Color.red);
+						g.drawRect(portX, portY, portWidth, portHeight);
+					}
+				} else {
+					minimapx = (map.mapxsize * 48) - minimapwidth - 5;
+					//make sure I dont draw too low
+					if(y + height + minimapheight + 10 > map.mapysize*48) {
+						minimapy = y - minimapheight - 5;
+					} else {
+						minimapy = y + height + 5;
+					}
+					showMiniMap(g, minimapx, minimapy);
+					if(showPort) {
+						g.setColor(Color.red);
+						g.drawRect(portX, portY, portWidth, portHeight);
+					}
+				}
 			}
 		}
 	}
 	
 	public void update(GameContainer gc){
-		Input mouse = gc.getInput();
-		int mouseX = mouse.getMouseX();
-		int mouseY = mouse.getMouseY();
+		Input input = gc.getInput();
+		int mouseX = input.getMouseX();
+		int mouseY = input.getMouseY();
+
+		
+		
+		//check mouse hover area while 
+		if(showminimap){
+			portWidth = miniMapScale * 48 *  map.mapxsize;
+			portHeight = miniMapScale * 48 * map.mapysize;
+			//check mouse location
+			if(mouseX >= minimapx && mouseX <= minimapx + minimapwidth 
+					&& mouseY >= minimapy && mouseY <= minimapy + minimapheight){
+				//create the bounds for the viewport rectangle
+				portX = (float) (minimapx + (mouseX - minimapx) - .5*portWidth);
+				portY = (float) (minimapy + (mouseY - minimapy) - .5*portHeight);
+				//make sure the port does not extend past the minimap
+				if(portX < minimapx) portX = minimapx;
+				if(portX + portWidth > minimapx + minimapwidth) portX = minimapx + minimapwidth - portWidth;
+				if(portY < minimapy) portY = minimapy;
+				if(portY + portHeight > minimapy + minimapheight) portY = minimapy + minimapheight - portHeight;
+				showPort = true;
+				//if the mouse is clicked
+				if(input.isMousePressed(0)){
+					map.move((portX - minimapx)/(48*miniMapScale), (portY - minimapy)/(48*miniMapScale));
+					setActive(false);
+					resetPort();
+				}
+			}
+		}
 		
 		//reset hoverArea
 		hoverArea = 0;
-		//check if it is in right horizontal place
-		if(mouseX >= x && mouseX <= x + width){
+		//check if it is over the right click menu
+		if(mouseX >= x && mouseX <= x + width && !showminimap){
 			//first item
 			if(mouseY >= y && mouseY <= y + (height/3)){
 				hoverArea = insertToken;
 				//if left-clicked
-				if(mouse.isMousePressed(0)){
-					fc = new JFileChooser();
-					JFrame frame = new JFrame();
-					fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-					int returnVal = fc.showOpenDialog(frame);
-				}
+				if(input.isMousePressed(0)){
+					try {
+						UIManager.setLookAndFeel(UIManager.getLookAndFeel());
+					} catch (UnsupportedLookAndFeelException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						// Set System L&F
+						UIManager.setLookAndFeel(
+								UIManager.getSystemLookAndFeelClassName());
+					} 
+					catch (UnsupportedLookAndFeelException e) {
+						// handle exception
+					}
+					catch (ClassNotFoundException e) {
+						// handle exception
+					}
+					catch (InstantiationException e) {
+						// handle exception
+					}
+					catch (IllegalAccessException e) {
+						// handle exception
+					}
+					// Force Slick to give up focus
+					Frame frame = new Frame();
+					frame.setUndecorated(true);
+					frame.setOpacity(0);
+					frame.setLocationRelativeTo(null);
+					frame.setVisible(true);
+					frame.toFront();
+					frame.setVisible(false);
+					frame.dispose();
+					// End force
+
+					try {
+						FileChooser fc = new FileChooser();
+						File file = fc.getSelectedFile();
+						setActive(false);
+						String location = file.getAbsolutePath();
+						if(location.contains(".png")){
+							Image tile = new Image(location).getScaledCopy(48, 48);
+							map.addTileCoord(tile, mouseX, mouseY);
+						} else {
+							System.out.println("Please choose a png file. Square works best, but do as you wish.");
+						}
+					} catch (SlickException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NullPointerException npe){}
+				} 
+			}
 			}
 			//second item
 			if(mouseY >= y + (height/3) && mouseY <= y + (2*height/3)){
 				hoverArea = move;
-				if (mouse.isMousePressed(0)){
-					moveBox = true;
+				if (input.isMousePressed(0)){
+					showminimap = true;
 					inputX = mouseX;
 					inputY = mouseY;
 				}
@@ -122,39 +239,48 @@ public class MapOptions {
 				hoverArea = ping;
 
 			}
-		}
 
-		//actions from a left click
-		if(mouse.isMouseButtonDown(0)){
-			//outside the main menu
-			if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height){
-				if (moveBox){
-					//outside the move menu
-					if (mouseX < inputX || mouseX > inputX + moveBoxWidth || mouseY < inputY || mouseY > inputY + moveBoxHeight){
-						moveBox = false;
-					} else {
-						//move map to coords
+
+			//actions from a left click
+			if(input.isMouseButtonDown(0)){
+				//outside the main menu
+				if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height){
+					if (showminimap){
+						//outside the move menu
+						if (mouseX < inputX || mouseX > inputX + minimapwidth || mouseY < inputY || mouseY > inputY + minimapheight){
+							showminimap = false;
+						} else {
+							//move map to coords
+						}
 					}
 				}
 			}
-		}
-		
+
 
 	}
 
-	public void showMoveBox(Graphics g, int x, int y){
+	/**
+	 * Used to get the port (red box) off of screen
+	 */
+	public void resetPort(){
+		portX = -1000;
+		portY = -1000;
+	}
+	
+	public void showMiniMap(Graphics g, int x, int y){
 		//outline
 		g.setColor(Color.lightGray);
-		g.fillRect(x - 3, y - 3, moveBoxWidth + 6, moveBoxHeight + 6);
+		g.fillRect(x - 3, y - 3, minimapwidth + 6, minimapheight + 6);
 		//grey background
 		g.setColor(Color.lightGray);
-		Image miniMap = map.map.getScaledCopy(moveBoxWidth, moveBoxHeight);
+		Image miniMap = map.map.getScaledCopy(miniMapScale);
 		miniMap.draw(x, y);
 		//find the "you are here"
-		float currentX = map.mapoffsetx;
-		float currentY = map.mapoffsety;
+		float currentX = (map.mapoffsetx + 24*map.mapxsize) * miniMapScale;
+		float currentY = (map.mapoffsety + 24*map.mapysize)* miniMapScale;
 		//put in terms of the move box
-		
+		g.setColor(Color.red);
+		g.fillOval(x + currentX, y + currentY, 5, 5);
 	}
 	
 	//GETTERS AND SETTERS
@@ -164,6 +290,9 @@ public class MapOptions {
 
 	public void setX(int x) {
 		this.x = x;
+		if(this.x + width > 48*map.mapxsize){
+			this.x = x - 5 - width;
+		}
 	}
 
 	public int getY() {
@@ -188,7 +317,7 @@ public class MapOptions {
 
 	public void setActive(boolean active) {
 		this.active = active;
-		moveBox = false;
+		showminimap = false;
 	}
 
 	public int getWidth() {

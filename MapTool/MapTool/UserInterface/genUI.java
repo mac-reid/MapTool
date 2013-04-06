@@ -35,7 +35,7 @@ public class genUI extends StateBasedGame{
 	public void initStatesList(GameContainer gc) throws SlickException {
 		this.getState(menu).init(gc, this);
 		this.getState(editor).init(gc, this);
-		this.enterState(menu);
+		this.enterState(editor);
 	}
 
 	public void setMapFile(String file){

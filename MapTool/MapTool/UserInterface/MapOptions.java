@@ -213,8 +213,7 @@ public class MapOptions {
 						setActive(false);
 						String location = file.getAbsolutePath();
 						if(location.contains(".png")){
-							Image tile = new Image(location).getScaledCopy(48, 48);
-							map.addTileCoord(tile, mouseX, mouseY);
+							map.addTokenCoord(location, mouseX, mouseY);
 						} else {
 							System.out.println("Please choose a png file. Square works best, but do as you wish.");
 						}

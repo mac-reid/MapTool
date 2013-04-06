@@ -1,143 +1,64 @@
 package UserInterface;
 
-import java.util.ArrayList;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.SlickException;
 
-/**
- * This class serves as a token that can be placed on the map
- *
- * @author Mac Reid
- */
+
 public class Token {
+	Image tokenimage = null;
+	int tileX = 1;
+	int tileY = 1;
+	int size = 1;
+	String name;
+
+	public Token(String imglocation, int x, int y) throws SlickException {
+		this("Redshirt", imglocation, x, y);
+	}
 	
-	private Map map; 
-	private Image pic; 
-	private String name;
-	private int x, y, width;
-	private ArrayList<Tile> tiles; 
-	private boolean hidden, hasBeenHidden; 
-
-	/**
-	 * Constructor that takes a representative image for the token and the 
-	 * pixel coordinates that the token is being added at
-	 *
-	 * @param pic The image that this object represents
-	 * @param x The x coordinate on the map that the token goes on
-	 * @param y The y coordinate on the map that the token goes on
-	 * @param name The name of this token
-	 */
-	public Token(Image pic, int x, int y, int width, String name) {
-
-		this.x = x;
-		this.y = y;
-		this.pic = pic;
-		this.name = name;
-		this.width = width;
-		hasBeenHidden = false;
-		tiles = new ArrayList<Tile>();
+	public Token(String setname, String imglocation, int x, int y) {
+		this(setname, imglocation, x, y, 1);
 	}
-
-	/**
-	 * Adds a tile to add to the list of the token occupies
-	 *
-	 * @param t The tile to add to the list of the token occupies
-	 */
-	public void addTile(Tile t) {
-		tiles.add(t);
+	
+	public Token(String setname, String imglocation, int x, int y, int getsize) {
+		name = setname;
+		tileX = x;
+		tileY = y;
+		size = getsize;
+		
+		int resources;
+		resources = imglocation.indexOf("Resources\\");
+		if (resources != -1) {
+			try { tokenimage = new Image(imglocation.substring(resources)).getScaledCopy(48, 48); }
+			catch (SlickException se){System.out.println("Token constructor (Image creation) failed");}
+		}
+		else {
+			try { tokenimage = new Image("Resources/" + imglocation).getScaledCopy(48, 48); }
+			catch (SlickException se){System.out.println("Token constructor (Image creation) failed");}
+		}
 	}
-
-	/**
-	 * Clears the list of tiles the token occupies
-	 */
-	public void clearTiles() {
-		tiles.clear();
+	
+	public void renderToken(float offx, float offy) {
+		tokenimage.draw(offx + (tileX * 48), offy + (tileY * 48));
 	}
-
-	/**
-	 * Returns the image that this token represents
-	 *
-	 * @return The image that this token represents
-	 */ 
-	public Image getImage() {
-		return pic;
-	}
-
+	
 	public String getName() {
 		return name;
 	}
-
-	/**
-	 * Returns the list of tiles the token occupies
-	 *
-	 * @return The list of tiles the token occupies
-	 */
-	public ArrayList<Tile> getTiles() {
-		return tiles;
+	
+	public String getFileName() {
+		return tokenimage.getResourceReference();
 	}
-
-	/**
-	 * Returns the width of the token in number of tiles
-	 * 
-	 * @return The width of the token in number of tiles
-	 */
-	public int getWidth() {
-		return width;
-	}
-
-	/**
-	 * Returns the y coordinate of the token in the map
-	 *
-	 * @return The y coordinate of the token in the map
-	 */
+	
 	public int getX() {
-		return x;
+		return tileX;
 	}
-
-	/**
-	 * Returns the y coordinate of the token in the map
-	 *
-	 * @return The y coordinate of the token in the map
-	 */
+	
 	public int getY() {
-		return y;
+		return tileY;
 	}
-
-	/**
-	 * Returns whether the token is hidden from the player's view
-	 *
-	 * @return Whether the token is hidden from the player's view
-	 */
-	public boolean isHidden() {
-		return hidden;
-	}
-
-	/**
-	 * Returns whether or not this token has been hidden. Only applies to 
-	 * tokens of size 2x2 or greater
-	 *
-	 * @return Whether or not this tokens has been hidden
-	 */
-	public boolean hasBeenHidden(){
-		return hasBeenHidden;
-	}
-
-	/**
-	 * Sets this token's hidden this pass value. Pertains to tokens of size 
-	 * 2x2 or greater as the toggleHidden function in map hits all tiles,
-	 * including multiple parts of the same token. This ensures the token 
-	 * stays hidden or stays visible.
-	 *
-	 * @param b The change whether this token has been hidden
-	 */
-	public void setHasBeenHidden(boolean b) {
-		hasBeenHidden = b;
-	}
-
-	/**
-	 * Toggles the state of hidden of the token
-	 */
-	public void toggleHidden() {
-		hidden = !hidden;
+	
+	public void move(int x, int y) {
+		tileX = x;
+		tileY = y;
 	}
 }

@@ -59,14 +59,14 @@ public class MapOptions {
 		fc = new JFileChooser();
 		
 		//create the mapBox sizes
-		if(map.mappxheight > map.mappxwidth){
-			miniMapScale = minimapsize/map.mappxheight;
-			minimapheight = (int) (miniMapScale * map.mappxheight);
-			minimapwidth = (int) (miniMapScale * map.mappxwidth);
+		if(map.pxSizeY > map.pxSizeX){
+			miniMapScale = minimapsize/map.pxSizeY;
+			minimapheight = (int) (miniMapScale * map.pxSizeY);
+			minimapwidth = (int) (miniMapScale * map.pxSizeX);
 		} else {
-			miniMapScale = minimapsize/map.mappxwidth;
-			minimapheight = (int) (miniMapScale * map.mappxheight);
-			minimapwidth = (int) (miniMapScale * map.mappxwidth);
+			miniMapScale = minimapsize/map.pxSizeX;
+			minimapheight = (int) (miniMapScale * map.pxSizeY);
+			minimapwidth = (int) (miniMapScale * map.pxSizeX);
 		}
 	}
 	
@@ -102,9 +102,9 @@ public class MapOptions {
 			g.drawString("Ping", x + 3, y + (2*height/3) + 3);
 			if(showminimap){
 				//check to make sure map is kept on screen (11 is size of buffers and borders)
-				if(x + 11 + minimapwidth + width < (map.mapxsize * 48)) {
+				if(x + 11 + minimapwidth + width < (map.tileSizeX * 48)) {
 					minimapx = x + width + 5;
-					if(y + height + minimapheight + 10 > map.mapysize*48) {
+					if(y + height + minimapheight + 10 > map.tileSizeY*48) {
 						minimapy = y - minimapheight - 5;
 					} else {
 						minimapy = y + height + 5;
@@ -115,9 +115,9 @@ public class MapOptions {
 						g.drawRect(portX, portY, portWidth, portHeight);
 					}
 				} else {
-					minimapx = (map.mapxsize * 48) - minimapwidth - 5;
+					minimapx = (map.tileSizeX * 48) - minimapwidth - 5;
 					//make sure I dont draw too low
-					if(y + height + minimapheight + 10 > map.mapysize*48) {
+					if(y + height + minimapheight + 10 > map.tileSizeY*48) {
 						minimapy = y - minimapheight - 5;
 					} else {
 						minimapy = y + height + 5;
@@ -141,8 +141,8 @@ public class MapOptions {
 		
 		//check mouse hover area while 
 		if(showminimap){
-			portWidth = miniMapScale * 48 *  map.mapxsize;
-			portHeight = miniMapScale * 48 * map.mapysize;
+			portWidth = miniMapScale * 48 *  map.tileSizeX;
+			portHeight = miniMapScale * 48 * map.tileSizeY;
 			//check mouse location
 			if(mouseX >= minimapx && mouseX <= minimapx + minimapwidth 
 					&& mouseY >= minimapy && mouseY <= minimapy + minimapheight){
@@ -173,7 +173,14 @@ public class MapOptions {
 				hoverArea = insertToken;
 				//if left-clicked
 				if(input.isMousePressed(0)){
-					try {
+					
+					
+					// Check it out, I made a file selector and it sorta works!
+					map.selectToken(mouseX, mouseY);
+					
+					
+					
+/*					try {
 						UIManager.setLookAndFeel(UIManager.getLookAndFeel());
 					} catch (UnsupportedLookAndFeelException e) {
 						// TODO Auto-generated catch block
@@ -213,15 +220,14 @@ public class MapOptions {
 						setActive(false);
 						String location = file.getAbsolutePath();
 						if(location.contains(".png")){
-							Image tile = new Image(location).getScaledCopy(48, 48);
-							map.addTileCoord(tile, mouseX, mouseY);
+							map.addTokenCoord(location, mouseX, mouseY);
 						} else {
 							System.out.println("Please choose a png file. Square works best, but do as you wish.");
 						}
 					} catch (SlickException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (NullPointerException npe){}
+					} catch (NullPointerException npe){}*/
 				} 
 			}
 			}
@@ -276,8 +282,8 @@ public class MapOptions {
 		Image miniMap = map.map.getScaledCopy(miniMapScale);
 		miniMap.draw(x, y);
 		//find the "you are here"
-		float currentX = (map.mapoffsetx + 24*map.mapxsize) * miniMapScale;
-		float currentY = (map.mapoffsety + 24*map.mapysize)* miniMapScale;
+		float currentX = (map.pxOffsetX + 24*map.tileSizeX) * miniMapScale;
+		float currentY = (map.pxOffsetY + 24*map.tileSizeY)* miniMapScale;
 		//put in terms of the move box
 		g.setColor(Color.red);
 		g.fillOval(x + currentX, y + currentY, 5, 5);
@@ -290,7 +296,7 @@ public class MapOptions {
 
 	public void setX(int x) {
 		this.x = x;
-		if(this.x + width > 48*map.mapxsize){
+		if(this.x + width > 48*map.tileSizeX){
 			this.x = x - 5 - width;
 		}
 	}

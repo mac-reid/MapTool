@@ -166,6 +166,10 @@ public class Client  {
 				// break to do the disconnect
 				break;
 			}
+			else if (msg.substring(0,2).equals("!!")) { // temporary testing for function calls
+				String temp = msg.substring(2, msg.length());
+				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, temp));
+			}
 			else if(msg.equalsIgnoreCase("WHOISIN")) { // message WhoIsIn 
 				client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));
 			}

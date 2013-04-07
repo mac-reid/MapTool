@@ -1,8 +1,8 @@
 package Backend;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.ArrayList;
+import UserInterface.Token;
 
 class Storage {
 
@@ -23,12 +23,12 @@ class Storage {
 			return;
 		}
 
-		Map m = c.getMap();
+		String mapname = c.getMap();
 		ArrayList<Token> t = c.getTokenList();
-		out.println(m.getBackground());
+		out.println(mapname);
 
 		for (Token token : t)
-			out.println(token);
+			out.println(token.getFileName() + "|" + token.getName());
 
 		out.close();
 	}

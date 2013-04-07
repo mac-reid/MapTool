@@ -46,7 +46,7 @@ public class Editor extends BasicGameState{
 		videoChatHeight = gc.getHeight()/5;
 		mapTileWidth = (gc.getWidth() - BUFFER*3 - CHAT_WIDTH)/48;
 		mapTileHeight = (gc.getHeight() - BUFFER*3 - videoChatHeight)/48;
-		mapTool = new MapPane("Resources/Dwarfort.png", mapTileWidth, mapTileHeight);
+		mapTool = new MapPane("Resources/Maps/Dwarfort.png", mapTileWidth, mapTileHeight);
 		mapTool.renderMap(BUFFER, BUFFER, getTileWidth(gc), getTileHeight(gc), gc.getGraphics());
 		mapTopX = BUFFER;
 		mapTopY = BUFFER;

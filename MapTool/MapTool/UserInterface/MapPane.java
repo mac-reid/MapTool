@@ -47,16 +47,16 @@ public class MapPane {
     
     // Demo constructor - loads example resources
     public MapPane() throws SlickException {
-    	loadMap("Resources/Dwarfort.png");
-    	mapgrid = new Image("Resources/GreyGrid.png");
-    	tokens.add(new Token("Resources/mslug.png", 2, 2));
-    	tokens.add(new Token("Resources/banshee.png", 6, 4));
-    	tokens.add(new Token("Resources/goomba.png", 7, 6));
+    	loadMap("Resources/Maps/Dwarfort.png");
+    	mapgrid = new Image("Resources/Tokens/GreyGrid.png");
+    	tokens.add(new Token("Resources/Tokens/mslug.png", 2, 2));
+    	tokens.add(new Token("Resources/Tokens/banshee.png", 6, 4));
+    	tokens.add(new Token("Resources/Tokens/goomba.png", 7, 6));
     }
     
     
     public MapPane(String maplocation) throws SlickException {
-    	map = new Image("maplocation");
+    	map = new Image(maplocation);
     }
     
     
@@ -140,7 +140,7 @@ public class MapPane {
     	
     	// If we are rendering the file chooser
     	if (fileChooser.getActive())
-    		fileChooser.render(x, y, xSize, ySize);
+    		fileChooser.render(x, y, g);
     	
     	// Otherwise, render whatever else
     	else {
@@ -177,7 +177,7 @@ public class MapPane {
     	
     	// If we are updating the file chooser
     	if (fileChooser.getActive()) {
-    		fileChooser.update(in, mXoffset, mYoffset);
+    		fileChooser.update(in, mXoffset, mYoffset, tileSizeX, tileSizeY);
     		// If the chooser returns a value, MapPane sets it inactive
     		if (!(fileChooser.getSelected().equals(""))) {
     			addTokenCoord(fileChooser.getSelected(), temppxX, temppxY);

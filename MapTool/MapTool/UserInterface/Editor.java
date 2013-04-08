@@ -219,7 +219,14 @@ public class Editor extends BasicGameState{
 			g.drawImage(botA, drawnWidth, height - BUFFER);
 			drawnWidth = drawnWidth + topA.getWidth();
 		}
-		//draw middle line
+		//draw most of the middle line
+		drawnWidth = BUFFER;
+		while(drawnWidth < getTileWidth(gc) * 48 - botA.getWidth()){
+			g.drawImage(botA, drawnWidth, getTileHeight(gc) * 48 + BUFFER);
+			drawnWidth = drawnWidth + botA.getWidth();
+		}
+		//draw the last bit of the bottom line
+		g.drawImage(botA.getSubImage(0, 0, getTileWidth(gc) * 48 - drawnWidth + BUFFER, botA.getHeight()), drawnWidth, getTileHeight(gc) * 48 + BUFFER);
 		//draw four corners
 		g.drawImage(topLeft, 0, 0);
 		g.drawImage(topRight, width - topRight.getWidth(), 0);

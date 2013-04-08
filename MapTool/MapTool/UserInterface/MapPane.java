@@ -18,9 +18,9 @@ public class MapPane {
 	Token dragToken = null;
 	
 	// Indicates if tiles are visible/occupied
-	boolean visible[][] = new boolean[200][200];
-	boolean occupied[][] = new boolean[200][200];  									//TODO: ADD CODE TO PROPERLY SIZE THESE
-																					//TODO: MAKE A PROPER "TOKENS" CLASS TO REMOVE THESE HEADACHES
+	boolean visible[][];
+	boolean occupied[][];
+	
 	
 	//ArrayList of all tokens on the map
 	ArrayList<Token> tokens = new ArrayList<Token>();
@@ -30,7 +30,7 @@ public class MapPane {
     float pxOffsetY = 0;
     int gridOffsetX = 0;
     int gridOffsetY = 0;
-    // Size of map width/height by tile count
+    // Size of map displayed width/height by tile count
     int tileSizeX = 17;
     int tileSizeY = 13;    
     // Size of map width/height by pixel count
@@ -58,6 +58,8 @@ public class MapPane {
     
     // Map draging mode (0: Normal, 1: Dragging Map, 2: Dragging Token)
     int dragMode = 0;
+    // File loading mode (0: None, 1: Maps, 2: Tokens)
+    int loadMode = 0;
     
     
     MapOptions options;
@@ -94,9 +96,18 @@ public class MapPane {
     
     
     private void loadMap(String mapname) throws SlickException {
-    	map = new Image(mapname);
+    	pxOffsetX = 0;
+    	pxOffsetY = 0;
+    	gridOffsetX = 0;
+    	gridOffsetY = 0;
     	pxSizeX = map.getWidth();
     	pxSizeY = map.getHeight();
+    	map = new Image(mapname);
+    	
+    	int tilesXSize = pxSizeX / 48;
+    	int tilesYSize = pxSizeY / 48;
+    	occupied = new boolean[tilesXSize][tilesYSize];
+    	visible = new boolean[tilesXSize][tilesYSize];
     }
     
     
@@ -196,7 +207,10 @@ public class MapPane {
     		fileChooser.update(in, mXoffset, mYoffset, tileSizeX, tileSizeY);
     		// If the chooser returns a value, MapPane sets it inactive
     		if (!(fileChooser.getSelected().equals(""))) {
-    			addTokenGrid(fileChooser.getSelected(), tempGridX, tempGridY);
+    			if (loadMode == 2)
+    				addTokenGrid(fileChooser.getSelected(), tempGridX, tempGridY);
+    			else if (loadMode == 1)
+    				loadMap(fileChooser.getSelected());
     		}
     	}
     	
@@ -301,8 +315,14 @@ public class MapPane {
     // Sets SwingFileChooser active, accepts mouse coordinates where the resource should be placed
     public void selectToken(int x, int y) {
     	fileChooser.setActive("Tokens");
+    	loadMode = 2;
     	tempGridX = x/48 + gridOffsetX;
     	tempGridY = y/48 + gridOffsetY;
+    }
+    
+    public void selectMap() {
+    	fileChooser.setActive("Maps");
+    	loadMode = 1;
     }
     
     

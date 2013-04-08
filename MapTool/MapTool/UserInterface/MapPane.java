@@ -96,14 +96,15 @@ public class MapPane {
     
     
     private void loadMap(String mapname) throws SlickException {
+    	map = new Image(mapname);
+    	
     	pxOffsetX = 0;
     	pxOffsetY = 0;
     	gridOffsetX = 0;
     	gridOffsetY = 0;
     	pxSizeX = map.getWidth();
     	pxSizeY = map.getHeight();
-    	map = new Image(mapname);
-    	
+    	    	
     	int tilesXSize = pxSizeX / 48;
     	int tilesYSize = pxSizeY / 48;
     	occupied = new boolean[tilesXSize][tilesYSize];

@@ -79,7 +79,7 @@ public class SlickFileChooser {
 		        @Override
 		        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
 		            if (dir.endsWith("Resources"))
-		            	filePath = dir.toString() + "\\";
+		            	filePath = dir.toString() + "/";
 		            return FileVisitResult.CONTINUE;
 		        }
 		        @Override
@@ -119,7 +119,7 @@ public class SlickFileChooser {
 		fileNames.clear();
 		
 		if (resourceType.equals("Tokens")) {
-			currentPath = filePath + "Tokens\\";
+			currentPath = filePath + "Tokens/";
 			gridWidth = 80;
 			gridHeight = 80;
 			resDispSize = 48;
@@ -128,7 +128,7 @@ public class SlickFileChooser {
 		}
 		
 		else if (resourceType.equals("Maps")) {
-			currentPath = filePath + "Maps\\";
+			currentPath = filePath + "Maps/";
 			gridWidth = 308;
 			gridHeight = 330;
 			resDispSize = 290;
@@ -152,18 +152,18 @@ public class SlickFileChooser {
 				fileNames.add(allFiles[i].substring(0, (allFiles[i].length() - 4)));
 
 				if (resourceType.equals("Tokens")) {
-					try { fileImages.add(new Image(currentPath + "\\" + allFiles[i]).getScaledCopy(resDispSize, resDispSize)); }
+					try { fileImages.add(new Image(currentPath + "/" + allFiles[i]).getScaledCopy(resDispSize, resDispSize)); }
 					catch (SlickException se) {}
 				}
 				
 				// Scales the map by its greatest dimension down to 'resDispSize'
 				else if (resourceType.equals("Maps")) {
 					try {
-						Image quickimage = new Image(currentPath + "\\" + allFiles[i]);
+						Image quickimage = new Image(currentPath + "/" + allFiles[i]);
 						if (quickimage.getWidth() > quickimage.getHeight())
-							fileImages.add(new Image(currentPath + "\\" + allFiles[i]).getScaledCopy((float)resDispSize / quickimage.getWidth()));
+							fileImages.add(new Image(currentPath + "/" + allFiles[i]).getScaledCopy((float)resDispSize / quickimage.getWidth()));
 						else
-							fileImages.add(new Image(currentPath + "\\" + allFiles[i]).getScaledCopy((float)resDispSize / quickimage.getHeight()));
+							fileImages.add(new Image(currentPath + "/" + allFiles[i]).getScaledCopy((float)resDispSize / quickimage.getHeight()));
 					}
 					catch (SlickException se) {}
 				}

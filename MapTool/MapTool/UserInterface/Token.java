@@ -26,7 +26,7 @@ public class Token {
 		size = getsize;
 		
 		int resources;
-		resources = imglocation.indexOf("Resources\\");
+		resources = imglocation.indexOf("Resources/");
 		if (resources != -1) {
 			try { tokenimage = new Image(imglocation.substring(resources)).getScaledCopy(48, 48); }
 			catch (SlickException se){System.out.println("Token constructor (Image creation) failed");}

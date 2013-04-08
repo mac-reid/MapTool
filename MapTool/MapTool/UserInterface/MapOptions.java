@@ -198,7 +198,7 @@ public class MapOptions {
 
 
 			//actions from a left click
-			if(input.isMouseButtonDown(0)){
+			if(input.isMousePressed(0)){
 				//outside the main menu
 				if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height){
 					if (showminimap){

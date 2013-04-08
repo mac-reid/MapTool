@@ -12,36 +12,53 @@ public class MapPane {
 	 
 	Image map = null; 
 	Image mapgrid = null;
+	Image selectgrid = null;
+	Image dragImage = null;
+	
+	Token dragToken = null;
 	
 	// Indicates if tiles are visible/occupied
-	boolean visible[][] = null;
-	boolean occupied[][] = null;
+	boolean visible[][] = new boolean[200][200];
+	boolean occupied[][] = new boolean[200][200];  									//TODO: ADD CODE TO PROPERLY SIZE THESE
+																					//TODO: MAKE A PROPER "TOKENS" CLASS TO REMOVE THESE HEADACHES
 	
 	//ArrayList of all tokens on the map
 	ArrayList<Token> tokens = new ArrayList<Token>();
 	
 	// Offset of map (from origin) in the display window
 	float pxOffsetX = 0;
-    float pxOffsetY = 0;    
+    float pxOffsetY = 0;
+    int gridOffsetX = 0;
+    int gridOffsetY = 0;
     // Size of map width/height by tile count
     int tileSizeX = 17;
     int tileSizeY = 13;    
     // Size of map width/height by pixel count
     int pxSizeX = 0;
     int pxSizeY = 0;
-    // Holds the intended X/Y pixel location for a resource, while in the FileChooser    
-    int temppxX = 0;
-    int temppxY = 0;
     
-    // Is map currently being dragged
-    boolean mapdrag = false;
-    //a "timer" used to delay actions and the drag function
-    double lastAction = 0;
+    // Current map grid location of the cursor
+    int currGridX = 0;
+    int currGridY = 0;
+    
+    // Last grid location of the cursor (while in full menus such as FileChooser)
+    int tempGridX = 0;
+    int tempGridY = 0;
+    
+    
     // Pixel count of X/Y drag values
     int mapdragx = 0;
     int mapdragy = 0;
     int dragoffsetx = 0;
     int dragoffsety = 0;
+    
+    // Current location of the mouse, via Update
+    int mouseX = 0;
+    int mouseY = 0;
+    
+    // Map draging mode (0: Normal, 1: Dragging Map, 2: Dragging Token)
+    int dragMode = 0;
+    
     
     MapOptions options;
     SlickFileChooser fileChooser = new SlickFileChooser();
@@ -49,7 +66,7 @@ public class MapPane {
     
     // Demo constructor - loads example resources
     public MapPane() throws SlickException {
-    	loadMap("Resources/Maps/dwarffort.png");
+    	loadMap("Resources/Maps/Dwarfort.png");
     	mapgrid = new Image("Resources/Tokens/GreyGrid.png");
     	tokens.add(new Token("Resources/Tokens/mslug.png", 2, 2));
     	tokens.add(new Token("Resources/Tokens/banshee.png", 6, 4));
@@ -68,6 +85,7 @@ public class MapPane {
     	tileSizeY = sizey;
     	//added by Neal
     	mapgrid = new Image("Resources/GreyGrid.png");
+    	selectgrid = new Image("Resources/selectgrid.png");
     	options = new MapOptions(0, 0, this);
     }
     
@@ -79,76 +97,56 @@ public class MapPane {
     }
     
     
-    public void mapLeft() {
-    pxOffsetX += 48;
+    // Initialize the map drag
+    public void setDrag(int x, int y) {
+    	mapdragx = x;
+		mapdragy = y;
+		dragoffsetx = 0;
+		dragoffsety = 0;
     }
     
+    // Maintain the map drag
+    public void dragMap(int x, int y) {
+    	
+		dragoffsetx = ((int)((mapdragx - x) / 48) * 48);
+		dragoffsety = ((int)((mapdragy - y) / 48) * 48);
+		
+		if (dragoffsetx != 0) {
+			pxOffsetX += dragoffsetx;
+			dragoffsetx = 0;
+			mapdragx = x;
+			
+			if(pxOffsetX < 0)
+				pxOffsetX = 0;
+			else if(pxOffsetX > ((pxSizeX - (pxSizeX % 48)) - (tileSizeX * 48)))
+				pxOffsetX = ((pxSizeX - (pxSizeX % 48)) - (tileSizeX * 48));
+		}
+		
+		if (dragoffsety != 0) {
+			pxOffsetY += dragoffsety;
+			dragoffsety = 0;
+			mapdragy = y;
+			
+			if(pxOffsetY < 0)
+				pxOffsetY = 0;
+			else if(pxOffsetY > ((pxSizeY - (pxSizeY % 48)) - (tileSizeY * 48)))
+				pxOffsetY = ((pxSizeY - (pxSizeY % 48)) - (tileSizeY * 48));
+		}    		
+	}
     
-    public void mapRight() {
-    pxOffsetX -= 48;
-    }
-    
-    
-    public void mapUp() {
-    pxOffsetY += 48;
-    }
-    
-    
-    public void mapDown() {
-    pxOffsetY -= 48;
-    }
-    
-    
-    
-    public void dragMap(boolean dragging, int x, int y) {
-    	if (!dragging) {
-    		mapdragx = x;
-    		mapdragy = y;
-    		dragoffsetx = 0;
-    		dragoffsety = 0;
-    	}
-    	else {
-    		// If empty Token, drag the map
-    		dragoffsetx = ((int)((mapdragx - x) / 48) * 48);
-    		dragoffsety = ((int)((mapdragy - y) / 48) * 48);
-    		
-    		if (dragoffsetx != 0) {
-    			pxOffsetX += dragoffsetx;
-    			dragoffsetx = 0;
-    			mapdragx = x;
-    			
-    			if(pxOffsetX < 0)
-    				pxOffsetX = 0;
-    			else if(pxOffsetX > ((pxSizeX - (pxSizeX % 48)) - (tileSizeX * 48)))
-    				pxOffsetX = ((pxSizeX - (pxSizeX % 48)) - (tileSizeX * 48));
-    		}
-    		
-    		if (dragoffsety != 0) {
-    			pxOffsetY += dragoffsety;
-    			dragoffsety = 0;
-    			mapdragy = y;
-    			
-    			if(pxOffsetY < 0)
-    				pxOffsetY = 0;
-    			else if(pxOffsetY > ((pxSizeY - (pxSizeY % 48)) - (tileSizeY * 48)))
-    				pxOffsetY = ((pxSizeY - (pxSizeY % 48)) - (tileSizeY * 48));
-    		}    		
-    	}
-    }
     
     // Draws current background and Tokens
     //		Objects drawn in the MapPane should determine render status via their own isActive() method
     public void renderMap(float x, float y, int xSize, int ySize, Graphics g) {
     	
     	// If we are rendering the file chooser
-    	if (fileChooser.getActive())
+    	if (fileChooser.isActive())
     		fileChooser.render(x, y, g);
     	
     	// Otherwise, render whatever else
     	else {
 	    	map.draw(x, y, x + (xSize * 48), y + (ySize * 48),
-	    	   pxOffsetX, pxOffsetY,
-	    	   pxOffsetX+ (xSize * 48), pxOffsetY+ (ySize * 48));
+	    	   pxOffsetX, pxOffsetY, pxOffsetX + (xSize * 48), pxOffsetY + (ySize * 48));
 	    	//draw grid
 	    	drawGrid(x, y, xSize, ySize);
 	    	// Only draw Tokens present in the current window
@@ -160,8 +158,15 @@ public class MapPane {
 	    				tokens.get(i).renderToken(x - pxOffsetX, y - pxOffsetY);
 	    	}
 	    	
-	    	//draw options
-	    	options.render(g);
+	    	// If a token is being dragged
+	    	if (dragMode == 2) {
+	    		dragImage.draw(mouseX, mouseY);
+	    	}
+	    	
+	    	// If Active, draw the options menu
+	    	if (options.isActive()) {
+	    		options.render(g);
+	    	}
     	}
     }
     
@@ -172,46 +177,90 @@ public class MapPane {
      * @throws SlickException 
      * @todo add character Token menu action
      */
-    public void update(GameContainer gc, int delta, int mXoffset, int mYoffset) throws SlickException {
+    public void update(int mXoffset, int mYoffset, GameContainer gc, int delta) throws SlickException {
     	Input in = gc.getInput();
-    	int mouseX = in.getMouseX();
-    	int mouseY = in.getMouseY();
+    	mouseX = in.getMouseX();
+    	mouseY = in.getMouseY();
     	
-    	// If we are updating the file chooser
-    	if (fileChooser.getActive()) {
+    	currGridX = (mouseX - mXoffset) / 48;
+    	currGridY = (mouseY - mYoffset) / 48;
+    	gridOffsetX = (int)pxOffsetX / 48;
+    	gridOffsetY = (int)pxOffsetY / 48;
+    	
+    	
+    	// If the file chooser is active, update
+    	if (fileChooser.isActive()) {
     		fileChooser.update(in, mXoffset, mYoffset, tileSizeX, tileSizeY);
     		// If the chooser returns a value, MapPane sets it inactive
     		if (!(fileChooser.getSelected().equals(""))) {
-    			addTokenCoord(fileChooser.getSelected(), temppxX, temppxY);
-    			fileChooser.setInactive();
+    			addTokenGrid(fileChooser.getSelected(), tempGridX, tempGridY);
     		}
     	}
     	
-    	// If we are not drawing the file chooser (a similar Else-If setup could allow for many elements of this nature
+    	// If the options are active, update
+    	else if (options.isActive()) {
+    		options.update(gc);
+    	}
+    	
+    	// If the Menus are not being used, a Drag is possibly taking place
     	else {
-	    	if(options.isActive()) options.update(gc);
-	    	//The constant 5 right now is the buffer from editor
+	    	// If the mouse is within the map bounds
 	    	if ((mouseX >= mXoffset && mouseX <= mXoffset + tileSizeX*48) && (mouseY >= mYoffset && mouseY <= mYoffset + tileSizeY*48)) {
-	        	
-	        	// If the mouse is pressed down, drag the map, but only if no menu is open
-		        dragMap(in.isMouseButtonDown(0), in.getMouseX(), in.getMouseY());
-		        // For a right click, check for token
-		        if (in.isMousePressed(1)) {
-		        	for(Token t : tokens) {
-		        		//if both if statements are true, a token is there
-		        		if(t.getX() == mouseX/48 + pxOffsetX) {
-		        				System.out.println("You have clicked on a token");
-		        				return;
-		        		}
-		        	}
+	    		
+	    		// If LeftMouse is down, initialize or maintain a drag
+	    		if(in.isMouseButtonDown(0)) {
+	    			if (dragMode == 0) {
+	    				if (occupied[currGridX + gridOffsetX][currGridY + gridOffsetY] == true) {
+		    				for(Token t : tokens) {
+		    					if((t.getX() == (currGridX + gridOffsetX))  &&  (t.getY() == currGridY + gridOffsetY)) {
+		    						// If token verified present, copy and set draw mode
+		    						System.out.println("WE'VE HOOKED A TOKEN");
+		    						dragMode = 2;
+		    						dragToken = t;
+		    						dragImage = t.getImage().copy();
+		    						dragImage.setAlpha(0.75f);
+		    					}		
+		    				}
+	    				}
+	    				// Initialize the drag
+	    				else {
+	    					dragMode = 1;
+	    					this.setDrag(in.getMouseX(), in.getMouseY());
+	    				}	
+	    			}
+	    			
+	    			// If the draw mode has been set to 1, drag the map
+	    			if (dragMode == 1)
+	    				dragMap(in.getMouseX(), in.getMouseY());
+	    		}
+	    		
+	    		
+	    		// If LeftMouse is not down, but a state is set, clear the state appropriately
+	    		else if(dragMode == 1) {
+	    			dragMode = 0;
+	    		}
+	    		else if(dragMode == 2) {
+	    			if (!occupied[currGridX + gridOffsetX][currGridY + gridOffsetY]) {
+	    				occupied[dragToken.getX()][dragToken.getY()] = false;
+	    				dragToken.move(currGridX + gridOffsetX, currGridY + gridOffsetY);
+	    				occupied[currGridX + gridOffsetX][currGridY + gridOffsetY] = true;
+	    			}
+	    			dragMode = 0;
+	    		}
+	    			
 		        
-			        options.resetPort();
+	    		// For Right Click, check for token
+		        if (in.isMousePressed(1)) {
+		        	if(occupied[currGridX + gridOffsetX][currGridY + gridOffsetY]) {
+		        		System.out.println("You have clicked on a token");
+		        		return;
+		        	}
+		            
+		        	options.resetPort();
 			        options.setX(mouseX);
 			        options.setY(mouseY);
 			        options.setActive(true);
-			        //commenting out the dude for now, kinda messy with the menu
-			        //addTokenCoord("Resources/mslug.png", mouseX - 5, mouseY - 5);
-		        }
+			    }
 	    	
 		        // For a middle click, delete a Token
 		        if (in.isMousePressed(2))
@@ -226,6 +275,7 @@ public class MapPane {
     	pxOffsetX = (int)tileX * 48;
     	pxOffsetY = (int)tileY * 48;
     }
+    
     
     
     public void resize(int tileWidth,int tileHeight){
@@ -248,46 +298,57 @@ public class MapPane {
     // Sets SwingFileChooser active, accepts mouse coordinates where the resource should be placed
     public void selectToken(int x, int y) {
     	fileChooser.setActive("Tokens");
-    	temppxX = x;
-    	temppxY = y;
+    	tempGridX = currGridX + gridOffsetX;
+    	tempGridY = currGridY + gridOffsetY;
     }
     
     
     // Add a Token by map coordinate
     public void addTokenCoord(String imglocation, int x, int y) throws SlickException {
-    	tokens.add(new Token(imglocation, (int)((x + pxOffsetX) / 48), (int)((y + pxOffsetY) / 48)));
+    	this.addTokenGrid(imglocation, (int)((x + pxOffsetX) / 48), (int)((y + pxOffsetY) / 48));
     }
     
     
     // Add a Token by grid location
     public void addTokenGrid(String imglocation, int x, int y) throws SlickException {
-    	tokens.add(new Token(imglocation, x, y));
+    	if (!occupied[x][y]) {
+    		tokens.add(new Token(imglocation, x, y));
+    		occupied[x][y] = true;
+    		System.out.println("Added token: " + x + " " + y);
+    	}
     }
     
     
     // Remove a token by coordinate
     public void removeTokenCoord(int x, int y) {
-    	for(int i = 0; i < tokens.size(); i++) {
-    		if (((int)(x + pxOffsetX) / 48) == tokens.get(i).getX() && ((int)(y + pxOffsetY) / 48) == tokens.get(i).getY())
-    			tokens.remove(i);
-    	}
+    	this.removeTokenGrid((int)((x + pxOffsetX) / 48), (int)((y + pxOffsetY) / 48));
     }
     
     
     // Remove a Token by grid location
     public void removeTokenGrid(int x, int y) {
     	for(int i = 0; i < tokens.size(); i++) {
-    		if (x == tokens.get(i).getX() && y == tokens.get(i).getY())
+    		if (x == tokens.get(i).getX() && y == tokens.get(i).getY()) {
     			tokens.remove(i);
+    			occupied[x][y] = false;
+    		}
     	}
     }
     
     
-    private void drawGrid(float x, float y, int width, int height) {
-    	for (int i = 0; i < width; i++)
-    		for (int j = 0; j < height; j++) {
-    			mapgrid.draw(x + i * 48, y + j * 48);
+    private void drawGrid(float getx, float gety, int width, int height) {
+    	float drawx = getx; 
+    	float drawy = gety;
+    	for (int x = 0; x < width; x++) {
+    		for (int y = 0; y < height; y++) {
+    			mapgrid.draw(drawx, drawy);
+    			if (x == currGridX  &&  y == currGridY)
+    				selectgrid.draw(drawx, drawy);
+    			drawy += 48;
     		}
+    		drawx += 48;
+    		drawy = gety;
+    	}
     }
     
     

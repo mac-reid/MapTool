@@ -41,6 +41,11 @@ public class Token {
 		tokenimage.draw(offx + (tileX * 48), offy + (tileY * 48));
 	}
 	
+	public Image getImage() {
+		return tokenimage;
+	}
+	
+	
 	public String getName() {
 		return name;
 	}

@@ -101,7 +101,7 @@ public class Editor extends BasicGameState{
         
         //resize the map
         mapTool.resize(getTileWidth(gc), getTileHeight(gc));
-        mapTool.update(gc, delta, BUFFER, BUFFER);
+        mapTool.update(BUFFER, BUFFER, gc, delta);
         // If mouse is over Map Pane, Enable Map input
         // This should definitely be cleaned up - passing 'input' to the appropriate object
         // Instead of calling all of these methods here

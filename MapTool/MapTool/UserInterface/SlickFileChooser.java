@@ -102,7 +102,7 @@ public class SlickFileChooser {
 	}
 	
 	
-	public boolean getActive() {
+	public boolean isActive() {
 		return active;
 	}
 	
@@ -150,7 +150,7 @@ public class SlickFileChooser {
 		for (int i = 0; i < allFiles.length; i++) {
 			if (allFiles[i].endsWith(".png")) {
 				fileNames.add(allFiles[i].substring(0, (allFiles[i].length() - 4)));
-//TODO: Alternative/dynamic handling for non-Token resources----------------------------------------------------------------------
+
 				if (resourceType.equals("Tokens")) {
 					try { fileImages.add(new Image(currentPath + "\\" + allFiles[i]).getScaledCopy(resDispSize, resDispSize)); }
 					catch (SlickException se) {}
@@ -189,9 +189,11 @@ public class SlickFileChooser {
 		
 		
 		// Adjust for x-coord render area on screen, border 
-		int adjMouseX = in.getMouseX() - x - bdrSize;
+		int mouseX = in.getMouseX();
+		int adjMouseX = mouseX - x - bdrSize;
 		// Adjust for y-coord render area on screen, border, cancel button & spacing
-		int adjMouseY = in.getMouseY() - y - bdrSize - (cnxSize + cnxSpacing);
+		int mouseY = in.getMouseY();
+		int adjMouseY = mouseY - y - bdrSize - (cnxSize + cnxSpacing);
 		
 		
 		
@@ -217,8 +219,8 @@ public class SlickFileChooser {
 		// Mouseclick event
 		if (in.isMousePressed(0)) {
 			// If cancel button clicked 
-			if ((adjMouseY > bdrSize) && (adjMouseY <= (cnxSize + bdrSize))) {
-				if ((adjMouseX >= (maxX - bdrSize - cnxSize)) &&  (adjMouseX < (maxX - bdrSize))) {
+			if ((mouseY > (bdrSize + y)) && (mouseY <= y + cnxSize + bdrSize)) {
+				if ((mouseX > (maxX - x - bdrSize - cnxSize)) &&  (mouseX < (maxX - x - bdrSize))) {
 					this.setInactive();
 				}
 			}
@@ -237,12 +239,13 @@ public class SlickFileChooser {
 	public void render(float getX, float getY, Graphics g) {
 		int pos = 0;
 		float x = getX + bdrSize;
-		float y = getY + bdrSize + cnxSize + cnxSpacing;
+		float y = getY + bdrSize;
 		
-		// Draw the cancel button 10px from upper-right border
-		canx.draw((maxX - cnxSize - bdrSize), (getY + bdrSize));
+		// Draw the cancel button 10px from upper-right edge
+		canx.draw((maxX - cnxSize - bdrSize), y);
 		
 		// Messy, but gets the job done - Displays the loaded resources
+		 y = y + cnxSize + cnxSpacing;
 		oloop:
 		while (y <= (maxY - gridHeight - bdrSize)) {
 			while (x <= (maxX - gridWidth - bdrSize)) {

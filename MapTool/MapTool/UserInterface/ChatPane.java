@@ -33,6 +33,8 @@ public class ChatPane {
 	boolean entrycheck = true;
 	
 	String entryline = "";
+	String visibleEntry = "";
+	int startSubstring = 0;
 	int entrychar = Keyboard.CHAR_NONE;
 	int lastchar = Keyboard.CHAR_NONE;
 	
@@ -48,19 +50,18 @@ public class ChatPane {
     // Default  constructor - currently loads example resources
     public ChatPane(int winwidth, int winheight, int minimum) throws SlickException {
     	Keyboard.enableRepeatEvents(false);
-    	
     	windowwidth = winwidth;
     	windowheight = winheight;
     	minimumWidth = minimum;
     	
     	lineheight = ttfont.getLineHeight();
     	
-    	textcaret = new Image("Resources/textcaretwhite.png");
-    	fillpattern = new Image("Resources/chatpattern.png");
+    	textcaret = new Image("Resources/textcaret.png");
+    	fillpattern = new Image("Resources/crepepaper.png");
     	
     	chatlog = new ArrayList<String>();
     	for(int i = 0; i<5; i++)
-    		chatlog.add(i + ":  bazooper!!!!1111 sampletext");
+    		chatlog.add(i + ":  bazooper!!!!1111 sampletext \n");
     	
     }
     
@@ -85,16 +86,16 @@ public class ChatPane {
     	for(int i = 1; (i + scrolladjust) <= chatlog.size(); i++) {
     		if (i * lineheight + 50 > height)
     			break;
-    		ttfont.drawString(x + ((width - minimumWidth)/2) + ((width - minimumWidth)/2) + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - (i + scrolladjust)));
+    		ttfont.drawString(x + ((width - minimumWidth)/2) + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - (i + scrolladjust)), Color.black);
     	}
-    	
+
     	// Draw entry line
-    	ttfont.drawString(x + ((width - minimumWidth)/2) + 5, y + height - (lineheight + 20), entryline);
+    	ttfont.drawString(x + ((width - minimumWidth)/2) + 5, y + height - (lineheight + 20), visibleEntry, Color.black);
     	
     	
     	// Draw caret
-    	if(showcaret)
-    		textcaret.draw((float)(x + ((width - minimumWidth)/2) + 2 + ttfont.getWidth(entryline)), y + height - (lineheight + 25));
+    	if(showcaret && isActivated())
+    		textcaret.draw((float)(x + ((width - minimumWidth)/2) + 3 + ttfont.getWidth(visibleEntry)), y + height - (lineheight + 25));
     	
     	lastX = (int)x;
     	lastY = (int)y;
@@ -116,6 +117,8 @@ public class ChatPane {
     			if (entryline.length() != 0) {
     				chatlog.add(parseEntry(entryline));
     				entryline = "";
+    				visibleEntry = "";
+    				startSubstring = 0;
     			}
     			
     		}
@@ -123,11 +126,23 @@ public class ChatPane {
     		else if (Keyboard.getEventKey() == Keyboard.KEY_BACK) {
     			if (entryline.length() != 0)
     				entryline = entryline.substring(0, entryline.length() - 1);
+    			//update the visible part of the string
+    			if(ttfont.getWidth(entryline) + 20 > minimumWidth){
+    				startSubstring -= 1;
+    				visibleEntry = entryline.substring(startSubstring);
+    			} else {
+    				visibleEntry = entryline;
+    			}
     		}
     		// Else, add pressed key to the entry line
     		else {
-    			if (ttfont.getWidth(entryline) + 30 < windowwidth)
-    				entryline = entryline + Keyboard.getEventCharacter();
+    			entryline = entryline + Keyboard.getEventCharacter();
+    			if(ttfont.getWidth(entryline) + 20 > minimumWidth){
+    				startSubstring += 1;
+    				visibleEntry = entryline.substring(startSubstring);
+    			} else {
+    				visibleEntry = entryline;
+    			}
     		}	
     	}
     	lastchar = entrychar;
@@ -157,12 +172,39 @@ public class ChatPane {
     			else if (addstring.substring(1, 6).equals("roll ")) {
     				// I need to speak with Mac about the structure of dice roll strings
     				System.out.println("A diceroll happens!");
+    				return addstring;
     			}
     		}
     	}
-    	return addstring;
+    	return wrapText(addstring);
     }
     
+    public String wrapText(String pString){
+    	if (!(ttfont.getWidth(entryline) + 20 > minimumWidth)){
+    		return pString;
+    	} else {
+    		int upperIndex = pString.length() - startSubstring;
+    		String newString = "";
+    		String subString = "";
+    		//add in the newline characters
+    		while(upperIndex < pString.length()){
+    			int temp = upperIndex;
+    			//make the line breaks on individual words
+    			try {
+    				while(pString.charAt(upperIndex) != ' ') upperIndex --;
+    				//if there was no space, well dont bother separating the word
+    			} catch (IndexOutOfBoundsException e) {upperIndex = temp;}
+    			subString = pString.substring(0, upperIndex);
+    			chatlog.add(subString);
+    			pString = pString.substring(upperIndex, pString.length());
+    			upperIndex = temp;
+    		}
+    		//tack on the remainder
+    		newString = pString;
+    		return newString;
+    	}
+
+    }
     public void chatReceive(String inline) {
     	chatlog.add(inline);
     }

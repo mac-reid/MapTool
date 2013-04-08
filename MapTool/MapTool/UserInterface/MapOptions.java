@@ -173,13 +173,12 @@ public class MapOptions {
 				//if left-clicked
 				if(input.isMousePressed(0)){
 					
-					
 					// Check it out, I made a file selector and it sorta works!
-					map.selectToken(mouseX, mouseY);
+					//the variables x and y are set when the options menu is started. should solve insert token issues
+					map.selectToken(x - 10, y - 10);
 					setActive(false);
 					
 				} 
-			}
 			}
 			//second item
 			if(mouseY >= y + (height/3) && mouseY <= y + (2*height/3)){
@@ -195,24 +194,28 @@ public class MapOptions {
 				hoverArea = ping;
 
 			}
+		}
 
-
-			//actions from a left click
+		//outside the main menu
+		if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height){
 			if(input.isMousePressed(0)){
-				//outside the main menu
-				if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height){
-					if (showminimap){
-						//outside the move menu
-						if (mouseX < inputX || mouseX > inputX + minimapwidth || mouseY < inputY || mouseY > inputY + minimapheight){
-							showminimap = false;
-						} else {
-							//move map to coords
-						}
+				if (showminimap){
+					//outside the move menu
+					if (mouseX < inputX || mouseX > inputX + minimapwidth || mouseY < inputY || mouseY > inputY + minimapheight){
+						showminimap = false;
+						setActive(false);
+					} else {
 					}
 				}
+				setActive(false);
 			}
-
-
+			if(input.isMousePressed(1)){
+				showminimap = false;
+				setY(mouseY);
+				setX(mouseX);
+				resetPort();
+			}
+		}
 	}
 
 	/**
@@ -231,14 +234,16 @@ public class MapOptions {
 		g.setColor(Color.lightGray);
 		Image miniMap = map.map.getScaledCopy(miniMapScale);
 		miniMap.draw(x, y);
-		//find the "you are here"
-		float currentX = (map.pxOffsetX + 24*map.tileSizeX) * miniMapScale;
-		float currentY = (map.pxOffsetY + 24*map.tileSizeY)* miniMapScale;
-		//put in terms of the move box
-		g.setColor(Color.red);
-		g.fillOval(x + currentX, y + currentY, 5, 5);
+		//place a red dot for each token
+		for(Token token : map.tokens){
+			float currentX = token.getX() * 48 * miniMapScale;
+			float currentY = token.getY() * 48 * miniMapScale;
+			//put in terms of the move box
+			g.setColor(Color.red);
+			g.fillOval(x + currentX + (float)(12 * miniMapScale), y + currentY + (float)(12 * miniMapScale), 5, 5);
+		}
 	}
-	
+
 	//GETTERS AND SETTERS
 	public int getX() {
 		return x;

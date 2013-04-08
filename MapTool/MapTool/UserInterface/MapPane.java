@@ -85,7 +85,10 @@ public class MapPane {
     	tileSizeY = sizey;
     	//added by Neal
     	mapgrid = new Image("Resources/GreyGrid.png");
-    	selectgrid = new Image("Resources/selectgrid.png");
+    	//Since i didnt have this file...
+    	//selectgrid = new Image("Resources/selectgrid.png");
+    	//THIS FILE!
+    	selectgrid = new Image("Resources/Redgrid.png");
     	options = new MapOptions(0, 0, this);
     }
     
@@ -298,8 +301,8 @@ public class MapPane {
     // Sets SwingFileChooser active, accepts mouse coordinates where the resource should be placed
     public void selectToken(int x, int y) {
     	fileChooser.setActive("Tokens");
-    	tempGridX = currGridX + gridOffsetX;
-    	tempGridY = currGridY + gridOffsetY;
+    	tempGridX = x/48 + gridOffsetX;
+    	tempGridY = y/48 + gridOffsetY;
     }
     
     
@@ -342,7 +345,7 @@ public class MapPane {
     	for (int x = 0; x < width; x++) {
     		for (int y = 0; y < height; y++) {
     			mapgrid.draw(drawx, drawy);
-    			if (x == currGridX  &&  y == currGridY)
+    			if (x == currGridX  &&  y == currGridY && !options.isActive())
     				selectgrid.draw(drawx, drawy);
     			drawy += 48;
     		}

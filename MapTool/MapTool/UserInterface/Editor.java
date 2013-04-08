@@ -234,6 +234,7 @@ public class Editor extends BasicGameState{
 		g.drawImage(botRight, width - topRight.getWidth(), height - botRight.getHeight());
 	}
 	
+	//loads all the images you need to draw the frame
 	public void loadImages(){
 		try {
 		topLeft = new Image("Resources/Frame/FrameTopLeft.png");

@@ -22,7 +22,7 @@ public class VideoChatPane {
 		faceSize = gc.getHeight()/5 - 20;
 		avatars = new Image[numFaces];
 		try {
-		fillpattern = new Image("Resources/parchment.png");
+		fillpattern = new Image("Resources/vidChatBack.png");
 			avatars[0] = new Image("Resources/Tokens/Elf.png").getScaledCopy(faceSize, faceSize);
 			avatars[1] = new Image("Resources/Tokens/Hero.png").getScaledCopy(faceSize, faceSize);
 			avatars[2] = new Image("Resources/Tokens/Mage.png").getScaledCopy(faceSize, faceSize);

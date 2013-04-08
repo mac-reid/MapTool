@@ -211,6 +211,7 @@ public class MapPane {
     				addTokenGrid(fileChooser.getSelected(), tempGridX, tempGridY);
     			else if (loadMode == 1)
     				loadMap(fileChooser.getSelected());
+    			loadMode = 0;
     		}
     	}
     	

@@ -17,6 +17,7 @@ public class ChatPane {
 	Font chatfont = new Font("Verdana", Font.BOLD, 12);
 	TrueTypeFont ttfont = new TrueTypeFont(chatfont, true);
 	
+	int windowX1, windowX2, windowY1, windowY2;
 	int windowwidth = 0;
 	int windowheight = 0;
 	int lineheight = 0;
@@ -41,15 +42,16 @@ public class ChatPane {
 	ArrayList<String> chatlog = null;
 	boolean showcaret = true;
 	
-	
+	private int minimumWidth;
 	
     
     // Default  constructor - currently loads example resources
-    public ChatPane(int winwidth, int winheight) throws SlickException {
+    public ChatPane(int winwidth, int winheight, int minimum) throws SlickException {
     	Keyboard.enableRepeatEvents(false);
     	
     	windowwidth = winwidth;
     	windowheight = winheight;
+    	minimumWidth = minimum;
     	
     	lineheight = ttfont.getLineHeight();
     	
@@ -68,27 +70,31 @@ public class ChatPane {
     
     // Draws current background and tiles
     public void renderChat(float x, float y, int width, int height, Graphics g) {
+    	windowX1 = (int)x;
+    	windowY1 = (int)y;
+    	windowX2 = windowX1 + width;
+    	windowY2 = windowY1 + height;
     	
     	// Fill a background pattern
     	g.fillRect(x, y, (float)width, (float)height, fillpattern, 0, 0);
     	g.setColor(Color.black);
-    	g.drawRect(x + 3, y + height - 45, width - 6, lineheight + 15);
+    	g.drawRect(x + ((width - minimumWidth)/2) + 3, y + height - 45, minimumWidth - 6, lineheight + 15);
     	
     	
     	// Draw chat history
     	for(int i = 1; (i + scrolladjust) <= chatlog.size(); i++) {
     		if (i * lineheight + 50 > height)
     			break;
-    		ttfont.drawString(x + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - (i + scrolladjust)));
+    		ttfont.drawString(x + ((width - minimumWidth)/2) + ((width - minimumWidth)/2) + 5, ((y + height) - 50 - (i * lineheight)), chatlog.get(chatlog.size() - (i + scrolladjust)));
     	}
     	
     	// Draw entry line
-    	ttfont.drawString(x + 5, y + height - (lineheight + 20), entryline);
+    	ttfont.drawString(x + ((width - minimumWidth)/2) + 5, y + height - (lineheight + 20), entryline);
     	
     	
     	// Draw caret
     	if(showcaret)
-    		textcaret.draw((float)(x + 2 + ttfont.getWidth(entryline)), y + height - (lineheight + 25));
+    		textcaret.draw((float)(x + ((width - minimumWidth)/2) + 2 + ttfont.getWidth(entryline)), y + height - (lineheight + 25));
     	
     	lastX = (int)x;
     	lastY = (int)y;

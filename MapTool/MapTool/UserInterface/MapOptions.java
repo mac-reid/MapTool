@@ -138,7 +138,6 @@ public class MapOptions {
 		int mouseY = input.getMouseY();
 
 		
-		
 		//check mouse hover area while 
 		if(showminimap){
 			portWidth = miniMapScale * 48 *  map.tileSizeX;
@@ -151,9 +150,9 @@ public class MapOptions {
 				portY = (float) (minimapy + (mouseY - minimapy) - .5*portHeight);
 				//make sure the port does not extend past the minimap
 				if(portX < minimapx) portX = minimapx;
-				if(portX + portWidth > minimapx + minimapwidth) portX = minimapx + minimapwidth - portWidth;
+				if(portX + portWidth > minimapx + minimapwidth) portX = minimapx + minimapwidth - portWidth + 1;
 				if(portY < minimapy) portY = minimapy;
-				if(portY + portHeight > minimapy + minimapheight) portY = minimapy + minimapheight - portHeight;
+				if(portY + portHeight > minimapy + minimapheight) portY = minimapy + minimapheight - portHeight + 1;
 				showPort = true;
 				//if the mouse is clicked
 				if(input.isMousePressed(0)){
@@ -177,57 +176,8 @@ public class MapOptions {
 					
 					// Check it out, I made a file selector and it sorta works!
 					map.selectToken(mouseX, mouseY);
+					setActive(false);
 					
-					
-					
-/*					try {
-						UIManager.setLookAndFeel(UIManager.getLookAndFeel());
-					} catch (UnsupportedLookAndFeelException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					try {
-						// Set System L&F
-						UIManager.setLookAndFeel(
-								UIManager.getSystemLookAndFeelClassName());
-					} 
-					catch (UnsupportedLookAndFeelException e) {
-						// handle exception
-					}
-					catch (ClassNotFoundException e) {
-						// handle exception
-					}
-					catch (InstantiationException e) {
-						// handle exception
-					}
-					catch (IllegalAccessException e) {
-						// handle exception
-					}
-					// Force Slick to give up focus
-					Frame frame = new Frame();
-					frame.setUndecorated(true);
-					frame.setOpacity(0);
-					frame.setLocationRelativeTo(null);
-					frame.setVisible(true);
-					frame.toFront();
-					frame.setVisible(false);
-					frame.dispose();
-					// End force
-
-					try {
-						FileChooser fc = new FileChooser();
-						File file = fc.getSelectedFile();
-						setActive(false);
-						String location = file.getAbsolutePath();
-						if(location.contains(".png")){
-							map.addTokenCoord(location, mouseX, mouseY);
-						} else {
-							System.out.println("Please choose a png file. Square works best, but do as you wish.");
-						}
-					} catch (SlickException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NullPointerException npe){}*/
 				} 
 			}
 			}

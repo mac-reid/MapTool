@@ -25,7 +25,7 @@ public class genUI extends StateBasedGame{
 	private String mapFile;
 	private Control control;
 	
-	public genUI(String name) {
+	public genUI(String name){
 		super(gamename);
 		this.addState(new Menu(menu));
 		this.addState(new Editor(editor));

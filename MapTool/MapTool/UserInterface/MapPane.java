@@ -49,7 +49,7 @@ public class MapPane {
     
     // Demo constructor - loads example resources
     public MapPane() throws SlickException {
-    	loadMap("Resources/Maps/Dwarfort.png");
+    	loadMap("Resources/Maps/dwarffort.png");
     	mapgrid = new Image("Resources/Tokens/GreyGrid.png");
     	tokens.add(new Token("Resources/Tokens/mslug.png", 2, 2));
     	tokens.add(new Token("Resources/Tokens/banshee.png", 6, 4));
@@ -223,8 +223,8 @@ public class MapPane {
     
     //Testing this, moves the map immediately
     public void move(float tileX, float tileY){
-    	pxOffsetX = tileX * 48;
-    	pxOffsetY = tileY * 48;
+    	pxOffsetX = (int)tileX * 48;
+    	pxOffsetY = (int)tileY * 48;
     }
     
     

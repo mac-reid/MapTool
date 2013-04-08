@@ -35,6 +35,8 @@ public class MapPane {
     
     // Is map currently being dragged
     boolean mapdrag = false;
+    //a "timer" used to delay actions and the drag function
+    double lastAction = 0;
     // Pixel count of X/Y drag values
     int mapdragx = 0;
     int mapdragy = 0;

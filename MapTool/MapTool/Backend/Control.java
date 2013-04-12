@@ -1,5 +1,6 @@
 package Backend;
 
+import java.io.*;
 import java.util.ArrayList;
 import UserInterface.Editor;
 import UserInterface.MapPane;
@@ -15,23 +16,21 @@ public class Control {
 	private Client client;
 	private Server server;
 	private Storage store;
-
 	
 	public Control(genUI genUI) {
 		this.genUI = genUI;
 	}
 
-	
 	public void setMap(MapPane getmap) {
 		map = getmap;
 		// Client broadcast code here, to support changing maps (as a DM option)
 	}
 	
-	void setMapB (String mapname) {}
-	// For the future, when clients will load maps based on the host
+	void setMapB (String mapname) {
+		// For the future, when clients will load maps based on the host
+	}
 
-
-	public void addToken(String fileName, int tileX, int tileY, String name) {
+	public void addToken(String fileName, int tileX, int tileY, String name) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
@@ -41,7 +40,6 @@ public class Control {
 		client.broadcast(string);
 	}
 
-
 	void addTokenB(String fileName, int tileX, int tileY, String name) {
 	
 		if (!gameLoaded()) { 
@@ -50,14 +48,12 @@ public class Control {
 		}
 		map.addToken(fileName, tileX, tileY, name);
 	}
-	
 
-	public void broadcastMessage(String message) {
+	public void broadcastMessage(String message) throws IOException {
 		
 		client.sendChatMessage(message);
 	}
 
-	
 	public Token getToken(int x, int y) {
 
 		if (!gameLoaded()) { 
@@ -67,7 +63,6 @@ public class Control {
 		return map.getToken(x,y);
 	}
 
-	
 	public ArrayList<Token> getTokenList() {
 
 		if (!gameLoaded()) { 
@@ -76,9 +71,8 @@ public class Control {
 		}
 		return map.getTokens();
 	}
-
 	
-	public void hideMapArea(int startX, int startY, int endX, int endY) {
+	public void hideMapArea(int startX, int startY, int endX, int endY) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
@@ -89,7 +83,6 @@ public class Control {
 		client.broadcast(string);
 	}
 
-	
 	void hideMapAreaB(int startX, int startY, int endX, int endY) {
 
 		if (!gameLoaded()) { 
@@ -99,54 +92,26 @@ public class Control {
 		map.hideArea(startX, startY, endX, endY);
 	}
 
-
 	public void hostGame() {
-
+		
 		Server server = new Server(8192);
 		server.start();
 	}
-
 	
-	public void hostGame(int port) {
+	public void joinGame(String alias, String hostname) throws IOException {
 
-		Server server = new Server(port);
-		server.start();
-	}
-
-	
-	public void joinGame(String alias, int port, String hostname) {
-		client = new Client(hostname, port, alias, this);
-	}
-
-	
-	public void joinGame(String alias, String hostname) {
 		client = new Client(hostname, 8192, alias, this);
+		client.start();
 	}
-
-	
-	public void joinGame(String host) {
-		client = new Client(host, 8192, "Anonymous", this);
-	}
-
-	
-	public void loadGame() {
-
-		// map = new Map(480, 480, 48, null);
-		// Should call an appropriate MapPane function, such as map.setMap(String mapname)
-		store = new Storage(this);
-	}
-
 	
 	public void loadSave(String saveFilePath) {
 
-		// map = new Map(480, 480, 48, null);
 		// Should call an appropriate MapPane function, such as map.setMap(String mapname)
 		store = new Storage(this);
 		store.readMapData(saveFilePath);
 	}
-
 	
-	public boolean moveToken(String s, int tileX, int tileY) {
+	public boolean moveToken(String s, int tileX, int tileY) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
@@ -157,13 +122,11 @@ public class Control {
 		return false;
 	}
 
-	
 	boolean moveTokenB(String s, int tileX, int tileY) {
 		return map.moveToken(s, tileX, tileY);
 	}
 
-
-	public boolean removeToken(String name) {
+	public boolean removeToken(String name) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here");
@@ -174,39 +137,36 @@ public class Control {
 		return true;
 	}
 
-
 	boolean removeTokenB(String name) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return false;
 		}
-	return map.removeToken(name);
+		return map.removeToken(name);
 	}
 
-	
 	public void saveGame() {
 
 		String mydir = System.getProperty("user.dir");
 		store.writeMapData(mydir + "/saves/default.sav");
 	}
 
-	
 	public void saveMap(String saveFilePath) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
+		store.writeMapData(saveFilePath);
 	}
 
 	
-	public void sendTextToGUI(String user, String message) {
+	public void sendTextToGUI(String user, String message) throws IOException {
 
 	}
 
-
-	public void showMapArea(int startX, int startY, int endX, int endY) {
+	public void showMapArea(int startX, int startY, int endX, int endY) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
@@ -217,7 +177,6 @@ public class Control {
 		client.broadcast(string);
 	}
 	
-	
 	void showMapAreaB(int startX, int startY, int endX, int endY) {
 
 		if (!gameLoaded()) { 
@@ -227,11 +186,9 @@ public class Control {
 		map.unHideArea(startX, startY, endX, endY);
 	}
 
-	
 	protected String getMap() {
 		return map.getBackground();
 	}
-
 	
 	private boolean gameLoaded() {
 
@@ -242,10 +199,9 @@ public class Control {
 		return true;
 	}
 
-	
-	public static void main(String[] args) {
+	/* public static void main(String[] args) {
 
-		/*Control c = new Control(null);
+		Control c = new Control(null);
 
 		String mydir = System.getProperty("user.dir");
 		c.loadSave(mydir + "/saves/default.sav");
@@ -254,6 +210,6 @@ public class Control {
 		c.addToken("", 2, 2, 1, "Carl");
 		c.addToken("", 2, 3, 1, "Caleb");
 
-		c.saveGame();*/		
-	}
+		c.saveGame();		
+	} */
 }

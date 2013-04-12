@@ -19,7 +19,7 @@ public class Client  {
 	private Control c;
 	private String server, username;
 
-	/*  Constructor called by console mode
+	/*  
 	 *  server: the server address
 	 *  port: the port number
 	 *  username: the username
@@ -68,6 +68,7 @@ public class Client  {
 
 		// creates the Thread to listen from the server 
 		new ListenFromServer().start();
+
 		// Send our username to the server this is the only message that we
 		// will send as a String. All other messages will be ChatMessage objects
 		try	{
@@ -77,6 +78,7 @@ public class Client  {
 			disconnect();
 			return false;
 		}
+
 		// success we inform the caller that it worked
 		return true;
 	}
@@ -102,7 +104,8 @@ public class Client  {
 
 	/*
 	 * When something goes wrong
-	 * Close the Input/Output streams and disconnect not much to do in the catch clause
+	 * Close the Input/Output streams and disconnect not 
+	 * much to do in the catch clause
 	 */
 	private void disconnect() {
 		try { 
@@ -117,7 +120,7 @@ public class Client  {
 
 	}
 
-	public static void main(String[] args) {
+	/* public static void main(String[] args) {
 		// default values
 		int portNumber = 8192;
 		String serverAddress = "localhost";
@@ -181,7 +184,7 @@ public class Client  {
 		}
 		// done disconnect
 		client.disconnect();	
-	}
+	}*/
 
 	/*
 	 * a class that waits for the message from the server and prints them 
@@ -196,11 +199,13 @@ public class Client  {
 					String msg = (String) sInput.readObject();
 					String[] splits = msg.split("~");
 					if (splits[0].equals("ChatMessage")) {
+
 						// Print the message
 						c.sendTextToGUI(splits[1], splits[2]);
 						System.out.println(splits[1] + ": " + splits[2]);
 					}
 					else if (splits[0].equals("AddToken")) {
+
 						// Get the parameters
 						String s = splits[1];
 						int x = Integer.parseInt(splits[2]);
@@ -211,6 +216,7 @@ public class Client  {
 						c.addTokenB(s, x, y, name);
 					}
 					else if (splits[0].equals("Hide")) {
+
 						// Get the parameters
 						int startX = Integer.parseInt(splits[1]);
 						int startY = Integer.parseInt(splits[2]);
@@ -228,6 +234,7 @@ public class Client  {
 						c.moveTokenB(s, tileX, tileY);
 					}
 					else if (splits[0].equals("RemoveToken")) {
+						
 						// Get the parameters
 						String name = splits[1];
 						
@@ -236,6 +243,7 @@ public class Client  {
 						
 					}
 					else if (splits[0].equals("Show")) {
+						
 						// Get the parameters
 						int startX = Integer.parseInt(splits[1]);
 						int startY = Integer.parseInt(splits[2]);

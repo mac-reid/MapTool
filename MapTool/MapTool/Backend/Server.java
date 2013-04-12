@@ -3,7 +3,6 @@ package Backend;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.text.SimpleDateFormat;
 
 /*
  * The server as a console application
@@ -43,9 +42,11 @@ public class Server extends Thread {
 			System.out.println(ioe);
 		}
 
+		// start listening for new clients conneting 
 		new ServerListener().start();
 	}		
 
+	// kills the server connections
 	synchronized void kill() {
 		try {
 			// I was asked to stop
@@ -59,18 +60,22 @@ public class Server extends Thread {
 		} catch (IOException ioe) {} // nothing I can do
 	}
 
-	/*
-	 *  to broadcast a message to all Clients
-	 */
-	private synchronized void broadcast(String message) {
+	// to broadcast a message to all Clients
+	private synchronized void broadcast(String message, int id) {
 		
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
 		for(int i = al.size(); --i >= 0;) {
+
+			// gets the client thread 
 			ClientThread ct = al.get(i);
-			// try to write to the Client if it fails remove it from the list
-			if(!ct.writeMsg(message)) {
-				al.remove(i);
+
+			// checks if this is the client that sent the message
+			if (ct.id != id) {
+
+				// try to write to the Client if it fails remove it from the list
+				if(!ct.writeMsg(message)) 
+					al.remove(i);
 			}
 		}
 	}
@@ -111,7 +116,7 @@ public class Server extends Thread {
 		}
 	}
 
-	//  instance of this thread will run for each clipublicent
+	//  instance of this thread will run for each client
 	class ClientThread extends Thread {
 
 		// the socket where to listen/talk
@@ -134,9 +139,6 @@ public class Server extends Thread {
 			// an unique id
 			id = ++uniqueId;
 			this.socket = socket;
-
-			// Creating both Data Stream 
-			System.out.println("Thread trying to create Object Input/Output Streams");
 			
 			try {
 
@@ -160,10 +162,8 @@ public class Server extends Thread {
 				// read a String (which is an object)
 				try {
 					cm = (ChatMessage) sInput.readObject();
-				} catch (IOException e) {
+				} catch (IOException | ClassNotFoundException e) {
 					break;				
-				} catch(ClassNotFoundException e2) {
-					break;
 				}
 				// the messaage part of the ChatMessage
 				String message = cm.getMessage();
@@ -171,21 +171,21 @@ public class Server extends Thread {
 				// Switch on the type of message receive
 				switch(cm.getType()) {
 
-				case ChatMessage.MESSAGE:
-					broadcast(message);
-					break;
-				case ChatMessage.LOGOUT:
-					System.out.println(username + " disconnected with a LOGOUT message.");
-					keepGoing = false;
-					break;
-				case ChatMessage.WHOISIN:
-					writeMsg("List of the users connected:");
-					// scan al the users connected
-					for(int i = 0; i < al.size(); ++i) {
-						ClientThread ct = al.get(i);
-						writeMsg((i+1) + ") " + ct.username);
-					}
-					break;
+					case ChatMessage.MESSAGE:
+						broadcast(message, id);
+						break;
+					case ChatMessage.LOGOUT:
+						System.out.println(username + " disconnected with a LOGOUT message.");
+						keepGoing = false;
+						break;
+					case ChatMessage.WHOISIN:
+						writeMsg("List of the users connected:");
+						// scan all the users connected
+						for(int i = 0; i < al.size(); ++i) {
+							ClientThread ct = al.get(i);
+							writeMsg((i+1) + ") " + ct.username);
+						}
+						break;
 				}
 			}
 
@@ -218,6 +218,7 @@ public class Server extends Thread {
 				close();
 				return false;
 			}
+
 			// write the message to the stream
 			try {
 				sOutput.writeObject(msg);

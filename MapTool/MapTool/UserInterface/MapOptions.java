@@ -99,7 +99,7 @@ public class MapOptions {
 			//draw the option labels
 			g.drawString("Insert Token", x + 3, y + 3);
 			g.drawString("Move", x + 3, y + (height/3) + 3);
-			g.drawString("Ping", x + 3, y + (2*height/3) + 3);
+			g.drawString("Change Map", x + 3, y + (2*height/3) + 3);
 			if(showminimap){
 				//check to make sure map is kept on screen (11 is size of buffers and borders)
 				if(x + 11 + minimapwidth + width < (map.tileSizeX * 48)) {
@@ -192,7 +192,11 @@ public class MapOptions {
 			//third item
 			if(mouseY >= y + (2*height/3) && mouseY <= y + height){
 				hoverArea = ping;
-
+				//if the mouse is pressed
+				if(input.isMousePressed(0)){
+					map.selectMap();
+					setActive(false);
+				}
 			}
 		}
 

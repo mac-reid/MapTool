@@ -210,8 +210,10 @@ public class MapPane {
     		if (!(fileChooser.getSelected().equals(""))) {
     			if (loadMode == 2)
     				addTokenGrid(fileChooser.getSelected(), tempGridX, tempGridY);
-    			else if (loadMode == 1)
+    			else if (loadMode == 1) {
     				loadMap(fileChooser.getSelected());
+    				tokens = new ArrayList<Token>();
+    			}
     			loadMode = 0;
     		}
     	}

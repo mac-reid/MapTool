@@ -1,11 +1,8 @@
 package Backend;
 
 import java.io.*;
+import UserInterface.*;
 import java.util.ArrayList;
-import UserInterface.Editor;
-import UserInterface.MapPane;
-import UserInterface.Token;
-import UserInterface.genUI;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 

@@ -13,10 +13,10 @@ set jar = $topdir/lwjgl-2.8.5/jar
 set uiFiles = `ls ./UserInterface/*.java`
 set backendFiles = `ls ./Backend/*java`
 
-#foreach file ($uiFiles) 
+foreach file ($uiFiles) 
 
-#	javac -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
-#end
+	javac -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
+end
 
 foreach file ($backendFiles)
 
@@ -25,5 +25,5 @@ end
 
 java -cp .:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend -Djava.library.path=$topdir/lwjgl-2.8.5/native/linux $1
 
-#rm -f ./UserInterface/*.class
+rm -f ./UserInterface/*.class
 rm -f ./Backend/*.class

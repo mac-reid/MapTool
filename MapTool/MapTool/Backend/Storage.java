@@ -7,6 +7,7 @@ import UserInterface.Token;
 class Storage {
 
 	Control c;
+	PrintReader in;
 	PrintWriter out;
 
 	public Storage(Control c) {
@@ -24,16 +25,24 @@ class Storage {
 		}
 
 		String mapname = c.getMap();
-		ArrayList<Token> t = c.getTokenList();
 		out.println(mapname);
 
+		ArrayList<Token> t = c.getTokenList();
 		for (Token token : t)
 			out.println(token.getFileName() + "|" + token.getName());
 
 		out.close();
 	}
 
-	public void readMapData(String s) {
+	public void readMapData(String filePath) {
 
+		try {
+			in = new PrintReader(new BufferedReader(new FileReader(filePath)));
+		} catch (IOException ioe) {
+			System.out.println("File " + filePath + " not found.");
+			return;
+		}
+
+		// do something
 	}
 }

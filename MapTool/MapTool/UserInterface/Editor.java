@@ -21,10 +21,12 @@ public class Editor extends BasicGameState{
 	private MapPane mapTool;
 	private ChatPane chatBox;
 	private VideoChatPane videoChat;
+	private InfoPane info;
 	
 	//int values used to determine object positioning
 	public final int BUFFER = 12; //general spacing between objects
 	public final int CHAT_WIDTH_MIN = 250;
+	public final int INFO_HEIGHT = 125;
 	public int chatWidth;
 	public int vidChatMin = 0;
 	public int vidChatHeight = 200;
@@ -61,10 +63,11 @@ public class Editor extends BasicGameState{
 		mapTopX = BUFFER;
 		mapTopY = BUFFER;
 		//Draw the chatwindow
-		chatBox = new ChatPane(chatWidth, gc.getHeight() - BUFFER*2, CHAT_WIDTH_MIN);
+		chatBox = new ChatPane(chatWidth, gc.getHeight() - BUFFER*2 - INFO_HEIGHT, CHAT_WIDTH_MIN);
 		//chatBox.renderChat(gc.getWidth() - CHAT_WIDTH - BUFFER, BUFFER, gc.getGraphics());
 		//draw the video chat box
 		videoChat = new VideoChatPane(gc);
+		info = new InfoPane("Testing Info Pane", gc.getWidth() - CHAT_WIDTH_MIN - BUFFER, BUFFER, INFO_HEIGHT, CHAT_WIDTH_MIN);
 		loadImages();
 		
 		frame(gc, gc.getGraphics());
@@ -84,12 +87,13 @@ public class Editor extends BasicGameState{
 		chatWidth = (gc.getWidth() - BUFFER * 3 - getTileWidth(gc) * 48);
 		vidChatHeight = (gc.getHeight() - BUFFER * 3 - getTileHeight(gc) * 48);
 		//makes chat, remeber that CHAT_WIDTH is standard chat width
-		chatBox.renderChat(getTileWidth(gc) * 48 + BUFFER * 2, BUFFER, chatWidth, gc.getHeight() - BUFFER*2, g);
+		chatBox.renderChat(getTileWidth(gc) * 48 + BUFFER * 2, INFO_HEIGHT + BUFFER*2, chatWidth, gc.getHeight() - BUFFER*2, g);
 		
 		//makes video chat pane, remember videoChatHeight is final int, standard height
 		videoChat.renderVideoPane(BUFFER, gc.getHeight() - vidChatHeight - BUFFER,
 				gc.getWidth() - 3*BUFFER - chatWidth, vidChatHeight, g);
-		
+		//render info pane
+		info.render(g);
 	}
 
 
@@ -227,6 +231,15 @@ public class Editor extends BasicGameState{
 		}
 		//draw the last bit of the bottom line
 		g.drawImage(botA.getSubImage(0, 0, getTileWidth(gc) * 48 - drawnWidth + BUFFER, botA.getHeight()), drawnWidth, getTileHeight(gc) * 48 + BUFFER);
+		
+		//draw bottom of infoPane
+		drawnWidth = gc.getWidth() - chatWidth - BUFFER;
+		while(drawnWidth < gc.getWidth() - BUFFER - botA.getWidth()){
+			g.drawImage(botA, drawnWidth, INFO_HEIGHT + BUFFER);
+			drawnWidth = drawnWidth + botA.getWidth();
+		}
+		//draw the last bit of the bottom line
+		g.drawImage(botA.getSubImage(0, 0, gc.getWidth() - drawnWidth - BUFFER, botA.getHeight()), drawnWidth, INFO_HEIGHT + BUFFER);
 		//draw four corners
 		g.drawImage(topLeft, 0, 0);
 		g.drawImage(topRight, width - topRight.getWidth(), 0);

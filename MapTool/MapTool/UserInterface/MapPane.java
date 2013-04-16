@@ -210,10 +210,8 @@ public class MapPane {
     		if (!(fileChooser.getSelected().equals(""))) {
     			if (loadMode == 2)
     				addTokenGrid(fileChooser.getSelected(), tempGridX, tempGridY);
-    			else if (loadMode == 1) {
+    			else if (loadMode == 1)
     				loadMap(fileChooser.getSelected());
-    				tokens = new ArrayList<Token>();
-    			}
     			loadMode = 0;
     		}
     	}
@@ -259,6 +257,7 @@ public class MapPane {
 	    		// If LeftMouse is not down, but a state is set, clear the state appropriately
 	    		else if(dragMode == 1) {
 	    			dragMode = 0;
+	    			dragToken = null;
 	    		}
 	    		else if(dragMode == 2) {
 	    			if (!occupied[currGridX + gridOffsetX][currGridY + gridOffsetY]) {
@@ -378,6 +377,9 @@ public class MapPane {
     	}
     }
     
+    public Token getSelectedToken(){
+    	return dragToken;
+    }
     
     // =======================================================================
     // Methods used directly by the controller
@@ -443,7 +445,6 @@ public class MapPane {
     public String getBackground() {
     	return map.getResourceReference();
     }
-    
     
 }
 

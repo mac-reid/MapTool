@@ -45,7 +45,6 @@ public class OptionField {
 	//if the field opens up a file
 	private boolean opensFiles;
 	private boolean isShowing = false;
-	private FileChooser fc;
 	
 	//general constructor for non 
 	public OptionField(String label, int x, int y) throws SlickException{
@@ -107,43 +106,7 @@ public class OptionField {
 				isActive = true;
 				//this is super buggy right now (only works on PC)
 				if(opensFiles){
-					//makes it look better
-					try {
-						// Set System L&F
-						UIManager.setLookAndFeel(
-								UIManager.getSystemLookAndFeelClassName());
-					} 
-					catch (UnsupportedLookAndFeelException e) {
-						// handle exception
-					}
-					catch (ClassNotFoundException e) {
-						// handle exception
-					}
-					catch (InstantiationException e) {
-						// handle exception
-					}
-					catch (IllegalAccessException e) {
-						// handle exception
-					}
-					
-					// Force Slick to give up focus
-					Frame frame = new Frame();
-					frame.setUndecorated(true);
-					frame.setOpacity(0);
-					frame.setLocationRelativeTo(null);
-					frame.setVisible(true);
-					frame.toFront();
-					frame.setVisible(false);
-					frame.dispose();
-					// End force
-					
-					
-					fc = new FileChooser();
-					value = fc.getFilename();
-					//if this is the map
-					if (label.equals("Map File: ")){
-						((genUI)sbg).setMapFile(fc.getAbsLocation());
-					}
+					//TODO put in code for slickFileChooser
 				}
 			} 
 		  //if we click somewhere else, diable this
@@ -174,11 +137,4 @@ public class OptionField {
 		}
 	}
 	
-	public void showChooser(boolean isShowing){
-		if(isShowing) return;
-		else {
-			new FileChooser();
-			isShowing = true;
-		}
-	}
 }

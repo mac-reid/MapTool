@@ -1,11 +1,14 @@
 package UserInterface;
 
+import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.InputStream;
 import java.util.Date;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.TrueTypeFont;
 
 import Backend.Control;
 
@@ -15,12 +18,15 @@ import Backend.Control;
  *
  */
 public class InfoPane {
+	Font font;
+	TrueTypeFont titleFont;
 	//Size constraints for panel
 	float panelX, panelY;
 	float sizeX, sizeY;
 	//Global Buffers
 	final int edgeBuffer = 10;
 	final int itemBuffer = 5;
+	final int picSize = 60;
 	//String info
 	String name, location, gameName, time;
 	//Status variables (need to make status class within Token class)
@@ -53,6 +59,18 @@ public class InfoPane {
 		panelY = pY;
 		sizeX = width;
 		sizeY = height;
+		token = null;
+		//create font
+		font = null;
+		try{
+			InputStream is = InfoPane.class.getResourceAsStream("Resources/Fonts/anglican.tff");
+			font = Font.createFont(Font.TRUETYPE_FONT, is);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.err.println("anglican.tff" + " not loaded.  Using serif font.");
+			font = new Font("serif", Font.PLAIN, 24);
+		}
+		titleFont = new TrueTypeFont(font, true);
 	}
 	
 	/**
@@ -71,15 +89,26 @@ public class InfoPane {
 	/**
 	 * Update method, doesnt need to much info, as most of the calls will be made from mapPane
 	 */
-	public void update(){
-		
+	public void update(GameContainer gc, Token selection){
+		token = selection;
 	}
 	
 	/**
 	 * Render method, draws everything on the screen
 	 */
-	public void render(Graphics g){
-		g.setColor(Color.blue);
-		g.fillOval(panelX + edgeBuffer, panelY + edgeBuffer, 50, 50);
+	public void render(float x, float y, int width, int height, Graphics g){
+		panelX = x;
+		panelY = y;
+		sizeX = width;
+		sizeY = height;
+		if(token != null){
+			token.getImage().getScaledCopy(picSize, picSize).draw(x + itemBuffer, y + itemBuffer);
+			g.setColor(Color.white);
+			g.drawString(token.getName(), x + itemBuffer * 2 + picSize, y + itemBuffer);
+		} else {
+			String testTitle = "TEST TITLE";
+			int strWidth = titleFont.getWidth(testTitle);
+			titleFont.drawString((width - strWidth)/2, y + itemBuffer, testTitle, Color.white);
+		}
 	}
 }

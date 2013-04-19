@@ -1,7 +1,9 @@
 package UserInterface;
 
 import java.awt.Frame;
+import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -235,9 +237,13 @@ public class MapOptions {
 		Image miniMap = map.map.getScaledCopy(miniMapScale);
 		miniMap.draw(x, y);
 		//place a red dot for each token
-		for(Token token : map.tokens){
-			float currentX = token.getX() * 48 * miniMapScale;
-			float currentY = token.getY() * 48 * miniMapScale;
+		
+		//TODO: AS EXAMPLE, recode as you see fit
+		ArrayList<Point> coords;
+		coords = map.tokens.getCoordinates();
+		for(int i = 0; i < coords.size(); i++) {
+			float currentX = (float)coords.get(i).getX() * map.tokenScale * miniMapScale;
+			float currentY = (float)coords.get(i).getY() * map.tokenScale * miniMapScale;
 			//put in terms of the move box
 			g.setColor(Color.red);
 			g.fillOval(x + currentX + (float)(12 * miniMapScale), y + currentY + (float)(12 * miniMapScale), 5, 5);

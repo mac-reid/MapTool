@@ -1,11 +1,20 @@
 package Backend;
 
 import java.io.*;
+import java.util.*;
 import UserInterface.*;
-import java.util.ArrayList;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
+/* The controller class that interacts between the GUI elements,
+ * the network elements, and the file i/o elements.
+ *
+ * This class has two types of methods, method names ending in
+ * the letter 'B' and the same methods without ending in the
+ * the letter 'B'. The methods ending with the letter 'B' are
+ * in place for the Client to call when updating locally. The
+ * methods not ending in the letter 'B' are in place for the
+ * GUI elements to call when broadcasting to all other clients.
+ */
 public class Control {
 
 	private MapPane map;
@@ -33,7 +42,8 @@ public class Control {
 			System.out.println("Some error here"); 
 			return;
 		}
-		String string = "AddToken~" + fileName + "~" + Integer.toString(tileX) + "~" + Integer.toString(tileY) + "~" + name;
+		String string = "AddToken~" + fileName + "~" + Integer.toString(tileX) 
+			+ "~" + Integer.toString(tileY) + "~" + name;
 		client.broadcast(string);
 	}
 
@@ -78,8 +88,9 @@ public class Control {
 			System.out.println("Some error here"); 
 			return;
 		}
-		String string = "Hide~" + Integer.toString(startX) + "~" + Integer.toString(startY) 
-				+ "~" + Integer.toString(endX) + "~" + Integer.toString(endY);
+		String string = "Hide~" + Integer.toString(startX) + "~" 
+			+ Integer.toString(startY) + "~" + Integer.toString(endX) 
+			+ "~" + Integer.toString(endY);
 		client.broadcast(string);
 	}
 
@@ -257,6 +268,27 @@ public class Control {
 		
 		return "";
 	}
+
+	private String rollDice(int numRolls, int nSides, int bonus) { 
+
+		int temp = 0;
+		int total = 0;
+		String ret = "";
+		Random  r = new Random(); 
+
+		ret = "Rolling " + numRolls + "d" + nSides + " + " + bonus + '\n' + "(";
+
+		for(int i = 0; i < numRolls; i++) { 
+
+			temp = (r.nextInt(nSides) + 1);
+			ret += temp;
+			total += temp;
+			if (i != numRolls -1)
+				ret += " + ";
+		} 
+		ret += ")+" + bonus + '\n' + "=" + total; 
+		return ret;  
+    }
 
 	private int[] parseRoll(String message, String[] data) {
 		

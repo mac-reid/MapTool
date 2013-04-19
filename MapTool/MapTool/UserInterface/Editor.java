@@ -40,6 +40,7 @@ public class Editor extends BasicGameState{
 	
 	private boolean imgsloaded = false;
 	
+	public String hostname;
 	//frame images
 	Image topLeft, topRight, botLeft, botRight, leftA, leftB, rightA, rightB, topA, topB, botA, botB;
 	
@@ -68,7 +69,7 @@ public class Editor extends BasicGameState{
 		//draw the video chat box
 		videoChat = new VideoChatPane(gc);
 		//TODO Replace "" with game name
-		infoPane = new InfoPane("", gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT);
+		infoPane = new InfoPane("", gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, "192.92.1");
 		loadImages();
 		
 		frame(gc, gc.getGraphics());

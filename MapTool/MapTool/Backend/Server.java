@@ -46,16 +46,30 @@ public class Server extends Thread {
 		new ServerListener().start();
 	}		
 
+	synchronized void whisper(String message) {
+
+		String[] data = message.split("~");
+		for(int i = al.size(); --i >= 0;) {
+
+				// checks if this is the recipient
+			if (al.get(i).username == data[0]) {
+
+					// try to write to the Client if fail, remove from the list
+				if(!al.get(i).writeMsg(message)) 
+					al.remove(i);
+			}
+		}
+	}
+
 	// kills the server connections
 	synchronized void kill() {
 		try {
 			// I was asked to stop
 			serverSocket.close();
 			for(int i = 0; i < al.size(); ++i) {
-				ClientThread tc = al.get(i);
-				tc.sInput.close();
-				tc.sOutput.close();
-				tc.socket.close();
+				al.get(i).sInput.close();
+				al.get(i).sOutput.close();
+				al.get(i).socket.close();
 			}
 		} catch (IOException ioe) {} // nothing I can do
 	}
@@ -67,14 +81,11 @@ public class Server extends Thread {
 		// because it has disconnected
 		for(int i = al.size(); --i >= 0;) {
 
-			// gets the client thread 
-			ClientThread ct = al.get(i);
-
 			// checks if this is the client that sent the message
-			if (ct.id != id) {
+			if (al.get(i).id != id) {
 
 				// try to write to the Client if it fails remove it from the list
-				if(!ct.writeMsg(message)) 
+				if(!al.get(i).writeMsg(message)) 
 					al.remove(i);
 			}
 		}
@@ -165,6 +176,7 @@ public class Server extends Thread {
 				} catch (IOException | ClassNotFoundException e) {
 					break;				
 				}
+
 				// the messaage part of the ChatMessage
 				String message = cm.getMessage();
 
@@ -175,17 +187,19 @@ public class Server extends Thread {
 						broadcast(message, id);
 						break;
 					case ChatMessage.LOGOUT:
-						System.out.println(username + " disconnected with a LOGOUT message.");
+						System.out.println(username + 
+						                " disconnected with a LOGOUT message.");
 						keepGoing = false;
 						break;
 					case ChatMessage.WHOISIN:
 						writeMsg("List of the users connected:");
 						// scan all the users connected
 						for(int i = 0; i < al.size(); ++i) {
-							ClientThread ct = al.get(i);
-							writeMsg((i+1) + ") " + ct.username);
+							writeMsg((i + 1) + ") " + al.get(i).username);
 						}
 						break;
+					case ChatMessage.WHISPER:
+						whisper(message);
 				}
 			}
 
@@ -200,13 +214,9 @@ public class Server extends Thread {
 			// try to close the connection
 			try {
 				if(sOutput != null) sOutput.close();
-			} catch(Exception e) {}
-			try {
 				if(sInput != null) sInput.close();
-			} catch(Exception e) {};
-			try {
 				if(socket != null) socket.close();
-			}  catch (Exception e) {}
+			} catch (IOException ioe) {} // not much to do here
 		}
 
 		/*

@@ -11,15 +11,14 @@ cd MapTool
 
 for %%f in (UserInterface\*.java) do (
 
-	javac -cp .;%topdir%\lwjgl-2.8.5\jar\*;%topdir% .\%%f
+	javac -d %topdir%\bin\ -cp .;%topdir%\lwjgl-2.8.5\jar\*;%topdir% .\%%f
 )
 
 for %%f in (Backend\*.java) do (
 
-	javac -cp .;%topdir%\lwjgl-2.8.5\jar\*;%topdir% .\%%f
+	javac -d %topdir%\bin\ -cp .;%topdir%\lwjgl-2.8.5\jar\*;%topdir% .\%%f
 )
 
-java -cp .;%topdir%\lwjgl-2.8.5\jar\*;.\Backend\;.\UserInterface\ -Djava.library.path=%topdir%\lwjgl-2.8.5\native\windows\ %1
-
-del /f Backend\*.class
-del /f UserInterface\*.class
+java -cp ^
+ .;%topdir%\lwjgl-2.8.5\jar\*;.\Backend\;.\UserInterface\;%topdir%\bin\ ^
+ -Djava.library.path=%topdir%\lwjgl-2.8.5\native\windows\ %1

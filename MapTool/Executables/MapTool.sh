@@ -15,15 +15,14 @@ set backendFiles = `ls ./Backend/*java`
 
 foreach file ($uiFiles) 
 
-	javac -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
+	javac -d $topdir/bin -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
 end
 
 foreach file ($backendFiles)
 
-	javac -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
+	javac -d $topdir/bin -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
 end
 
-java -cp .:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend -Djava.library.path=$topdir/lwjgl-2.8.5/native/linux $1
-
-rm -f ./UserInterface/*.class
-rm -f ./Backend/*.class
+java -cp \
+ .:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend:$topdir/bin \
+ -Djava.library.path=$topdir/lwjgl-2.8.5/native/linux $1

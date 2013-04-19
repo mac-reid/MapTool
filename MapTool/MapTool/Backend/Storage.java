@@ -7,7 +7,7 @@ import UserInterface.Token;
 class Storage {
 
 	Control c;
-	PrintReader in;
+	BufferedReader in;
 	PrintWriter out;
 
 	public Storage(Control c) {
@@ -37,7 +37,7 @@ class Storage {
 	public void readMapData(String filePath) {
 
 		try {
-			in = new PrintReader(new BufferedReader(new FileReader(filePath)));
+			in = new BufferedReader(new FileReader(filePath));
 		} catch (IOException ioe) {
 			System.out.println("File " + filePath + " not found.");
 			return;

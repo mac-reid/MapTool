@@ -31,38 +31,39 @@ public class Client  {
 		c = control;
 	}
 
-	public void broadcast(String s) {
+	public void broadcast(String message) {
 		try {
-			sOutput.writeObject(new ChatMessage(1, s));
+			sOutput.writeObject(new ChatMessage(ChatMessage.MESSAGE, message));
 		}
 		catch (IOException e) {
 			System.out.println(e);
 		}
 	}
 
+	public void whisper(String recipient, String message) {
+
+		try {
+			sOutput.writeObject(new ChatMessage(ChatMessage.WHISPER, message));
+		} catch (IOException ioe) {}
+	}
+
 	/*
 	 * To start the dialog
 	 */
 	public boolean start() {
+
 		// try to connect to the server
 		try {
 			socket = new Socket(server, port);
-		} 
-		// if it failed not much I can so
-		catch(Exception ec) {
-			System.out.println("Error connecting to server: " + ec);
+		} catch(Exception ec) {
 			return false;
 		}
-
-		String msg = "Connection accepted " + socket.getInetAddress() + ":" + socket.getPort();
-		System.out.println(msg);
 
 		/* Creating both Data Stream */
 		try {
 			sInput  = new ObjectInputStream(socket.getInputStream());
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
-		} catch (IOException eIO) {
-			System.out.println("Exception creating new Input/output Streams: " + eIO);
+		} catch (IOException ioe) {
 			return false;
 		}
 
@@ -73,8 +74,7 @@ public class Client  {
 		// will send as a String. All other messages will be ChatMessage objects
 		try	{
 			sOutput.writeObject(username);
-		} catch (IOException eIO) {
-			System.out.println("Exception doing login: " + eIO);
+		} catch (IOException ioe) {
 			disconnect();
 			return false;
 		}
@@ -96,7 +96,8 @@ public class Client  {
 
 	public void sendChatMessage(String message) {
 		try {
-			sOutput.writeObject(new ChatMessage(1, username + "~" + message));
+			sOutput.writeObject(new ChatMessage(ChatMessage.MESSAGE, 
+			                    username + "~" + message));
 		} catch(IOException e) {
 			System.out.println("Exception writing to server: " + e);
 		}		
@@ -110,81 +111,10 @@ public class Client  {
 	private void disconnect() {
 		try { 
 			if(sInput != null) sInput.close();
-		} catch(Exception e) {} // not much else I can do
-		try {
 			if(sOutput != null) sOutput.close();
-		} catch(Exception e) {} // not much else I can do
-		try{
 			if(socket != null) socket.close();
-		} catch(Exception e) {} // not much else I can do
-
+		} catch (IOException ioe) {} // not much to do
 	}
-
-	/* public static void main(String[] args) {
-		// default values
-		int portNumber = 8192;
-		String serverAddress = "localhost";
-		String userName = "Loser";
-
-		// depending of the number of arguments provided we fall through
-		switch(args.length) {
-		// > java Client username portNumber serverAddr
-		case 3:
-			serverAddress = args[2];
-			// > java Client username portNumber
-		case 2:
-			try {
-				portNumber = Integer.parseInt(args[1]);
-			} catch(Exception e) {
-				System.out.println("Invalid port number.");
-				System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
-				return;
-			}
-			// > java Client username
-		case 1: 
-			userName = args[0];
-			// > java Client
-		case 0:
-			break;
-			// invalid number of arguments
-		default:
-			System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
-			return;
-		}
-		// create the Client object
-		Client client = new Client(serverAddress, portNumber, userName, null);
-		// test if we can start the connection to the Server
-		// if it failed nothing we can do
-		if(!client.start())
-			return;
-
-		// wait for messages from user
-		Scanner scan = new Scanner(System.in);
-		// loop forever for message from the user
-		while(true) {
-			
-			String msg = scan.nextLine(); 		     // read message from user
-			if(msg.equalsIgnoreCase("LOGOUT")) {     // logout if message is LOGOUT
-				client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
-				// break to do the disconnect
-				break;
-			}
-			else if (msg.substring(0,2).equals("!!")) { // temporary testing for function calls
-				String temp = msg.substring(2, msg.length());
-				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, temp));
-			}
-			else if(msg.equalsIgnoreCase("WHOISIN")) { // message WhoIsIn 
-				client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));
-			}
-			else {	                                 // default to ordinary message
-				msg = "ChatMessage~" + msg;
-				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
-			}
-
-		}
-		// done disconnect
-		client.disconnect();	
-	}*/
 
 	/*
 	 * a class that waits for the message from the server and prints them 
@@ -253,6 +183,8 @@ public class Client  {
 						// Call the function
 						c.showMapAreaB(startX, startY, endX, endY);
 					}
+
+					// should be roll, whisper, setmap
 					
 					
 				} catch(IOException e) {

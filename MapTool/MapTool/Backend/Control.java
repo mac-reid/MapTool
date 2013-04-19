@@ -46,9 +46,12 @@ public class Control {
 		map.addToken(fileName, tileX, tileY, name);
 	}
 
-	public void broadcastMessage(String message) throws IOException {
-		
+	public String broadcastMessage(String message) throws IOException {
+
+		String tmp = parseInput(message);
+
 		client.sendChatMessage(message);
+		return "";
 	}
 
 	public Token getToken(int x, int y) {
@@ -196,17 +199,87 @@ public class Control {
 		return true;
 	}
 
-	/* public static void main(String[] args) {
+	public String parseInput(String message) {
 
-		Control c = new Control(null);
+		// parse the message for command messages
+		if (message.charAt(0) == '/') {
 
-		String mydir = System.getProperty("user.dir");
-		c.loadSave(mydir + "/saves/default.sav");
+			String[] data = message.split(" ");
+			int[] roll;
 
-		c.hostGame();
-		c.addToken("", 2, 2, 1, "Carl");
-		c.addToken("", 2, 3, 1, "Caleb");
+			// case for no spaces in the input
+			if (data.length == 1)
+				return "Unrecognized command: " + message;
+		
+			if (message.length() > 2) {
 
-		c.saveGame();		
-	} */
+				// section for /r
+				if (message.charAt(1) == 'r' && message.charAt(2) == ' ') {
+					roll = parseRoll(message, data);
+				}
+
+				// section for /w
+				else if (message.charAt(1) == 'w' && message.charAt(2) == ' ') {
+
+					parseWhisper(message, data);
+				}
+			
+			} else if (message.length() > 6) {
+
+				// section for /roll
+				if (message.substring(0, 4).equalsIgnoreCase("/roll")
+				    	&& message.charAt(5) == ' ') {
+					roll = parseRoll(message, data);
+				} 
+
+			} else if (message.length() > 8) {
+
+				// section for /gmroll
+				if (message.substring(0,6).equalsIgnoreCase("/gmroll") 
+				    	&& message.charAt(7) == ' ') {
+					roll = parseRoll(message, data);
+				}
+
+			} else if (message.length() > 9) {
+
+				//section for /whisper
+				if (message.substring(0,7).equalsIgnoreCase("/whisper") 
+				    	&& message.charAt(8) == ' ') {
+					parseWhisper(message, data);
+				}
+			
+			} else 
+
+				// section for returning an error message stating the given
+				// command is improperly formatted e.g. /r (no trailing characters)
+				return "Unrecognized command: " + message;
+		}
+		
+		return "";
+	}
+
+	private int[] parseRoll(String message, String[] data) {
+		
+		int d = message.indexOf("d");
+		if (d == -1) {}
+			// no d in message, improper formatted /roll
+
+		int[] roll = new int[3];
+
+		return null;
+	}
+
+	private String[] parseWhisper(String message, String[] data) {
+
+		if (data.length < 3) {
+			// improperly formatted /w only one parameter
+		}
+
+		return null;
+	}
+
+	public static void main(String[] args) {
+
+
+	}
 }

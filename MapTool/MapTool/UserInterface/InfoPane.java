@@ -11,6 +11,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.geom.Shape;
 
 import Backend.Control;
 
@@ -129,7 +130,24 @@ public class InfoPane {
 		}
 	}
 	
+	/**
+	 * Inner class that will have the radio button feeling for the statuses
+	 * @author nrjohnso
+	 *
+	 */
 	public class statusGrid{
+		
+		//shape array for the icon for the stuff
+		Shape[] icons;
+		
+		public statusGrid(Token token, int width, int height){
+			initIcons();
+		}
+		
+		public void initIcons(){
+			icons = new Shape[8];
+			icons[0] = null;
+		}
 		
 	}
 }

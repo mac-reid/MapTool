@@ -97,7 +97,7 @@ public class SlickFileChooser {
 		
 		
 		// Load the cancel image
-		try {canx = new Image(filePath + "canx.png").getScaledCopy(cnxSize, cnxSize); }
+		try {canx = new Image("Resources/canx.png").getScaledCopy(cnxSize, cnxSize); }
 		catch (SlickException se) {};
 	}
 	

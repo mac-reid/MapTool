@@ -10,6 +10,7 @@ public class Token {
 	int tileY = 1;
 	int size = 1;
 	String name;
+	String[] statuses;
 
 	public Token(String imglocation, int x, int y) throws SlickException {
 		this("Redshirt", imglocation, x, y);

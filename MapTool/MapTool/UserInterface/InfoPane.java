@@ -8,6 +8,8 @@ import java.util.Date;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 
 import Backend.Control;
@@ -20,39 +22,40 @@ import Backend.Control;
 public class InfoPane {
 	Font font;
 	TrueTypeFont titleFont;
+	TrueTypeFont subFont;
 	//Size constraints for panel
 	float panelX, panelY;
 	float sizeX, sizeY;
 	//Global Buffers
 	final int edgeBuffer = 10;
 	final int itemBuffer = 5;
-	final int picSize = 60;
+	final int picSize = 80;
 	//String info
-	String name, location, gameName, time;
+	String hostname, gameName, time;
+	int numPlayers;
 	//Status variables (need to make status class within Token class)
 	//Status[] statuses;
 	
 	//Clock
 	
+	//background
+	Image background;
 	//the selected token, if there is one
 	Token token;
 	
-	//Game stuff
-	GameContainer gc;
-	Control control;
-	Graphics g;
-	
-	//used to determine what state to show
-	//0 = general info
-	//1 = token info;
-	private int state;
 	
 	/**
 	 * Constructor to initialize necessary variables
 	 */
-	public InfoPane(String pGameName, float pX, float pY, float width, float height){
+	public InfoPane(String pGameName, float pX, float pY, float width, float height, String host){
+		try {
+			background = new Image("Resources/chatpattern.png");
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		gameName = pGameName;
-		state = 0;
+		hostname = host;
 		time = getTime();
 		//set size
 		panelX = pX;
@@ -68,9 +71,10 @@ public class InfoPane {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.err.println("anglican.tff" + " not loaded.  Using serif font.");
-			font = new Font("serif", Font.PLAIN, 24);
+			font = new Font("serif", Font.PLAIN, 20);
 		}
 		titleFont = new TrueTypeFont(font, true);
+		subFont = new TrueTypeFont(new Font("serif", Font.PLAIN, 13), true);
 	}
 	
 	/**
@@ -83,6 +87,9 @@ public class InfoPane {
 		int secondOffset = 4*3600;
 		hours = ((seconds - secondOffset) / 3600 ) % 12;
 		minutes = (seconds / 60) % 60;
+		if (minutes < 10) {
+			return ("" + hours + ":0" + minutes);
+		}
 		return ("" + hours +  ":" + minutes);
 	}
 	
@@ -97,6 +104,7 @@ public class InfoPane {
 	 * Render method, draws everything on the screen
 	 */
 	public void render(float x, float y, int width, int height, Graphics g){
+		background.draw(x, y, width, height);
 		panelX = x;
 		panelY = y;
 		sizeX = width;
@@ -104,11 +112,24 @@ public class InfoPane {
 		if(token != null){
 			token.getImage().getScaledCopy(picSize, picSize).draw(x + itemBuffer, y + itemBuffer);
 			g.setColor(Color.white);
-			g.drawString(token.getName(), x + itemBuffer * 2 + picSize, y + itemBuffer);
+			//draw token name (centered)
+			titleFont.drawString(x + picSize + (width - picSize - titleFont.getWidth(token.getName()))/2, y + itemBuffer, token.getName(), Color.white);
 		} else {
 			String testTitle = "TEST TITLE";
 			int strWidth = titleFont.getWidth(testTitle);
-			titleFont.drawString((width - strWidth)/2, y + itemBuffer, testTitle, Color.white);
+			//draw title (centered)
+			titleFont.drawString(x + (width - strWidth)/2, y + itemBuffer, testTitle, Color.white);
+			//draw time (centered)
+			titleFont.drawString(x + (width - titleFont.getWidth(time))/2, y + titleFont.getHeight() + itemBuffer, time, Color.white);
+			//show the IP
+			subFont.drawString(x + itemBuffer, height/2, "Game Hostname: " + hostname);
+			//how many players are connected
+			subFont.drawString(x + itemBuffer, height/2 + itemBuffer + subFont.getHeight(), "Connected Players: " + "(" + "X" + ") " + "TestPlayer1");
+			
 		}
+	}
+	
+	public class statusGrid{
+		
 	}
 }

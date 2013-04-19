@@ -60,7 +60,7 @@ public class Editor extends BasicGameState{
 		mapTileHeight = (gc.getHeight() - BUFFER*3 - vidChatMin)/48;
 		chatWidth = (gc.getWidth() - BUFFER * 3 - mapTileWidth*48);
 		mapTool = new MapPane("Resources/Maps/losttemple.png", mapTileWidth, mapTileHeight);
-		mapTool.renderMap(BUFFER, BUFFER, getTileWidth(gc), getTileHeight(gc), gc.getGraphics());
+		mapTool.renderMap(BUFFER, BUFFER, gc.getGraphics());
 		mapTopX = BUFFER;
 		mapTopY = BUFFER;
 		//Draw the chatwindow
@@ -83,14 +83,14 @@ public class Editor extends BasicGameState{
 			throws SlickException {
 
 		//draw things
-		mapTool.renderMap(BUFFER, BUFFER, getTileWidth(gc), getTileHeight(gc), g);
+		mapTool.renderMap(BUFFER, BUFFER, g);
 		
 		frame(gc, g);
 		//get chat height and width
-		chatWidth = (gc.getWidth() - BUFFER * 3 - getTileWidth(gc) * 48);
-		vidChatHeight = (gc.getHeight() - BUFFER * 3 - getTileHeight(gc) * 48);
+		chatWidth = (gc.getWidth() - BUFFER * 3 - getMapWidth(gc));
+		vidChatHeight = (gc.getHeight() - BUFFER * 3 - getMapHeight(gc));
 		//makes chat, remeber that CHAT_WIDTH is standard chat width
-		chatBox.renderChat(getTileWidth(gc) * 48 + BUFFER * 2, BUFFER * 2 + INFO_PANE_HEIGHT, 
+		chatBox.renderChat(getMapWidth(gc) + BUFFER * 2, BUFFER * 2 + INFO_PANE_HEIGHT, 
 				chatWidth, gc.getHeight() - BUFFER*3 - INFO_PANE_HEIGHT, g);
 		//render the info pane
 		infoPane.render(gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, g);
@@ -107,9 +107,7 @@ public class Editor extends BasicGameState{
         int mouseX = input.getMouseX();
         int mouseY = input.getMouseY();
         
-        //resize the map
-        mapTool.resize(getTileWidth(gc), getTileHeight(gc));
-        mapTool.update(BUFFER, BUFFER, gc, delta);
+        mapTool.update(BUFFER, BUFFER, getMapWidth(gc), getMapHeight(gc), gc, delta);
         // If mouse is over Map Pane, Enable Map input
         // This should definitely be cleaned up - passing 'input' to the appropriate object
         // Instead of calling all of these methods here
@@ -197,8 +195,8 @@ public class Editor extends BasicGameState{
 	 * 3 buffers from bottom to top of map
 	 * 48 pixel tiles
 	 */
-	public int getTileHeight(GameContainer gc){
-		return (gc.getHeight() - vidChatHeight - BUFFER * 3)/48;
+	public int getMapHeight(GameContainer gc){
+		return (gc.getHeight() - vidChatHeight - BUFFER * 3);
 	}
 	
 	/**
@@ -206,8 +204,8 @@ public class Editor extends BasicGameState{
 	 * @param gc
 	 * @return
 	 */
-	public int getTileWidth(GameContainer gc){
-		return (gc.getWidth() - CHAT_WIDTH_MIN - BUFFER * 3)/48;
+	public int getMapWidth(GameContainer gc){
+		return (gc.getWidth() - CHAT_WIDTH_MIN - BUFFER * 3);
 	}
 	
 	public void frame(GameContainer gc, Graphics g){
@@ -224,7 +222,7 @@ public class Editor extends BasicGameState{
 		//draw vertical lines
 		while(drawnHeight < height){
 			g.drawImage(leftA, 0, drawnHeight);
-			g.drawImage(leftA, BUFFER + getTileWidth(gc) * 48, drawnHeight);
+			g.drawImage(leftA, BUFFER + getMapWidth(gc), drawnHeight);
 			g.drawImage(leftB, gc.getWidth() - BUFFER, drawnHeight);
 			drawnHeight = drawnHeight + leftA.getHeight();
 		}
@@ -237,12 +235,12 @@ public class Editor extends BasicGameState{
 		}
 		//draw most of the middle line
 		drawnWidth = BUFFER;
-		while(drawnWidth < getTileWidth(gc) * 48 - botA.getWidth()){
-			g.drawImage(botA, drawnWidth, getTileHeight(gc) * 48 + BUFFER);
+		while(drawnWidth < getMapWidth(gc) - botA.getWidth()){
+			g.drawImage(botA, drawnWidth, getMapHeight(gc) + BUFFER);
 			drawnWidth = drawnWidth + botA.getWidth();
 		}
 		//draw the last bit of the bottom line
-		g.drawImage(botA.getSubImage(0, 0, getTileWidth(gc) * 48 - drawnWidth + BUFFER, botA.getHeight()), drawnWidth, getTileHeight(gc) * 48 + BUFFER);
+		g.drawImage(botA.getSubImage(0, 0, getMapWidth(gc) - drawnWidth + BUFFER, botA.getHeight()), drawnWidth, getMapHeight(gc) + BUFFER);
 		//draw four corners
 		g.drawImage(topLeft, 0, 0);
 		g.drawImage(topRight, width - topRight.getWidth(), 0);

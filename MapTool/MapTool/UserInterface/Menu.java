@@ -12,7 +12,7 @@ import org.newdawn.slick.state.StateBasedGame;
 public class Menu extends BasicGameState{
 
 	//
-	private MenuButton host, join;
+	private MenuButton host, join, testMode;
 	private MenuOptions hostOptions;
 	private MenuOptions joinOptions;
 	private String usrName;

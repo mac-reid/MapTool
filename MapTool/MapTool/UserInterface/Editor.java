@@ -26,7 +26,7 @@ public class Editor extends BasicGameState{
 	//int values used to determine object positioning
 	public final int BUFFER = 12; //general spacing between objects
 	public final int CHAT_WIDTH_MIN = 250;
-	public final int INFO_PANE_HEIGHT = 190;
+	public final int INFO_PANE_HEIGHT = 150;
 	public int chatWidth;
 	public int vidChatMin = 0;
 	public int vidChatHeight = 200;

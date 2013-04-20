@@ -23,14 +23,14 @@ public class Server extends Thread {
 
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
-		
+
 	public Server(int port) {
 
 		this.port = port;
 		keepGoing = true;
 		al = new ArrayList<ClientThread>();
 	}
-	
+
 	public void start() {
 
 		// create socket server and wait for connection requests 
@@ -42,7 +42,7 @@ public class Server extends Thread {
 			System.out.println(ioe);
 		}
 
-		// start listening for new clients conneting 
+		// start listening for new clients connecting 
 		new ServerListener().start();
 	}		
 
@@ -51,10 +51,10 @@ public class Server extends Thread {
 		String[] data = message.split("~");
 		for(int i = al.size(); --i >= 0;) {
 
-				// checks if this is the recipient
+			// checks if this is the recipient
 			if (al.get(i).username == data[0]) {
 
-					// try to write to the Client if fail, remove from the list
+				// try to write to the Client if fail, remove from the list
 				if(!al.get(i).writeMsg(message)) 
 					al.remove(i);
 			}
@@ -76,7 +76,7 @@ public class Server extends Thread {
 
 	// to broadcast a message to all Clients
 	private synchronized void broadcast(String message, int id) {
-		
+
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
 		for(int i = al.size(); --i >= 0;) {
@@ -91,7 +91,66 @@ public class Server extends Thread {
 		}
 	}
 
-	// for a client who logoff using the LOGOUT message
+	// To transfer a file to all Clients
+	synchronized void fileTransfer(String message, int id) {
+		
+		// Initialize new server socket, socket, thread, and thread list
+		ServerSocket servSock = null;
+		Socket socket = null;
+		ClientThread t = null;
+		ArrayList<ClientThread> alct = new ArrayList<ClientThread>();
+
+		// Create new server socket/port
+		try {
+			servSock = new ServerSocket(3142);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+
+		// For each of the clients, inform them that a file is incoming and what its size will be
+		for(int i = al.size(); --i >= 0;) {
+			
+			if (al.get(i).id != id) {
+
+				if(!al.get(i).writeMsg("File"))
+					al.remove(i);
+
+				if(!al.get(i).writeMsg(message))
+					al.remove(i);
+			}
+			
+			// Wait for each existing client to connect on a different port
+			try {
+				socket = servSock.accept();
+				t = new ClientThread(socket);
+				alct.add(t);
+				t.start();
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+			
+			// Write the input stream to the output stream
+			try {
+				t.sOutput.writeObject(t.sInput);
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+		}
+		
+		// Close all sockets
+		try {
+			for(int i = 0; i < alct.size(); ++i) {
+				alct.get(i).sInput.close();
+				alct.get(i).sOutput.close();
+				alct.get(i).socket.close();
+			}
+			servSock.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+
+	// for a client who log off using the LOGOUT message
 	synchronized void remove(int id) {
 		// scan the array list until we found the Id
 		for(int i = 0; i < al.size(); ++i) {
@@ -101,13 +160,14 @@ public class Server extends Thread {
 			}
 		}
 	}
-	
+
+
 	// instance of this thread will listen for
 	// clients connecting to the server
 	class ServerListener extends Thread {
 
 		public void run() {		
-			
+
 			// infinite loop to wait for connections
 			while(keepGoing) {
 
@@ -115,7 +175,7 @@ public class Server extends Thread {
 				if(!keepGoing)
 					break;
 				try {
-					Socket socket = serverSocket.accept();  	// accept connection
+					Socket socket = serverSocket.accept();	  	// accept connection
 					ClientThread t = new ClientThread(socket);  // make a thread of it
 					al.add(t);									// save it in the ArrayList
 					t.start();
@@ -150,7 +210,7 @@ public class Server extends Thread {
 			// an unique id
 			id = ++uniqueId;
 			this.socket = socket;
-			
+
 			try {
 
 				// create output first
@@ -183,23 +243,26 @@ public class Server extends Thread {
 				// Switch on the type of message receive
 				switch(cm.getType()) {
 
-					case ChatMessage.MESSAGE:
-						broadcast(message, id);
-						break;
-					case ChatMessage.LOGOUT:
-						System.out.println(username + 
-						                " disconnected with a LOGOUT message.");
-						keepGoing = false;
-						break;
-					case ChatMessage.WHOISIN:
-						writeMsg("List of the users connected:");
-						// scan all the users connected
-						for(int i = 0; i < al.size(); ++i) {
-							writeMsg((i + 1) + ") " + al.get(i).username);
-						}
-						break;
-					case ChatMessage.WHISPER:
-						whisper(message);
+				case ChatMessage.MESSAGE:
+					broadcast(message, id);
+					break;
+				case ChatMessage.LOGOUT:
+					System.out.println(username + 
+							" disconnected with a LOGOUT message.");
+					keepGoing = false;
+					break;
+				case ChatMessage.WHOISIN:
+					writeMsg("List of the users connected:");
+					// scan all the users connected
+					for(int i = 0; i < al.size(); ++i) {
+						writeMsg((i + 1) + ") " + al.get(i).username);
+					}
+					break;
+				case ChatMessage.WHISPER:
+					whisper(message);
+					break;
+				case ChatMessage.FILE:
+					fileTransfer(message, id);
 				}
 			}
 
@@ -208,7 +271,7 @@ public class Server extends Thread {
 			remove(id);
 			close();
 		}
-		
+
 		// try to close everything
 		private void close() {
 			// try to close the connection

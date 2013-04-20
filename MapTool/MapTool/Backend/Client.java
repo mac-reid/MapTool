@@ -40,6 +40,53 @@ public class Client  {
 		}
 	}
 
+	/*
+	 * method used for sending a file to the server to be broadcast out
+	 * 
+	 */
+	public boolean broadcastFile(String fileOutput) {
+		File myFile = null;
+		myFile = new File(fileOutput);
+
+		// create socket
+		try {
+			sOutput.writeObject(new ChatMessage(ChatMessage.FILE, ("" + (int)myFile.length())));
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+
+		Socket s = null;
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		OutputStream os = null;
+
+		try {
+			s = new Socket(server, 3142);
+		} catch(Exception ec) {
+			return false;
+		}
+
+		try {
+			byte [] mybytearray  = new byte [(int)myFile.length()];
+
+			fis = new FileInputStream(myFile);
+			bis = new BufferedInputStream(fis);
+			bis.read(mybytearray,0,mybytearray.length);
+
+			os = s.getOutputStream();
+			os.write(mybytearray,0,mybytearray.length);
+
+			os.flush();
+			bis.close();
+			os.close();
+			s.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+
+		return true;
+	}
+
 	public void whisper(String recipient, String message) {
 
 		try {
@@ -97,7 +144,7 @@ public class Client  {
 	public void sendChatMessage(String message) {
 		try {
 			sOutput.writeObject(new ChatMessage(ChatMessage.MESSAGE, 
-			                    username + "~" + message));
+					username + "~" + message));
 		} catch(IOException e) {
 			System.out.println("Exception writing to server: " + e);
 		}		
@@ -128,6 +175,49 @@ public class Client  {
 				try {
 					String msg = (String) sInput.readObject();
 					String[] splits = msg.split("~");
+					
+					// Incoming file
+					if (splits[0].equals("File")) {
+						// File size
+						int filesize = Integer.parseInt((String) sInput.readObject());
+
+						int bytesRead;
+						int current = 0;
+						Socket sock = null;
+						InputStream is = null;
+
+						// Connect to server on another new socket/port
+						try {
+							sock = new Socket(server,3142);
+							is = sock.getInputStream();
+						} catch (IOException e) {
+							System.out.println(e);
+						}
+
+						// Receive the new file
+						byte [] mybytearray  = new byte [filesize];
+						try {
+							final String dir = System.getProperty("user.dir") + "/MapTool/Resources";
+							FileOutputStream fos = new FileOutputStream(dir);
+							BufferedOutputStream bos = new BufferedOutputStream(fos);
+							
+							bytesRead = is.read(mybytearray,0,mybytearray.length);
+							current = bytesRead;
+
+							do {
+								bytesRead = is.read(mybytearray, current, (mybytearray.length-current));
+								if(bytesRead >= 0) current += bytesRead;
+							} while(bytesRead > -1);
+
+							bos.write(mybytearray, 0 , current);
+							bos.flush();
+
+							bos.close();
+							sock.close();
+						} catch (IOException ex) {
+							System.out.println(ex);
+						}
+					}
 					if (splits[0].equals("ChatMessage")) {
 
 						// Print the message
@@ -141,7 +231,7 @@ public class Client  {
 						int x = Integer.parseInt(splits[2]);
 						int y = Integer.parseInt(splits[3]);
 						String name = splits[4];
-						
+
 						// Call the function
 						c.addTokenB(s, x, y, name);
 					}
@@ -152,7 +242,7 @@ public class Client  {
 						int startY = Integer.parseInt(splits[2]);
 						int endX = Integer.parseInt(splits[3]);
 						int endY = Integer.parseInt(splits[4]);
-						
+
 						// Call the function
 						c.hideMapAreaB(startX, startY, endX, endY);
 					}
@@ -160,33 +250,33 @@ public class Client  {
 						String s = splits[1];
 						int tileX = Integer.parseInt(splits[2]);
 						int tileY = Integer.parseInt(splits[3]);
-						
+
 						c.moveTokenB(s, tileX, tileY);
 					}
 					else if (splits[0].equals("RemoveToken")) {
-						
+
 						// Get the parameters
 						String name = splits[1];
-						
+
 						// Call the function
 						c.removeTokenB(name);
-						
+
 					}
 					else if (splits[0].equals("Show")) {
-						
+
 						// Get the parameters
 						int startX = Integer.parseInt(splits[1]);
 						int startY = Integer.parseInt(splits[2]);
 						int endX = Integer.parseInt(splits[3]);
 						int endY = Integer.parseInt(splits[4]);
-						
+
 						// Call the function
 						c.showMapAreaB(startX, startY, endX, endY);
 					}
 
 					// should be roll, whisper, setmap
-					
-					
+
+
 				} catch(IOException e) {
 					System.out.println("Server has closed the connection.");
 					break;

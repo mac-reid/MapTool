@@ -29,8 +29,8 @@ public class OptionField {
 	Font chatfont = new Font("Verdana", Font.BOLD, 12);
 	TrueTypeFont ttfont = new TrueTypeFont(chatfont, true);
 	//metadata?
-	private String label;
-	private String value;
+	public String label;
+	public String value;
 	private Image background;
 	private boolean isActive;
 	private char lastchar;

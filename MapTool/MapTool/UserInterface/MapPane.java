@@ -6,6 +6,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+import Backend.Control;
+
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -73,13 +75,15 @@ public class MapPane {
     // File loading mode (0: None, 1: Maps, 2: Tokens)
     int loadMode = 0;
     
+    genUI genUI;
     
     MapOptions options;
     SlickFileChooser fileChooser = new SlickFileChooser();
     
     
-    public MapPane(String maplocation, int sizex, int sizey) throws SlickException {
+    public MapPane(String maplocation, int sizex, int sizey, genUI genUI) throws SlickException {
     	loadMap(maplocation);
+    	this.genUI = genUI;
     	paneSizeX = sizex;
     	paneSizeY = sizey;
     	//added by Neal

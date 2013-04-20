@@ -67,8 +67,7 @@ public class InfoPane {
 		//create font
 		font = null;
 		try{
-			InputStream is = InfoPane.class.getResourceAsStream("Resources/Fonts/anglican.tff");
-			font = Font.createFont(Font.TRUETYPE_FONT, is);
+			font = new Font("anglican", Font.TRUETYPE_FONT, 24);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.err.println("anglican.tff" + " not loaded.  Using serif font.");
@@ -99,6 +98,7 @@ public class InfoPane {
 	 */
 	public void update(GameContainer gc, Token selection){
 		token = selection;
+		time = getTime();
 	}
 	
 	/**

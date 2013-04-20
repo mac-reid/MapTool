@@ -5,6 +5,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+import Backend.Control;
+
 
 public class MenuButton {
 	
@@ -19,8 +21,10 @@ public class MenuButton {
 	private boolean isActive;
 	private double whenActivated;
 
+	public Control control;
 	
-	public MenuButton(String imgLocation, int locX, int locY, float scale) throws SlickException{
+	public MenuButton(String imgLocation, int locX, int locY, float scale, Control control) throws SlickException{
+		this.control = control;
 		img = new Image(imgLocation);
 		img = img.getScaledCopy(scale);
 		X = locX;
@@ -29,7 +33,8 @@ public class MenuButton {
 		YSize = img.getHeight();
 	}
 	
-	public MenuButton(Image img, int locX, int locY, float scale) throws SlickException{
+	public MenuButton(Image img, int locX, int locY, float scale, Control control) throws SlickException{
+		this.control = control;
 		this.img = img;
 		this.img = img.getScaledCopy(scale);
 		X = locX;

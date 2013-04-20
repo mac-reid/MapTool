@@ -113,6 +113,7 @@ public class Control {
 
 		client = new Client(hostname, 8192, alias, this);
 		client.start();
+		System.out.println(hostname);
 	}
 	
 	public void loadSave(String saveFilePath) {
@@ -172,9 +173,9 @@ public class Control {
 		store.writeMapData(saveFilePath);
 	}
 
-	
 	public void sendTextToGUI(String user, String message) throws IOException {
-
+		genUI.receiveChat(user, message);
+		System.out.println(user + "   " + message);
 	}
 
 	public void showMapArea(int startX, int startY, int endX, int endY) throws IOException {
@@ -310,8 +311,4 @@ public class Control {
 		return null;
 	}
 
-	public static void main(String[] args) {
-
-
-	}
 }

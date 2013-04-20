@@ -97,7 +97,7 @@ public class Client  {
 	public void sendChatMessage(String message) {
 		try {
 			sOutput.writeObject(new ChatMessage(ChatMessage.MESSAGE, 
-			                    username + "~" + message));
+			                    "ChatMessage~" + username + "~" + message));
 		} catch(IOException e) {
 			System.out.println("Exception writing to server: " + e);
 		}		
@@ -106,7 +106,7 @@ public class Client  {
 	/*
 	 * When something goes wrong
 	 * Close the Input/Output streams and disconnect not 
-	 * much to do in the catch clause
+	 * much to do in the catch clause3
 	 */
 	private void disconnect() {
 		try { 

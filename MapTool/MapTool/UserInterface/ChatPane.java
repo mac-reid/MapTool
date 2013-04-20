@@ -9,7 +9,10 @@ import org.newdawn.slick.Graphics;
 //import org.newdawn.slick.gui.TextField;
 import org.lwjgl.input.Keyboard;
 
+import Backend.Control;
+
 import java.awt.Font;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -46,9 +49,11 @@ public class ChatPane {
 	
 	private int minimumWidth;
 	
+	public genUI genUI;
     
     // Default  constructor - currently loads example resources
-    public ChatPane(int winwidth, int winheight, int minimum) throws SlickException {
+    public ChatPane(int winwidth, int winheight, int minimum, genUI genUI) throws SlickException {
+    	this.genUI = genUI;
     	Keyboard.enableRepeatEvents(false);
     	windowwidth = winwidth;
     	windowheight = winheight;
@@ -115,7 +120,13 @@ public class ChatPane {
     		// If ENTER, send message to log
     		if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
     			if (entryline.length() != 0) {
-    				chatlog.add(parseEntry(entryline));
+    				chatlog.add(parseEntry(genUI.getName() +": " + entryline));
+    				try {
+						genUI.control.broadcastMessage(entryline);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
     				entryline = "";
     				visibleEntry = "";
     				startSubstring = 0;
@@ -206,7 +217,7 @@ public class ChatPane {
 
     }
     public void chatReceive(String inline) {
-    	chatlog.add(inline);
+    	chatlog.add(parseEntry(inline));
     }
     
     // Broadcasts a string, int should indicate which, if not all, users

@@ -8,6 +8,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import Backend.Control;
+
 
 public class Menu extends BasicGameState{
 
@@ -21,6 +23,7 @@ public class Menu extends BasicGameState{
 	private Image bkgnd;
 	private Image selectionGlow;
 
+	public Control control;
 	
 	public Menu(int state){
 		
@@ -28,6 +31,7 @@ public class Menu extends BasicGameState{
 
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
+		control = ((genUI)sbg).control;
 		bkgnd = new Image("Resources/d20.png");
 		bkgnd = bkgnd.getScaledCopy(gc.getWidth(), gc.getHeight());
 		//get the scaled versions of host and join game buttons
@@ -36,9 +40,9 @@ public class Menu extends BasicGameState{
 		Image joinImg = (new Image("Resources/joinGame.png")
 		.getScaledCopy(gc.getWidth()/3, gc.getHeight()/8));
 		host = new MenuButton(hostImg, gc.getWidth()-hostImg.getWidth() - hostImg.getWidth()/8, 
-				hostImg.getHeight()/8, 1);
+				hostImg.getHeight()/8, 1, control);
 		join = new MenuButton(joinImg, gc.getWidth()-joinImg.getWidth() - joinImg.getWidth()/8, 
-				joinImg.getHeight() + 2*hostImg.getHeight()/8, 1);
+				joinImg.getHeight() + 2*hostImg.getHeight()/8, 1, control);
 		((AppGameContainer) gc).setResizable(false);
 		hostOptions = new MenuOptions(0, host, gc);
 		joinOptions = new MenuOptions(1, join, gc);

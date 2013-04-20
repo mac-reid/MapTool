@@ -1,7 +1,9 @@
 package UserInterface;
 
 import java.awt.Frame;
+import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -102,9 +104,9 @@ public class MapOptions {
 			g.drawString("Ping", x + 3, y + (2*height/3) + 3);
 			if(showminimap){
 				//check to make sure map is kept on screen (11 is size of buffers and borders)
-				if(x + 11 + minimapwidth + width < (map.tileSizeX * 48)) {
+				if(x + 11 + minimapwidth + width < (map.pxSizeX)) {
 					minimapx = x + width + 5;
-					if(y + height + minimapheight + 10 > map.tileSizeY*48) {
+					if(y + height + minimapheight + 10 > map.pxSizeY) {
 						minimapy = y - minimapheight - 5;
 					} else {
 						minimapy = y + height + 5;
@@ -115,9 +117,9 @@ public class MapOptions {
 						g.drawRect(portX, portY, portWidth, portHeight);
 					}
 				} else {
-					minimapx = (map.tileSizeX * 48) - minimapwidth - 5;
+					minimapx = (map.pxSizeX) - minimapwidth - 5;
 					//make sure I dont draw too low
-					if(y + height + minimapheight + 10 > map.tileSizeY*48) {
+					if(y + height + minimapheight + 10 > map.pxSizeY) {
 						minimapy = y - minimapheight - 5;
 					} else {
 						minimapy = y + height + 5;
@@ -140,8 +142,8 @@ public class MapOptions {
 		
 		//check mouse hover area while 
 		if(showminimap){
-			portWidth = miniMapScale * 48 *  map.tileSizeX;
-			portHeight = miniMapScale * 48 * map.tileSizeY;
+			portWidth = miniMapScale * map.pxSizeX;
+			portHeight = miniMapScale * 48 * map.pxSizeX;
 			//check mouse location
 			if(mouseX >= minimapx && mouseX <= minimapx + minimapwidth 
 					&& mouseY >= minimapy && mouseY <= minimapy + minimapheight){
@@ -235,9 +237,13 @@ public class MapOptions {
 		Image miniMap = map.map.getScaledCopy(miniMapScale);
 		miniMap.draw(x, y);
 		//place a red dot for each token
-		for(Token token : map.tokens){
-			float currentX = token.getX() * 48 * miniMapScale;
-			float currentY = token.getY() * 48 * miniMapScale;
+		
+		//TODO: AS EXAMPLE, recode as you see fit
+		ArrayList<Point> coords;
+		coords = map.tokens.getCoordinates();
+		for(int i = 0; i < coords.size(); i++) {
+			float currentX = (float)coords.get(i).getX() * map.tokenScale * miniMapScale;
+			float currentY = (float)coords.get(i).getY() * map.tokenScale * miniMapScale;
 			//put in terms of the move box
 			g.setColor(Color.red);
 			g.fillOval(x + currentX + (float)(12 * miniMapScale), y + currentY + (float)(12 * miniMapScale), 5, 5);
@@ -251,7 +257,7 @@ public class MapOptions {
 
 	public void setX(int x) {
 		this.x = x;
-		if(this.x + width > 48*map.tileSizeX){
+		if(this.x + width > map.pxSizeX){
 			this.x = x - 5 - width;
 		}
 	}

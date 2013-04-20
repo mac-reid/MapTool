@@ -23,6 +23,9 @@ foreach file ($backendFiles)
 	javac -d $topdir/bin -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
 end
 
+echo "hi"
 java -cp \
  .:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend:$topdir/bin \
  -Djava.library.path=$topdir/lwjgl-2.8.5/native/linux $1
+
+ echo "wa"

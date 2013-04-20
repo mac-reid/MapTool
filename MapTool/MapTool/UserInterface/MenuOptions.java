@@ -1,11 +1,15 @@
 package UserInterface;
 
+import java.io.IOException;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+
+import Backend.Control;
 
 
 public class MenuOptions {
@@ -24,10 +28,13 @@ public class MenuOptions {
 	private double scale;
 	
 	private boolean isActive;
-	private MenuButton control;
+	private MenuButton button;
 	
-	public MenuOptions(int state, MenuButton control, GameContainer gc) throws SlickException{
-		this.control = control;
+	public Control control;
+	
+	public MenuOptions(int state, MenuButton button, GameContainer gc) throws SlickException{
+		this.control = button.control;
+		this.button = button;
 		this.state = state;
 		//make the cancelcontinue button different
 		cancelContinue = new Image("Resources/cancelORcontinue.png")
@@ -46,7 +53,7 @@ public class MenuOptions {
 		}
 		case 1: {
 			fields = new OptionField[2];
-			fields[0] = new OptionField("IP Addr: ", startX, startY);
+			fields[0] = new OptionField("IP Address: ", startX, startY);
 			fields[1] = new OptionField("Avatar Name: ", startX, startY + yChange);
 			break;
 		}
@@ -75,16 +82,44 @@ public class MenuOptions {
 			int separation = gc.getHeight() - cancelContinue.getHeight()/2 - 15;
 			int cancelBot = gc.getHeight() - 15;
 			//if the mouse gets pressed
-			if (in.isMouseButtonDown(0)){
+			if (in.isMousePressed(0)){
 				if (mouseX >= startX && mouseX <= startX + cancelContinue.getWidth()){
-					//continue
 					if (mouseY <= separation && mouseY >= continueTop){
-						sbg.enterState(1);
-						((AppGameContainer) gc).setResizable(true);
+						//if hosting a game
+						if(fields[0].label.equals("Game Name: ")){
+							if(fields[0].value.equals("") || fields[2].value.equals("")){
+								System.out.println("Please enter name and gamename");
+								button.deActivate();
+								return;
+							}
+							control.hostGame();
+							try{
+								control.joinGame(fields[2].value, "127.0.0.1");
+								((genUI)sbg).setName(fields[2].value);
+								sbg.enterState(1);
+							} catch (IOException e){
+								System.out.println("Fail");
+							}
+						}
+						if(fields[0].label.equals("IP Address: ")){
+							//if one of the fields are empty
+							if(fields[0].value.equals("") || fields[1].value.equals("")){
+								System.out.println("Please enter name and gamename");
+								button.deActivate();
+								return;
+							}
+							try{
+								control.joinGame(fields[1].value, fields[0].value);
+								((genUI)sbg).setName(fields[1].value);
+								sbg.enterState(1);
+							} catch (IOException e){
+								System.out.println("JOIN FALIED");
+							}
+						}
 					}
 					//cancel
 					if (mouseY <= cancelBot && mouseY > separation){
-						control.deActivate();
+						button.deActivate();
 					}
 				}
 			}

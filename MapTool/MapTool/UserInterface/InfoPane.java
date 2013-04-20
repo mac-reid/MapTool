@@ -11,6 +11,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.geom.Shape;
 
 import Backend.Control;
 
@@ -66,8 +67,7 @@ public class InfoPane {
 		//create font
 		font = null;
 		try{
-			InputStream is = InfoPane.class.getResourceAsStream("Resources/Fonts/anglican.tff");
-			font = Font.createFont(Font.TRUETYPE_FONT, is);
+			font = new Font("anglican", Font.TRUETYPE_FONT, 24);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.err.println("anglican.tff" + " not loaded.  Using serif font.");
@@ -98,6 +98,7 @@ public class InfoPane {
 	 */
 	public void update(GameContainer gc, Token selection){
 		token = selection;
+		time = getTime();
 	}
 	
 	/**
@@ -129,7 +130,24 @@ public class InfoPane {
 		}
 	}
 	
+	/**
+	 * Inner class that will have the radio button feeling for the statuses
+	 * @author nrjohnso
+	 *
+	 */
 	public class statusGrid{
+		
+		//shape array for the icon for the stuff
+		Shape[] icons;
+		
+		public statusGrid(Token token, int width, int height){
+			initIcons();
+		}
+		
+		public void initIcons(){
+			icons = new Shape[8];
+			icons[0] = null;
+		}
 		
 	}
 }

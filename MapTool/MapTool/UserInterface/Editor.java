@@ -11,6 +11,8 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import Backend.Control;
+
 import java.awt.Toolkit;
 import java.awt.font.*;
 
@@ -18,10 +20,10 @@ import java.awt.font.*;
 public class Editor extends BasicGameState{
 
 	private int ID;
-	private MapPane mapTool;
-	private ChatPane chatBox;
-	private VideoChatPane videoChat;
-	private InfoPane infoPane;
+	public MapPane mapTool;
+	public ChatPane chatBox;
+	public VideoChatPane videoChat;
+	public InfoPane infoPane;
 	
 	//int values used to determine object positioning
 	public final int BUFFER = 12; //general spacing between objects
@@ -44,6 +46,7 @@ public class Editor extends BasicGameState{
 	//frame images
 	Image topLeft, topRight, botLeft, botRight, leftA, leftB, rightA, rightB, topA, topB, botA, botB;
 	
+	public genUI genUI;
 	public Editor(int state){
 		ID = state;
 	}
@@ -54,17 +57,18 @@ public class Editor extends BasicGameState{
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
 		((AppGameContainer)gc).setResizable(true);
+		genUI = ((genUI)sbg);
 		vidChatMin = gc.getHeight()/5;
 		//find the best height and width of the map
 		mapTileWidth = (gc.getWidth() - BUFFER*3 - CHAT_WIDTH_MIN)/48;
 		mapTileHeight = (gc.getHeight() - BUFFER*3 - vidChatMin)/48;
 		chatWidth = (gc.getWidth() - BUFFER * 3 - mapTileWidth*48);
-		mapTool = new MapPane("Resources/Maps/losttemple.png", mapTileWidth, mapTileHeight);
-		mapTool.renderMap(BUFFER, BUFFER, getTileWidth(gc), getTileHeight(gc), gc.getGraphics());
+		mapTool = new MapPane("Resources/Maps/losttemple.png", mapTileWidth, mapTileHeight, genUI);
+		mapTool.renderMap(BUFFER, BUFFER, gc.getGraphics());
 		mapTopX = BUFFER;
 		mapTopY = BUFFER;
 		//Draw the chatwindow
-		chatBox = new ChatPane(chatWidth, gc.getHeight() - BUFFER*2 - INFO_PANE_HEIGHT, CHAT_WIDTH_MIN);
+		chatBox = new ChatPane(chatWidth, gc.getHeight() - BUFFER*2 - INFO_PANE_HEIGHT, CHAT_WIDTH_MIN, genUI);
 		//chatBox.renderChat(gc.getWidth() - CHAT_WIDTH - BUFFER, BUFFER, gc.getGraphics());
 		//draw the video chat box
 		videoChat = new VideoChatPane(gc);
@@ -83,14 +87,14 @@ public class Editor extends BasicGameState{
 			throws SlickException {
 
 		//draw things
-		mapTool.renderMap(BUFFER, BUFFER, getTileWidth(gc), getTileHeight(gc), g);
+		mapTool.renderMap(BUFFER, BUFFER, g);
 		
 		frame(gc, g);
 		//get chat height and width
-		chatWidth = (gc.getWidth() - BUFFER * 3 - getTileWidth(gc) * 48);
-		vidChatHeight = (gc.getHeight() - BUFFER * 3 - getTileHeight(gc) * 48);
+		chatWidth = (gc.getWidth() - BUFFER * 3 - getMapWidth(gc));
+		vidChatHeight = (gc.getHeight() - BUFFER * 3 - getMapHeight(gc));
 		//makes chat, remeber that CHAT_WIDTH is standard chat width
-		chatBox.renderChat(getTileWidth(gc) * 48 + BUFFER * 2, BUFFER * 2 + INFO_PANE_HEIGHT, 
+		chatBox.renderChat(getMapWidth(gc) + BUFFER * 2, BUFFER * 2 + INFO_PANE_HEIGHT, 
 				chatWidth, gc.getHeight() - BUFFER*3 - INFO_PANE_HEIGHT, g);
 		//render the info pane
 		infoPane.render(gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, g);
@@ -107,9 +111,7 @@ public class Editor extends BasicGameState{
         int mouseX = input.getMouseX();
         int mouseY = input.getMouseY();
         
-        //resize the map
-        mapTool.resize(getTileWidth(gc), getTileHeight(gc));
-        mapTool.update(BUFFER, BUFFER, gc, delta);
+        mapTool.update(BUFFER, BUFFER, getMapWidth(gc), getMapHeight(gc), gc, delta);
         // If mouse is over Map Pane, Enable Map input
         // This should definitely be cleaned up - passing 'input' to the appropriate object
         // Instead of calling all of these methods here
@@ -197,8 +199,8 @@ public class Editor extends BasicGameState{
 	 * 3 buffers from bottom to top of map
 	 * 48 pixel tiles
 	 */
-	public int getTileHeight(GameContainer gc){
-		return (gc.getHeight() - vidChatHeight - BUFFER * 3)/48;
+	public int getMapHeight(GameContainer gc){
+		return (gc.getHeight() - vidChatHeight - BUFFER * 3);
 	}
 	
 	/**
@@ -206,8 +208,8 @@ public class Editor extends BasicGameState{
 	 * @param gc
 	 * @return
 	 */
-	public int getTileWidth(GameContainer gc){
-		return (gc.getWidth() - CHAT_WIDTH_MIN - BUFFER * 3)/48;
+	public int getMapWidth(GameContainer gc){
+		return (gc.getWidth() - CHAT_WIDTH_MIN - BUFFER * 3);
 	}
 	
 	public void frame(GameContainer gc, Graphics g){
@@ -224,7 +226,7 @@ public class Editor extends BasicGameState{
 		//draw vertical lines
 		while(drawnHeight < height){
 			g.drawImage(leftA, 0, drawnHeight);
-			g.drawImage(leftA, BUFFER + getTileWidth(gc) * 48, drawnHeight);
+			g.drawImage(leftA, BUFFER + getMapWidth(gc), drawnHeight);
 			g.drawImage(leftB, gc.getWidth() - BUFFER, drawnHeight);
 			drawnHeight = drawnHeight + leftA.getHeight();
 		}
@@ -237,12 +239,12 @@ public class Editor extends BasicGameState{
 		}
 		//draw most of the middle line
 		drawnWidth = BUFFER;
-		while(drawnWidth < getTileWidth(gc) * 48 - botA.getWidth()){
-			g.drawImage(botA, drawnWidth, getTileHeight(gc) * 48 + BUFFER);
+		while(drawnWidth < getMapWidth(gc) - botA.getWidth()){
+			g.drawImage(botA, drawnWidth, getMapHeight(gc) + BUFFER);
 			drawnWidth = drawnWidth + botA.getWidth();
 		}
 		//draw the last bit of the bottom line
-		g.drawImage(botA.getSubImage(0, 0, getTileWidth(gc) * 48 - drawnWidth + BUFFER, botA.getHeight()), drawnWidth, getTileHeight(gc) * 48 + BUFFER);
+		g.drawImage(botA.getSubImage(0, 0, getMapWidth(gc) - drawnWidth + BUFFER, botA.getHeight()), drawnWidth, getMapHeight(gc) + BUFFER);
 		//draw four corners
 		g.drawImage(topLeft, 0, 0);
 		g.drawImage(topRight, width - topRight.getWidth(), 0);
@@ -260,11 +262,8 @@ public class Editor extends BasicGameState{
 		leftA = new Image("Resources/Frame/FrameVerticalLeftA.png");
 		leftB = new Image("Resources/Frame/FrameVerticalLeftB.png");
 		rightA = new Image("Resources/Frame/FrameVerticalRightA.png");
-		rightB = new Image("Resources/Frame/FrameVerticalRightB.png");
 		topA = new Image("Resources/Frame/FrameTopA.png"); 
-		topB = new Image("Resources/Frame/FrameTopB.png"); 
 		botA = new Image("Resources/Frame/FrameBotA.png");
-		botB = new Image("Resources/Frame/FrameBotA.png");
 		} catch (SlickException e){System.out.print("load img error");}
 	}
 }

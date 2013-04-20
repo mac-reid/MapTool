@@ -23,7 +23,9 @@ public class genUI extends StateBasedGame{
 	private static final int editor = 1;
 	private static final int FRAME_BORDER = 13;
 	private String mapFile;
-	private Control control;
+	public Control control;
+	
+	public String name, mapName;
 	
 	public genUI(String name){
 		super(gamename);
@@ -35,7 +37,7 @@ public class genUI extends StateBasedGame{
 	public void initStatesList(GameContainer gc) throws SlickException {
 		this.getState(menu).init(gc, this);
 		this.getState(editor).init(gc, this);
-		this.enterState(editor);
+		this.enterState(menu);
 	}
 
 	public void setMapFile(String file){
@@ -54,9 +56,24 @@ public class genUI extends StateBasedGame{
 			int height = (int)(800*width/1280);
 			app = new AppGameContainer(new genUI(gamename));
 			app.setDisplayMode(width, height, false);
+			app.setTargetFrameRate(60);
 			app.start();
 		}catch(SlickException e){
 			e.printStackTrace();
 		}
+	}
+	
+	
+	//Control stuff and user/map info
+	public void receiveChat(String user, String msg){
+		((Editor)this.getState(editor)).chatBox.chatReceive(user + ": " + msg);
+	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public String getName(){
+		return name;
 	}
 }

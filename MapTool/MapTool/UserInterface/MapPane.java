@@ -1,5 +1,6 @@
 package UserInterface;
 
+import org.lwjgl.input.Mouse;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -28,7 +29,7 @@ public class MapPane {
 	Point dragToken = new Point();
 	
 	// Current token scale
-	int tokenScale = 48;
+	float tokenScale = 48;
 	float mapScale = 1;
 	
 	
@@ -38,9 +39,9 @@ public class MapPane {
     int gridOffsetX = 0;
     int gridOffsetY = 0;
     
-    // Size of map displayed width/height by tile count
+    /* Size of map displayed width/height by tile count
     int tileSizeX = 17;
-    int tileSizeY = 13;
+    int tileSizeY = 13;*/
     
     // Size of displayed map by pixel count
     int paneSizeX = 0;
@@ -51,8 +52,8 @@ public class MapPane {
     int pxSizeY = 0;
     
     // Current map grid location of the cursor
-    int currGridX = 0;
-    int currGridY = 0;
+    int currentGridX = 0;
+    int currentGridY = 0;
     
     // Last grid location of the cursor (while in full menus such as FileChooser)
     int tempGridX = 0;
@@ -194,20 +195,21 @@ public class MapPane {
      */
     public void update(int mXoffset, int mYoffset, int mapXsize, int mapYsize, GameContainer gc, int delta) throws SlickException {
     	Input in = gc.getInput();
+    	
     	mouseX = in.getMouseX();
     	mouseY = in.getMouseY();
     	paneSizeX = mapXsize;
     	paneSizeY = mapYsize;
     	
-    	currGridX = (mouseX - mXoffset) / (int)tokenScale;
-    	currGridY = (mouseY - mYoffset) / (int)tokenScale;
+    	currentGridX = (int)((mouseX + pxOffsetX - mXoffset) / tokenScale);
+    	currentGridY = (int)((mouseY + pxOffsetY - mYoffset) / tokenScale);
     	gridOffsetX = (int)(pxOffsetX / tokenScale);
     	gridOffsetY = (int)(pxOffsetY / tokenScale);
     	
     	
     	// If the file chooser is active, update
     	if (fileChooser.isActive()) {
-    		fileChooser.update(in, mXoffset, mYoffset, tileSizeX, tileSizeY);  //TODO: FIX FILECHOOSER
+    		fileChooser.update(in, mXoffset, mYoffset, pxSizeX, pxSizeY);  //TODO: FIX FILECHOOSER
     		// If the chooser returns a value, MapPane sets it inactive
     		if (!(fileChooser.getSelected().equals(""))) {
     			if (loadMode == 2)
@@ -232,10 +234,10 @@ public class MapPane {
 	    		if(in.isMouseButtonDown(0)) {
 	    			// If the space is occupied, initialize a Token Drag
 	    			if (dragMode == 0) {
-	    				if (tokens.isOccupied(currGridX + gridOffsetX, currGridY + gridOffsetY)) {
+	    				if (tokens.isOccupied(currentGridX, currentGridY)) {
 		    				dragMode = 2;
-	    					dragToken = new Point(currGridX + gridOffsetX, currGridY + gridOffsetY);
-		    				dragImage = tokens.getImage(currGridX + gridOffsetX, currGridY + gridOffsetY).copy();
+	    					dragToken = new Point(currentGridX, currentGridY);
+		    				dragImage = tokens.getImage(currentGridX, currentGridY).copy();
 	    					dragImage.setAlpha(0.75f);
 		    			}		
 		    		
@@ -258,7 +260,7 @@ public class MapPane {
 	    		}
 	    		else if(dragMode == 2) {
 	    			// Indicates the mouse was released from a token drag.  Attempt to move the token
-	    			tokens.moveToken((int)dragToken.getX(), (int)dragToken.getY(), currGridX + gridOffsetX, currGridY + gridOffsetY);
+	    			tokens.moveToken((int)dragToken.getX(), (int)dragToken.getY(), currentGridX, currentGridY);
 	    			dragToken = null;
 	    			dragImage = null;
 	    			dragMode = 0;
@@ -269,7 +271,7 @@ public class MapPane {
 	    		
 	    		// For Right Click, check for token
 		        if (in.isMousePressed(1)) {
-		        	if(tokens.isOccupied(currGridX + gridOffsetX, currGridY + gridOffsetY)) {
+		        	if(tokens.isOccupied(currentGridX, currentGridY)) {
 		        		System.out.println("You have clicked on a token");
 		        		return;
 		        	}
@@ -282,29 +284,37 @@ public class MapPane {
 	    	
 		        // For a middle click, delete a Token
 		        if (in.isMousePressed(2))
-		        	removeTokenCoord(mouseX - 5, mouseY - 5);
+		        	removeTokenCoord(mouseX - mXoffset, mouseY - mYoffset);
+		        
+		        
+		        // Sloppy MouseWheel Polling
+		        int wheel = Mouse.getDWheel();
+		        if (wheel != 0) {
+		        	this.changeScale(wheel);
+		        }
 	    	}
 	    }
     }
     
     
-    //Testing this, moves the map immediately
+    // Testing this, moves the map immediately
     public void move(float tileX, float tileY){
     	pxOffsetX = (int)(tileX * tokenScale);
     	pxOffsetY = (int)(tileY * tokenScale);
     }
     
     public void changeScale(int change) {
-    	if (change > 1  &&  tokenScale < 256)
-    		tokenScale++;
-    	else if (change < 1  &&  tokenScale > 8)
-    		tokenScale--;
+    	if (change > 0  &&  tokenScale < 256)
+    		tokenScale += 0.1;
+    	else if (change < 0  &&  tokenScale > 8)
+    		tokenScale -= 0.1;
     	tokens.scaleTokens(tokenScale);
     	System.out.println("Changed scale: " + change);
     }
     
     
     
+    // Don't ever use this thing
     public void zoomMap(int change) {
     	if (change > 1  && mapScale < 8) {
     		mapScale = mapScale * 1.25f;
@@ -318,23 +328,6 @@ public class MapPane {
     	}
     }
     
-    
-    
-   /* public void resize(int tileWidth,int tileHeight){  //TODO: GET RID OF THIS
-    	//if the screen got wider compensate so no blank grid
-    	if(tileWidth > tileSizeX && pxOffsetX > 0){
-    		pxOffsetX -= (tileWidth - tileSizeX) * tokenScale;
-    	}
-    	//if the screen got wider compensate so no blank grids
-    	if(tileHeight > tileSizeY && pxOffsetY > 0){
-    		pxOffsetY -= (tileHeight - tileSizeY) * tokenScale;
-    	}
-    	tileSizeX = tileWidth;
-    	tileSizeY = tileHeight;
-    	
-    	if(pxOffsetY > (map.getHeight() - (tileSizeY * tokenScale)))
-			pxOffsetY = (map.getHeight() - (tileSizeY * tokenScale));
-    } */
     
     
     // Gets token currently selected in MapPane
@@ -351,8 +344,8 @@ public class MapPane {
     public void selectToken(int x, int y) {
     	fileChooser.setActive("Tokens");
     	loadMode = 2;
-    	tempGridX = (int)(x/tokenScale + gridOffsetX);
-    	tempGridY = (int)(y/tokenScale + gridOffsetY);
+    	tempGridX = currentGridX;
+    	tempGridY = currentGridY;
     }
     
     public void selectMap() {
@@ -370,7 +363,6 @@ public class MapPane {
     // Add a Token by grid location
     public void addTokenGrid(String imglocation, int x, int y) throws SlickException {
     	tokens.addToken(imglocation, x, y);
-    	System.out.println("Added token: " + x + " " + y);
     }
     
     
@@ -387,21 +379,21 @@ public class MapPane {
     
     
     private void drawGrid(float getX, float getY, Graphics g) {
-    	float partialx = -pxOffsetX % tokenScale;
-    	float partialy = -pxOffsetY % tokenScale;
-    	
     	for (float x = 0; x < pxSizeX; x += tokenScale)
     		g.drawLine(getX + x - pxOffsetX, getY - pxOffsetY, getX + x - pxOffsetX, getY - pxOffsetY + pxSizeY);
-    
+    	
     	for (float y = 0; y < pxSizeY; y += tokenScale)
     		g.drawLine(getX - pxOffsetX, getY + y - pxOffsetY, getX + pxOffsetX + pxSizeX, getY + y - pxOffsetY);
     }
     
     
-    // =======================================================================
-    // Methods used directly by the controller
     
- // Add a token to this map with default size (1)
+    
+    
+    // =======================================================================
+    // Methods used the controller (client<->host operations)
+    
+    // Add a token to this map with default size (1)
     public void addToken(String file, int x, int y, String tokenname) {
     	tokens.addToken(tokenname, file, x, y);
     }

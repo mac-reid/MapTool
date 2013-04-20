@@ -38,7 +38,6 @@ public class Token implements Comparable<Token> {
     public boolean isVisible(float topX, float topY, float botX, float botY, float scale) {
     	if (((x * scale) >= (topX - scale))  &&  ((x * scale) <= botX)  &&  ((y * scale) >= (topY - scale))  &&  ((y * scale) <= botY))
     		return true;
-    	System.out.println("NOT VISIBLE");
     	return false;
     }
     

@@ -177,12 +177,12 @@ public class SlickFileChooser {
 	
 	
 	// Updates via mouse input
-	public void update(Input in, int x, int y, int tilesX, int tilesY) {
+	public void update(Input in, int x, int y, int mapSizeX, int mapSizeY) {
 		selx = -1;
 		sely = -1;
 		
-		maxX = x + (tilesX * 48);
-		maxY = y + (tilesY * 48);
+		maxX = x + mapSizeX;
+		maxY = y + mapSizeY;
 		
 		cGridWidth = (maxX - x - (bdrSize * 2)) / gridWidth;
 		cGridHeight = (maxY - y - (bdrSize * 2) - cnxSize - cnxSpacing) / gridHeight; 

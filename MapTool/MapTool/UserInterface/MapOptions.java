@@ -104,9 +104,9 @@ public class MapOptions {
 			g.drawString("Ping", x + 3, y + (2*height/3) + 3);
 			if(showminimap){
 				//check to make sure map is kept on screen (11 is size of buffers and borders)
-				if(x + 11 + minimapwidth + width < (map.tileSizeX * 48)) {
+				if(x + 11 + minimapwidth + width < (map.pxSizeX)) {
 					minimapx = x + width + 5;
-					if(y + height + minimapheight + 10 > map.tileSizeY*48) {
+					if(y + height + minimapheight + 10 > map.pxSizeY) {
 						minimapy = y - minimapheight - 5;
 					} else {
 						minimapy = y + height + 5;
@@ -117,9 +117,9 @@ public class MapOptions {
 						g.drawRect(portX, portY, portWidth, portHeight);
 					}
 				} else {
-					minimapx = (map.tileSizeX * 48) - minimapwidth - 5;
+					minimapx = (map.pxSizeX) - minimapwidth - 5;
 					//make sure I dont draw too low
-					if(y + height + minimapheight + 10 > map.tileSizeY*48) {
+					if(y + height + minimapheight + 10 > map.pxSizeY) {
 						minimapy = y - minimapheight - 5;
 					} else {
 						minimapy = y + height + 5;
@@ -142,8 +142,8 @@ public class MapOptions {
 		
 		//check mouse hover area while 
 		if(showminimap){
-			portWidth = miniMapScale * 48 *  map.tileSizeX;
-			portHeight = miniMapScale * 48 * map.tileSizeY;
+			portWidth = miniMapScale * map.pxSizeX;
+			portHeight = miniMapScale * 48 * map.pxSizeX;
 			//check mouse location
 			if(mouseX >= minimapx && mouseX <= minimapx + minimapwidth 
 					&& mouseY >= minimapy && mouseY <= minimapy + minimapheight){
@@ -257,7 +257,7 @@ public class MapOptions {
 
 	public void setX(int x) {
 		this.x = x;
-		if(this.x + width > 48*map.tileSizeX){
+		if(this.x + width > map.pxSizeX){
 			this.x = x - 5 - width;
 		}
 	}

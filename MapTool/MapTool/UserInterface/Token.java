@@ -3,19 +3,19 @@ package UserInterface;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
-
 public class Token implements Comparable<Token> {
     public String name;
     public Image tokenImage; 
     public int x;  
     public int y;
     public int size;
-    public boolean[] status;
+    //initialize all the statuses to false;
+    //public boolean[] status = {true, false, false, false, false, false, false, false};
+    public boolean[] status = {true, true, true, true, true, true, true, true};
     
     
     public Token (String name, String imglocation, int x, int y, int size, float scale) {
-    	
-    	this.status = new boolean[8];
+    
     	this.name = name;
     	this.x = x;
     	this.y = y;
@@ -45,11 +45,28 @@ public class Token implements Comparable<Token> {
     // Renders the token (or an appropriate portion)
     // Offset refers to the absolute screen position the Map is being drawn at
     // Top / Bottom (X/Y) refer to the visible area of the map, in pixels
-    public void renderToken(float offx, float offy, float topX, float topY, float botX, float botY, float scale) {
+    public void renderToken(float offx, float offy, float topX, float topY, float botX, float botY, float scale, Image[] icons) {
     	// If the token is displayed fully
-    	if (((x * scale) >= topX)  &&  ((x * scale) <= (botX - scale))  &&  ((y * scale) >= topX)  &&  ((y * scale) <= (botY - scale)))
+    	if (((x * scale) >= topX)  &&  ((x * scale) <= (botX - scale))  &&  ((y * scale) >= topX)  &&  ((y * scale) <= (botY - scale))){
     		tokenImage.draw(offx + (x * scale) - topX, offy + (y * scale) - topY);
-    	
+    		int buffer = 0;
+    		int numStats = 0;
+    		int yOffSet = 0;
+    		int iconSize = tokenImage.getWidth()/5;
+    		//drawing the statuses
+    		for(int i = 0; i < 8; i++){
+    			if(status[i]){
+    				Image scaledIcon = icons[i].getScaledCopy(iconSize, iconSize);
+    				scaledIcon.draw(offx + (x * scale) - topX - buffer + tokenImage.getWidth() - iconSize, offy + (y * scale) - topY + yOffSet);
+    				numStats++;
+    				buffer += iconSize + 2;
+    				if(numStats == 4){
+    					yOffSet = iconSize + 2;
+    					buffer = 0;
+    				} 
+    			}
+    		}
+    	}
     	// If the token is on the upper or left border
     	else {
     		float ctop = 0;
@@ -75,6 +92,10 @@ public class Token implements Comparable<Token> {
 		
 	public int compareTo(Token O) {
 		return(name.compareToIgnoreCase(O.name));
+	}
+	
+	public void setStatus(boolean bool, int index){
+		status[index] = bool;
 	}
 }
 	

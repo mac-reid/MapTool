@@ -78,12 +78,15 @@ public class MapPane {
     
     genUI genUI;
     
+    Token selectedToken;
+    
     MapOptions options;
     SlickFileChooser fileChooser = new SlickFileChooser();
     
     
     public MapPane(String maplocation, int sizex, int sizey, genUI genUI) throws SlickException {
     	loadMap(maplocation);
+    	selectedToken = null;
     	this.genUI = genUI;
     	paneSizeX = sizex;
     	paneSizeY = sizey;
@@ -176,7 +179,7 @@ public class MapPane {
     		}
 	    	
 	    	// Only draw Tokens present in the current window
-	    	tokens.renderTokens(x, y, pxOffsetX, pxOffsetY, pxOffsetX + paneSizeX, pxOffsetY + paneSizeY);
+	    	tokens.renderTokens(x, y, pxOffsetX, pxOffsetY, pxOffsetX + paneSizeX, pxOffsetY + paneSizeY, genUI.getIcons());
 	    	
 	    	// If a token is being dragged
 	    	if (dragMode == 2) {
@@ -243,12 +246,16 @@ public class MapPane {
 	    					dragToken = new Point(currentGridX, currentGridY);
 		    				dragImage = tokens.getImage(currentGridX, currentGridY).copy();
 	    					dragImage.setAlpha(0.75f);
+	    					//set the selected token
+	    					selectedToken = tokens.getToken(dragToken.x, dragToken.y);
 		    			}		
 		    		
 	    			// If the tile is empty, initialize a Map Drag
 	    				else {
 	    					dragMode = 1;
 	    					this.setDrag(in.getMouseX(), in.getMouseY());
+	    					//de-select the token
+	    					selectedToken = null;
 	    				}	
 	    			}
 	    			
@@ -336,10 +343,7 @@ public class MapPane {
     
     // Gets token currently selected in MapPane
     public Token getSelectedToken() {
-    	if(dragToken == null)
-    		return null;
-    	else
-    		return tokens.getToken(dragToken.x, dragToken.y);
+    	return selectedToken;
     }
     
     

@@ -45,11 +45,11 @@ public class Tokens {
 	
 	
 	// Draws all applicable tokens, cropped as necessary, for the map coordinates (topX, topY) to (botX, botY)
-	public void renderTokens(float offX, float offY, float topX, float topY, float botX, float botY) {
+	public void renderTokens(float offX, float offY, float topX, float topY, float botX, float botY, Image[] icons) {
 		for (int i = 0; i < tokens.size(); i++) {
 			// If the token is within the draw bounds
 			if (tokens.get(i).isVisible(topX, topY, botX, botY, scale))
-				tokens.get(i).renderToken(offX, offY, topX, topY, botX, botY, scale);
+				tokens.get(i).renderToken(offX, offY, topX, topY, botX, botY, scale, icons);
 			}
 	}
 	

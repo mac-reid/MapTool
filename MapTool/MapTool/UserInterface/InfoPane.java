@@ -30,17 +30,14 @@ public class InfoPane {
 	//Global Buffers
 	final int edgeBuffer = 10;
 	final int itemBuffer = 5;
-	final int picSize = 80;
+	final int picSize = 70;
 	//String info
 	String hostname, gameName, time;
 	int numPlayers;
-	//Status variables (need to make status class within Token class)
-	//Status[] statuses;
-	
-	//Clock
 	
 	//background
 	Image background;
+	Image icons;
 	//the selected token, if there is one
 	Token token;
 	
@@ -51,6 +48,7 @@ public class InfoPane {
 	public InfoPane(String pGameName, float pX, float pY, float width, float height, String host){
 		try {
 			background = new Image("Resources/chatpattern.png");
+			icons = new Image("Resources/icons.png");
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,13 +64,7 @@ public class InfoPane {
 		token = null;
 		//create font
 		font = null;
-		try{
-			font = new Font("anglican", Font.TRUETYPE_FONT, 24);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.err.println("anglican.tff" + " not loaded.  Using serif font.");
-			font = new Font("serif", Font.PLAIN, 20);
-		}
+		font = new Font("monotype corsiva", Font.PLAIN, 24);
 		titleFont = new TrueTypeFont(font, true);
 		subFont = new TrueTypeFont(new Font("serif", Font.PLAIN, 13), true);
 	}
@@ -86,6 +78,9 @@ public class InfoPane {
 		//hard coded time zone stuff
 		int secondOffset = 4*3600;
 		hours = ((seconds - secondOffset) / 3600 ) % 12;
+		if(hours == 0){
+			hours = 12;
+		}
 		minutes = (seconds / 60) % 60;
 		if (minutes < 10) {
 			return ("" + hours + ":0" + minutes);
@@ -99,6 +94,32 @@ public class InfoPane {
 	public void update(GameContainer gc, Token selection){
 		token = selection;
 		time = getTime();
+		int mouseX = gc.getInput().getMouseX();
+		int mouseY = gc.getInput().getMouseY();
+		//if mouse over the icons
+		if(mouseX >= panelX && mouseY >= panelY + picSize && mouseY <= panelY + sizeY){
+			//if mouse is pressed
+			if(gc.getInput().isMousePressed(0)){
+				//first row
+				if(mouseY >= panelY + picSize + itemBuffer * 2 && mouseY <= panelY + picSize + itemBuffer * 2 + 15){
+					for(int i = 0; i < 4; i++){
+						int leftSide = (int) (panelX + itemBuffer + (60 * i));
+						if(mouseX >= leftSide && mouseX <= leftSide + 15){
+							token.status[i] = !token.status[i];
+						}
+					}
+				}
+				//second row
+				if(mouseY >= panelY + picSize + itemBuffer * 2 + 45 && mouseY <= panelY + picSize + itemBuffer * 2 + 15 + 45){
+					for(int i = 0; i < 4; i++){
+						int leftSide = (int) (panelX + itemBuffer + (60 * i));
+						if(mouseX >= leftSide && mouseX <= leftSide + 15){
+							token.status[i + 4] = !token.status[i + 4];
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -115,6 +136,8 @@ public class InfoPane {
 			g.setColor(Color.white);
 			//draw token name (centered)
 			titleFont.drawString(x + picSize + (width - picSize - titleFont.getWidth(token.getName()))/2, y + itemBuffer, token.getName(), Color.white);
+			icons.draw(x, y + picSize + itemBuffer * 2);
+			radioButtons(token, x, y + picSize + itemBuffer * 2, icons.getWidth(), icons.getHeight(), g);
 		} else {
 			String testTitle = "TEST TITLE";
 			int strWidth = titleFont.getWidth(testTitle);
@@ -131,23 +154,28 @@ public class InfoPane {
 	}
 	
 	/**
-	 * Inner class that will have the radio button feeling for the statuses
-	 * @author nrjohnso
-	 *
+	 * 
+	 * @param token = selected token
+	 * @param x = top left x coord
+	 * @param y = top left y coord
+	 * @param width = width of icons img
+	 * @param height = height of the icons img
 	 */
-	public class statusGrid{
-		
-		//shape array for the icon for the stuff
-		Shape[] icons;
-		
-		public statusGrid(Token token, int width, int height){
-			initIcons();
+	public void radioButtons(Token token, float x, float y, int width, int height, Graphics g){
+		//space between squares
+		int space = width/4;
+		int start = (int) (itemBuffer + panelX);
+		//draw the radio buttons
+		for(int i = 0; i < 8; i++){
+			//draw the outlines
+			g.setColor(Color.black);
+			//the random 45 is because I did not make the icons half way down the img
+			g.drawRect(start + space * (i % 4) , y + 3 + i/4 * 45, 15, 15);
+			if(token.status[i]){
+				g.setColor(Color.blue);
+				g.fillRect(start + space * (i % 4) + 1, y + 3 + i/4 * 45 + 1, 14, 14);
+			}
 		}
-		
-		public void initIcons(){
-			icons = new Shape[8];
-			icons[0] = null;
-		}
-		
 	}
+	
 }

@@ -11,10 +11,10 @@ import Backend.Control;
 public class MenuButton {
 	
 	private Image img;
-	private int X;
-	private int Y;
-	private int XSize;
-	private int YSize;
+	public int X;
+	public int Y;
+	public int XSize;
+	public int YSize;
 	private float imgScale = 1.0f;
 	private float growthScale = .00018f;
 	private boolean isDecreasing;
@@ -55,7 +55,7 @@ public class MenuButton {
 			//if mouse is in correct Y position
 			if (mouseY >= Y && mouseY <= Y + YSize){
 				//if we click, activate it
-				if (in.isMouseButtonDown(0)){
+				if (in.isMousePressed(0)){
 					isActive = true;
 					imgScale = 1.0f;
 					whenActivated = System.currentTimeMillis();

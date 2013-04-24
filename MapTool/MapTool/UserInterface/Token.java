@@ -86,6 +86,24 @@ public class Token implements Comparable<Token> {
     		
     		Image croppedImage = tokenImage.getSubImage((int)cleft, (int)ctop, (int)(cright - cleft), (int)(cbot - ctop));
     		croppedImage.draw(offx + (x * scale) - topX + cleft, offy + (y * scale) - topY + ctop);
+    		
+    		int buffer = 0;
+    		int numStats = 0;
+    		int yOffSet = 0;
+    		int iconSize = tokenImage.getWidth()/5;
+    		//drawing the statuses
+    		for(int i = 0; i < 8; i++){
+    			if(status[i]){
+    				Image scaledIcon = icons[i].getScaledCopy(iconSize, iconSize);
+    				scaledIcon.draw(offx + (x * scale) - topX - buffer + tokenImage.getWidth() - iconSize, offy + (y * scale) - topY + yOffSet);
+    				numStats++;
+    				buffer += iconSize + 2;
+    				if(numStats == 4){
+    					yOffSet = iconSize + 2;
+    					buffer = 0;
+    				} 
+    			}
+    		}
     	}
     }
 		

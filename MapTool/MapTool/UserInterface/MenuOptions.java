@@ -3,7 +3,9 @@ package UserInterface;
 import java.io.IOException;
 
 import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
@@ -27,8 +29,10 @@ public class MenuOptions {
 	
 	private double scale;
 	
-	private boolean isActive;
-	private MenuButton button;
+	public boolean isActive, showDialog;
+	public MenuButton button;
+	
+	String errorMessage;
 	
 	public Control control;
 	
@@ -66,6 +70,31 @@ public class MenuOptions {
 				fields[i].render(gc);
 			}
 			cancelContinue.draw(startX, gc.getHeight() - cancelContinue.getHeight() - 15, .90f);
+			if(showDialog){
+				//if hosting
+				if(state == 0){
+					errorMessage = "Please enter a valid string in the Game Name and Avatar Name text boxes./n" + 
+							"/t/tClick anywhere to continue";
+				} else {
+					errorMessage = "Please enter a valid string in the IP Address and Avatar Name text boxes./n"; 
+					if(fields[0].value.contains(" ")){
+						
+					}
+				}
+				Graphics g = gc.getGraphics();
+				int height = 70;
+				int width = 700;
+				//draw the outline
+				g.setColor(Color.black);
+				g.drawRect(gc.getWidth()/2 - width/2 - 1, gc.getHeight()/2 - height/2 - 1, width + 2, height + 2);
+				//fill the dialog box
+				g.setColor(Color.lightGray);
+				g.fillRect(gc.getWidth()/2 - width/2, gc.getHeight()/2 - height/2, width, height);;
+				//add the text
+				g.setColor(Color.black);
+				g.drawString(errorMessage, (gc.getWidth()/2 - width/2 + 10), (gc.getHeight()/2 - height/2 + 10));
+				
+			}
 		}catch (NullPointerException e){		}
 
 	}
@@ -88,8 +117,7 @@ public class MenuOptions {
 						//if hosting a game
 						if(fields[0].label.equals("Game Name: ")){
 							if(fields[0].value.equals("") || fields[2].value.equals("")){
-								System.out.println("Please enter name and gamename");
-								button.deActivate();
+								showDialog = true;
 								return;
 							}
 							control.hostGame();
@@ -104,10 +132,11 @@ public class MenuOptions {
 						if(fields[0].label.equals("IP Address: ")){
 							//if one of the fields are empty
 							if(fields[0].value.equals("") || fields[1].value.equals("")){
-								System.out.println("Please enter name and gamename");
-								button.deActivate();
+								showDialog = true;
 								return;
 							}
+							//scrub down the IP address field
+							
 							try{
 								control.joinGame(fields[1].value, fields[0].value);
 								((genUI)sbg).setName(fields[1].value);
@@ -125,5 +154,6 @@ public class MenuOptions {
 			}
 		}catch (NullPointerException e){		}
 	}
+
 	
 }

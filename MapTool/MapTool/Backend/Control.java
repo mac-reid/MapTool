@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import UserInterface.*;
 import org.newdawn.slick.*;
+import java.lang.StringBuffer;
 
 /* The controller class that interacts between the GUI elements,
  * the network elements, and the file i/o elements.
@@ -60,8 +61,9 @@ public class Control {
 
 		String tmp = parseInput(message);
 
-		client.sendChatMessage(message);
-		return "";
+		if (client != null)
+			client.sendChatMessage(message);
+		return tmp;
 	}
 
 	public Token getToken(int x, int y) {
@@ -129,7 +131,8 @@ public class Control {
 			System.out.println("Some error here"); 
 			return false;
 		}		
-		String string = "Move~" + s + "~" + Integer.toString(tileX) + "~" + Integer.toString(tileY);
+		String string = "Move~" + s + "~" + Integer.toString(tileX) + "~" + 
+			Integer.toString(tileY);
 		client.broadcast(string);
 		return false;
 	}
@@ -211,13 +214,23 @@ public class Control {
 		return true;
 	}
 
+	public File[] importFiles() {
+
+		PopupWindow popUp = new PopupWindow();
+		popUp.start();
+		File[] files = popUp.importFiles();
+		moveFiles(files, "/Resources/Tokens");
+		return files;
+	}
+
 	public String parseInput(String message) {
 
 		// parse the message for command messages
 		if (message.charAt(0) == '/') {
 
-			String[] data = message.split(" ");
 			int[] roll;
+			String ret = "";
+			String[] data = message.split(" ");
 
 			// case for no spaces in the input
 			if (data.length == 1)
@@ -228,6 +241,11 @@ public class Control {
 				// section for /r
 				if (message.charAt(1) == 'r' && message.charAt(2) == ' ') {
 					roll = parseRoll(message, data);
+					if (roll == null) {
+						// improperly formatted roll
+					} else if (roll.length == 3 && roll[0] != 0 && roll[1] != 0) {
+						ret = rollDice(roll[0], roll[1], roll[2]);
+					}
 				}
 
 				// section for /w
@@ -249,7 +267,10 @@ public class Control {
 				// section for /gmroll
 				if (message.substring(0,6).equalsIgnoreCase("/gmroll") 
 				    	&& message.charAt(7) == ' ') {
-					roll = parseRoll(message, data);
+					roll = parseRoll(message, data);					
+					if (roll == null) {
+						// improperly formatted roll
+					}
 				}
 
 			} else if (message.length() > 9) {
@@ -267,7 +288,13 @@ public class Control {
 				return "Unrecognized command: " + message;
 		}
 		
-		return "";
+		return ret;
+	}
+
+	private void moveFiles(File[] files, String subdir) {
+
+		String dest = System.getProperty("user.dir");
+		System.out.println(dest + subdir);
 	}
 
 	private String rollDice(int numRolls, int nSides, int bonus) { 
@@ -287,19 +314,36 @@ public class Control {
 			if (i != numRolls -1)
 				ret += " + ";
 		} 
-		ret += ")+" + bonus + '\n' + "=" + total; 
+		ret += ")+" + bonus + '\n' + "= " + total; 
+		System.out.println(ret);
 		return ret;  
     }
 
 	private int[] parseRoll(String message, String[] data) {
 		
 		int d = message.indexOf("d");
-		if (d == -1) {}
+		if (d == -1) {
 			// no d in message, improper formatted /roll
+			return null;
+		}
 
+		StringBuffer str = new StringBuffer();
 		int[] roll = new int[3];
+		String sub = message.substring(message.indexOf(" ") + 1, message.length());
+		sub = sub.replaceAll(" ", "");
 
-		return null;
+		String[] parts = sub.split("d");
+		roll[0] = Integer.parseInt(parts[0]);
+
+		if (parts[1].indexOf("+") != -1) {
+
+			System.out.println(parts[1].length() + " length of parts");
+			roll[1] = Integer.parseInt(parts[1].substring(0, 
+				parts[1].indexOf("+")));
+			roll[2] = Integer.parseInt(parts[1].substring(parts[1].indexOf("+")));
+		}
+
+		return roll;
 	}
 
 	private String[] parseWhisper(String message, String[] data) {

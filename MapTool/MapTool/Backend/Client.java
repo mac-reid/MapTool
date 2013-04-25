@@ -42,7 +42,6 @@ public class Client  {
 
 	/*
 	 * method used for sending a file to the server to be broadcast out
-	 * 
 	 */
 	public boolean broadcastFile(String fileOutput) {
 		File myFile = null;

@@ -15,17 +15,18 @@ set backendFiles = `ls ./Backend/*java`
 
 foreach file ($uiFiles) 
 
-	javac -d $topdir/bin -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
+	javac -d $topdir/bin -cp .:$jar/org.eclipse.swt_3.100.0.v4236b.jar:$jar/org.eclipse.swt.gtk.linux.x86_3.100.1.v4236b.jar:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
 end
 
 foreach file ($backendFiles)
 
-	javac -d $topdir/bin -cp .:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
+	javac -d $topdir/bin -cp .::$jar/org.eclipse.swt_3.100.0.v4236b.jar:$jar/org.eclipse.swt.gtk.linux.x86_3.100.1.v4236b.jar:$jar/slick.jar:$jar/lwjgl.jar:$topdir $file
 end
 
 echo "hi"
+
 java -cp \
- .:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend:$topdir/bin \
+ .:$jar/org.eclipse.swt_3.100.0.v4236b.jar:$jar/org.eclipse.swt.gtk.linux.x86_3.100.1.v4236b.jar:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend:$topdir/bin \
  -Djava.library.path=$topdir/lwjgl-2.8.5/native/linux $1
 
- echo "wa"
+ echo "wa" 

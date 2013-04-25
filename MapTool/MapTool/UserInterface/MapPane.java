@@ -213,6 +213,8 @@ public class MapPane {
     	gridOffsetX = (int)(pxOffsetX / tokenScale);
     	gridOffsetY = (int)(pxOffsetY / tokenScale);
     	
+        if (in.isKeyPressed(in.KEY_0))
+            genUI.control.importFiles();
     	
     	// If the file chooser is active, update
     	if (fileChooser.isActive()) {

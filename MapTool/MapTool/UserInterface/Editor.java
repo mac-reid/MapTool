@@ -56,7 +56,6 @@ public class Editor extends BasicGameState{
 	 */
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
-		((AppGameContainer)gc).setResizable(true);
 		genUI = ((genUI)sbg);
 		vidChatMin = gc.getHeight()/5;
 		//find the best height and width of the map
@@ -85,7 +84,14 @@ public class Editor extends BasicGameState{
 	 */
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)
 			throws SlickException {
-
+		//make sure the size is OK
+		if (gc.getHeight() < 600){
+        	((AppGameContainer) gc).setDisplayMode(gc.getWidth(), 600, false);
+        }
+        
+        if (gc.getWidth() < 800){
+        	((AppGameContainer) gc).setDisplayMode(800, gc.getHeight(), false);
+        }
 		//draw things
 		mapTool.renderMap(BUFFER, BUFFER, g);
 		
@@ -107,6 +113,13 @@ public class Editor extends BasicGameState{
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException {
+		if (gc.getHeight() < 600){
+        	((AppGameContainer) gc).setDisplayMode(gc.getWidth(), 600, false);
+        }
+        
+        if (gc.getWidth() < 800){
+        	((AppGameContainer) gc).setDisplayMode(800, gc.getHeight(), false);
+        }
         Input input = gc.getInput();
         int mouseX = input.getMouseX();
         int mouseY = input.getMouseY();
@@ -152,13 +165,6 @@ public class Editor extends BasicGameState{
         chatBox.updateChat(input);
         
         infoPane.update(gc, mapTool.getSelectedToken());
-        if (gc.getHeight() < 600){
-        	((AppGameContainer) gc).setDisplayMode(gc.getWidth(), 600, false);
-        }
-        
-        if (gc.getWidth() < 800){
-        	((AppGameContainer) gc).setDisplayMode(800, gc.getHeight(), false);
-        }
 	}
 	
 	

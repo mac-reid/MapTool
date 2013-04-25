@@ -1,16 +1,10 @@
 package UserInterface;
 
-import java.awt.GraphicsConfiguration;
 import Backend.Control;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Window;
 
+import org.lwjgl.opengl.OpenGLException;
 import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.Game;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -27,22 +21,45 @@ public class genUI extends StateBasedGame{
 	public Control control;
 	private Image[] icons;
 	
+	
 	public String name, mapName, hostAddress;
 	
 	public genUI(String name){
 		super(gamename);
+		control = new Control(this);
 		this.addState(new Menu(menu));
 		this.addState(new Editor(editor));
-		control = new Control(this);
 	}
 
-	public void initStatesList(GameContainer gc) throws SlickException {
-		//init icons
-		initIcons();
-		this.getState(menu).init(gc, this);
-		this.getState(editor).init(gc, this);
-		this.enterState(menu);
+
+	public static void main(String[] args){		
+		AppGameContainer app = null;
+		genUI game = new genUI(gamename);
+		try{
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			int width = (int)(.8*kit.getScreenSize().getWidth());
+			//the original image was 1280/800 res, so thats what those numbers are for
+			int height = (int)(800*width/1280);
+			//make sure it isnt drawn huge
+			if(width > 1280) width = 1280;
+			if(height > 800) height = 800;
+			app = new AppGameContainer(game, width, height, false);
+			app.setTargetFrameRate(60);
+			app.start();
+		}catch(SlickException e){
+			e.printStackTrace();
+		}
 	}
+	
+	public void initStatesList(GameContainer gc) throws SlickException {
+		this.getState(menu).init(gc, this);
+		this.enterState(menu);
+		this.getState(editor).init(gc, this);
+		initIcons();
+	}
+	
+	
+	//Control stuff and user/map info
 
 	public void setMapFile(String file){
 		mapFile = file;
@@ -51,24 +68,6 @@ public class genUI extends StateBasedGame{
 	public String getMapFile(){
 		return mapFile;
 	}
-	public static void main(String[] args){		
-		AppGameContainer app;
-		try{
-			Toolkit kit = Toolkit.getDefaultToolkit();
-			int width = (int)(.8*kit.getScreenSize().getWidth());
-			//the original image was 1280/800 res, so thats what those numbers are for
-			int height = (int)(800*width/1280);
-			app = new AppGameContainer(new genUI(gamename));
-			app.setDisplayMode(width, height, false);
-			app.setTargetFrameRate(60);
-			app.start();
-		}catch(SlickException e){
-			e.printStackTrace();
-		}
-	}
-	
-	
-	//Control stuff and user/map info
 	public void receiveChat(String user, String msg){
 		((Editor)this.getState(editor)).chatBox.chatReceive(user + ": " + msg);
 	}
@@ -111,4 +110,5 @@ public class genUI extends StateBasedGame{
 			e.printStackTrace();
 		}
 	}
+
 }

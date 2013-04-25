@@ -45,7 +45,6 @@ public class Menu extends BasicGameState{
 				hostImg.getHeight()/8, 1, control);
 		join = new MenuButton(joinImg, gc.getWidth()-joinImg.getWidth() - joinImg.getWidth()/8, 
 				joinImg.getHeight() + 2*hostImg.getHeight()/8, 1, control);
-		((AppGameContainer) gc).setResizable(false);
 		hostOptions = new MenuOptions(0, host, gc);
 		joinOptions = new MenuOptions(1, join, gc);
 		testMode = new MenuButton(testImg, gc.getWidth()-joinImg.getWidth() - joinImg.getWidth()/8, 
@@ -71,9 +70,17 @@ public class Menu extends BasicGameState{
 			if (join.whenActivated() > host.whenActivated()){
 				joinOptions.render(gc);
 				host.deActivate();
+				//clear the fields
+				for(int i = 0; i < hostOptions.fields.length; i++){
+					hostOptions.fields[i].value = "";
+				}
 			} else {
 				hostOptions.render(gc);
 				join.deActivate();
+				//clear the fields
+				for(int i = 0; i < joinOptions.fields.length; i++){
+					joinOptions.fields[i].value = "";
+				}
 			}
 		}
 	}
@@ -82,6 +89,7 @@ public class Menu extends BasicGameState{
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException {
 		Input input = gc.getInput();
+		((AppGameContainer) gc).setResizable(false);
 		if(hostOptions.showDialog || joinOptions.showDialog){
 			if(input.isMousePressed(0) || input.isMousePressed(1)){
 				hostOptions.showDialog = false;
@@ -106,6 +114,7 @@ public class Menu extends BasicGameState{
 				((genUI)sbg).setName("Test Mode");
 				((genUI)sbg).setAddress("---Testing with no host---");
 				sbg.enterState(1);
+				((AppGameContainer) gc).setResizable(true);
 			}
 		}
 	}

@@ -27,7 +27,7 @@ public class genUI extends StateBasedGame{
 	public Control control;
 	private Image[] icons;
 	
-	public String name, mapName;
+	public String name, mapName, hostAddress;
 	
 	public genUI(String name){
 		super(gamename);
@@ -41,7 +41,7 @@ public class genUI extends StateBasedGame{
 		initIcons();
 		this.getState(menu).init(gc, this);
 		this.getState(editor).init(gc, this);
-		this.enterState(editor);
+		this.enterState(menu);
 	}
 
 	public void setMapFile(String file){
@@ -79,6 +79,14 @@ public class genUI extends StateBasedGame{
 	
 	public String getName(){
 		return name;
+	}
+	
+	public void setAddress(String addr){
+		hostAddress = addr;
+	}
+	
+	public String getAddress(){
+		return hostAddress;
 	}
 	
 	public Image[] getIcons(){

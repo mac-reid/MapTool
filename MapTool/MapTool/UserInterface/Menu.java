@@ -39,6 +39,8 @@ public class Menu extends BasicGameState{
 			.getScaledCopy(gc.getWidth()/3, gc.getHeight()/8));
 		Image joinImg = (new Image("Resources/joinGame.png")
 		.getScaledCopy(gc.getWidth()/3, gc.getHeight()/8));
+		Image testImg = (new Image("Resources/test.png")
+		.getScaledCopy(gc.getWidth()/3, gc.getHeight()/8));
 		host = new MenuButton(hostImg, gc.getWidth()-hostImg.getWidth() - hostImg.getWidth()/8, 
 				hostImg.getHeight()/8, 1, control);
 		join = new MenuButton(joinImg, gc.getWidth()-joinImg.getWidth() - joinImg.getWidth()/8, 
@@ -46,6 +48,8 @@ public class Menu extends BasicGameState{
 		((AppGameContainer) gc).setResizable(false);
 		hostOptions = new MenuOptions(0, host, gc);
 		joinOptions = new MenuOptions(1, join, gc);
+		testMode = new MenuButton(testImg, gc.getWidth()-joinImg.getWidth() - joinImg.getWidth()/8, 
+				2*joinImg.getHeight() + 3*hostImg.getHeight()/8, 1, control);
 	}
 
 
@@ -54,6 +58,7 @@ public class Menu extends BasicGameState{
 		bkgnd.draw(0, 0);
 		host.render(gc);
 		join.render(gc);
+		testMode.render(gc);
 		//if only host is activated
 		if (host.isActive() && !join.isActive()){
 			hostOptions.render(gc);
@@ -77,15 +82,31 @@ public class Menu extends BasicGameState{
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException {
 		Input input = gc.getInput();
-		int mouseX = input.getMouseX();
-		int mouseY = input.getMouseY();
-		host.update(input, delta);
-		join.update(input, delta);
-		if (join.isActive()){
-			joinOptions.update(gc, gc.getInput(), sbg);
+		if(hostOptions.showDialog || joinOptions.showDialog){
+			if(input.isMousePressed(0) || input.isMousePressed(1)){
+				hostOptions.showDialog = false;
+				joinOptions.showDialog = false;
+				joinOptions.button.deActivate();
+				hostOptions.button.deActivate();
+			}
 		}
-		if (host.isActive()){
-			hostOptions.update(gc, gc.getInput(), sbg);
+		else {
+			int mouseX = input.getMouseX();
+			int mouseY = input.getMouseY();
+			host.update(input, delta);
+			join.update(input, delta);
+			testMode.update(input, delta);
+			if (join.isActive()){
+				joinOptions.update(gc, gc.getInput(), sbg);
+			}
+			if (host.isActive()){
+				hostOptions.update(gc, gc.getInput(), sbg);
+			}
+			if (testMode.isActive()){
+				((genUI)sbg).setName("Test Mode");
+				((genUI)sbg).setAddress("---Testing with no host---");
+				sbg.enterState(1);
+			}
 		}
 	}
 

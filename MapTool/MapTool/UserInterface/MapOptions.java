@@ -49,17 +49,17 @@ public class MapOptions {
 	private final int move = 2;
 	private final int ping = 3;
 	private boolean active = false;
-	
+	private boolean showOptions = true;
 	private MapPane map;
-	
+
 	private JFileChooser fc;
-	
+
 	public MapOptions(int x, int y, MapPane map){
-		this.x = x;
-		this.y = y;
 		this.map = map;
+		setX(x);
+		setY(y);
 		fc = new JFileChooser();
-		
+
 		//create the mapBox sizes
 		if(map.pxSizeY > map.pxSizeX){
 			miniMapScale = minimapsize/map.pxSizeY;
@@ -71,45 +71,51 @@ public class MapOptions {
 			minimapwidth = (int) (miniMapScale * map.pxSizeX);
 		}
 	}
-	
+
 	public void render(Graphics g){
 		if (active){
-			//draw initial rectangle
-			g.setColor(Color.black);
-			g.drawRect(x, y, (float)width, (float)height);
-			//fill in the background
-			g.setColor(Color.lightGray);
-			g.fillRect(x+1, y+1, width-1, height - 1);
-			//check if a place is hovered over
-			switch(hoverArea){
-			case 0:
-				break;
-			case 1:
-				g.setColor(Color.blue);
-				g.fillRect(x+1, y+1, width-1, height/3);
-				break;
-			case 2:
-				g.setColor(Color.blue);
-				g.fillRect(x+1, y+1 + (height/3), width-1, height/3);
-				break;
-			case 3:
-				g.setColor(Color.blue);
-				g.fillRect(x+1, y+1 + (2*height/3), width-1, height/3);
+			if (showOptions){
+				//draw initial rectangle
+				g.setColor(Color.black);
+				g.drawRect(x, y, (float)width, (float)height);
+				//fill in the background
+				g.setColor(Color.lightGray);
+				g.fillRect(x+1, y+1, width-1, height - 1);
+				//check if a place is hovered over
+				switch(hoverArea){
+				case 0:
+					break;
+				case 1:
+					g.setColor(Color.blue);
+					g.fillRect(x+1, y+1, width-1, height/3);
+					break;
+				case 2:
+					g.setColor(Color.blue);
+					g.fillRect(x+1, y+1 + (height/3), width-1, height/3);
+					break;
+				case 3:
+					g.setColor(Color.blue);
+					g.fillRect(x+1, y+1 + (2*height/3), width-1, height/3);
+				}
+
+				//draw the options
+				g.setColor(Color.black);
+				//draw the option labels
+				g.drawString("Insert Token", x + 3, y + 3);
+				g.drawString("Move", x + 3, y + (height/3) + 3);
+				g.drawString("Ping", x + 3, y + (2*height/3) + 3);
 			}
-			//draw the options
-			g.setColor(Color.black);
-			//draw the option labels
-			g.drawString("Insert Token", x + 3, y + 3);
-			g.drawString("Move", x + 3, y + (height/3) + 3);
-			g.drawString("Ping", x + 3, y + (2*height/3) + 3);
 			if(showminimap){
 				//check to make sure map is kept on screen (11 is size of buffers and borders)
-				if(x + 11 + minimapwidth + width < (map.pxSizeX)) {
+				if(x + 11 + minimapwidth + width < (map.paneSizeX)) {
 					minimapx = x + width + 5;
-					if(y + height + minimapheight + 10 > map.pxSizeY) {
-						minimapy = y - minimapheight - 5;
+					if(y + minimapheight + 10 > map.paneSizeY + 12) {
+						minimapy = y - minimapheight + height - 3;
+						if(y - minimapheight + height - 3 < 12){
+							minimapy = 15;
+						}
 					} else {
-						minimapy = y + height + 5;
+						minimapy = y + 3;
 					}
 					showMiniMap(g, minimapx, minimapy);
 					if(showPort) {
@@ -117,12 +123,19 @@ public class MapOptions {
 						g.drawRect(portX, portY, portWidth, portHeight);
 					}
 				} else {
-					minimapx = (map.pxSizeX) - minimapwidth - 5;
+					minimapx = x - minimapwidth - 5;
+					if (minimapx < 17){
+						minimapx = 17;
+						showOptions = false;
+					}
 					//make sure I dont draw too low
-					if(y + height + minimapheight + 10 > map.pxSizeY) {
-						minimapy = y - minimapheight - 5;
+					if(y + minimapheight + 10 > map.paneSizeY) {
+						minimapy = y - minimapheight + height - 3;
+						if(y - minimapheight + height - 3 < 12){
+							minimapy = 15;
+						}
 					} else {
-						minimapy = y + height + 5;
+						minimapy = y + 3;
 					}
 					showMiniMap(g, minimapx, minimapy);
 					if(showPort) {
@@ -142,8 +155,8 @@ public class MapOptions {
 		
 		//check mouse hover area while 
 		if(showminimap){
-			portWidth = miniMapScale * map.pxSizeX;
-			portHeight = miniMapScale * 48 * map.pxSizeX;
+			portWidth = miniMapScale * map.paneSizeX;
+			portHeight = miniMapScale * map.paneSizeY;
 			//check mouse location
 			if(mouseX >= minimapx && mouseX <= minimapx + minimapwidth 
 					&& mouseY >= minimapy && mouseY <= minimapy + minimapheight){
@@ -158,7 +171,7 @@ public class MapOptions {
 				showPort = true;
 				//if the mouse is clicked
 				if(input.isMousePressed(0)){
-					map.move((portX - minimapx)/(48*miniMapScale), (portY - minimapy)/(48*miniMapScale));
+					map.move((portX - minimapx)/(miniMapScale), (portY - minimapy)/(miniMapScale));
 					setActive(false);
 					resetPort();
 				}
@@ -226,6 +239,7 @@ public class MapOptions {
 	public void resetPort(){
 		portX = -1000;
 		portY = -1000;
+		showOptions = true;
 	}
 	
 	public void showMiniMap(Graphics g, int x, int y){
@@ -257,8 +271,11 @@ public class MapOptions {
 
 	public void setX(int x) {
 		this.x = x;
-		if(this.x + width > map.pxSizeX){
-			this.x = x - 5 - width;
+		if(this.x + width > map.paneSizeX){
+			this.x = map.paneSizeX - width;
+		}
+		if(this.x < 12){
+			this.x = 12;
 		}
 	}
 
@@ -268,6 +285,12 @@ public class MapOptions {
 
 	public void setY(int y) {
 		this.y = y;
+		if(this.y + height > map.paneSizeY){
+			this.y = map.paneSizeY - height;
+		}
+		if(this.y < 12){
+			this.y = 12;
+		}
 	}
 
 	public int getHoverArea() {

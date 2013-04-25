@@ -312,9 +312,12 @@ public class MapPane {
     
     // Testing this, moves the map immediately
     public void move(float tileX, float tileY){
-    	pxOffsetX = (int)(tileX * tokenScale);
-    	pxOffsetY = (int)(tileY * tokenScale);
+    	//pxOffsetX = (int)(tileX * tokenScale);
+    	//pxOffsetY = (int)(tileY * tokenScale);
+    	pxOffsetX = tileX;
+    	pxOffsetY = tileY;
     }
+    
     
     public void changeScale(int change) {
     	if (change > 0  &&  tokenScale < 256)

@@ -2,6 +2,9 @@ package Backend;
 
 import java.io.*;
 import java.util.*;
+
+import org.newdawn.slick.SlickException;
+
 import UserInterface.*;
 
 /* The controller class that interacts between the GUI elements,
@@ -155,7 +158,9 @@ public class Control {
 
 	void lostConnectionToHost() {
 		// call some function in MapPane to notify the gui that there is no network
-		// genUI.forceQuit();
+		try {
+			genUI.forceQuit();
+		} catch (SlickException e) {}
 	}
 
 	public boolean moveToken(int startX, int startY, int endX, int endY) throws IOException {
@@ -208,8 +213,8 @@ public class Control {
 		client.sendFile(file, user);
 	}
 
-	public void sendTextToGUI(String user, String message) throws IOException {
-		genUI.receiveChat(user, message);
+	public void sendTextToGUI(String message) throws IOException {
+		//genUI.receiveChat(message);
 	}
 
 	public void showMapArea(int startX, int startY, int endX, int endY) throws IOException {

@@ -232,7 +232,7 @@ public class Client  {
 					else if (splits[0].equals("ChatMessage")) {
 
 						// Print the message
-						c.sendTextToGUI(splits[1], splits[2]);
+						c.sendTextToGUI(msg);
 					}
 					else if (splits[0].equals("AddToken")) {
 
@@ -303,6 +303,7 @@ public class Client  {
 					System.out.println("Server has closed the connection." + e);
 					
 					// call the appropriate control function
+					disconnect();
 					c.lostConnectionToHost();
 					
 					break;

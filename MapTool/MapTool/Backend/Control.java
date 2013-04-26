@@ -88,8 +88,10 @@ public class Control {
 
 	public void disconnect() {
 
-		client.disconnect();
-		server.kill();
+		if (client != null)
+			client.disconnect();
+		if (server != null)
+			server.kill();
 	}
 
 	public Token getToken(int x, int y) {

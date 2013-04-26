@@ -1,5 +1,8 @@
 package UserInterface;
 
+import java.awt.Toolkit;
+
+import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -135,7 +138,9 @@ public class MenuPane {
 			case 0:
 				break;
 			case 1:
+				//change map
 				editor.mapTool.fileChooser.setActive("Maps");
+				editor.mapTool.loadMode = 1;
 				break;
 			case 2:
 				//TODO import token
@@ -154,8 +159,25 @@ public class MenuPane {
 				editor.genUI.control.load();
 				break;
 			case 6:
+				//quit
+				//clear tokens
+				editor.mapTool.tokens.clearTokens();
 				editor.genUI.control.disconnect();
 				editor.genUI.enterState(0);
+				editor.genUI.control.disconnect();
+				Toolkit kit = Toolkit.getDefaultToolkit();
+				int width = (int)(.8*kit.getScreenSize().getWidth());
+				//the original image was 1280/800 res, so thats what those numbers are for
+				int height = (int)(800*width/1280);
+				//make sure it isnt drawn huge
+				if(width > 1280) width = 1280;
+				if(height > 800) height = 800;
+				try {
+					((AppGameContainer) gc).setDisplayMode(width, height, false);
+				} catch (SlickException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

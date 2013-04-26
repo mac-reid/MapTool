@@ -222,7 +222,7 @@ public class SlickFileChooser {
 			hoverIndex = -1;
 		
 		
-		// Mouseclick event
+		// Mouseclick event inside the file chooser
 		if (in.isMousePressed(0)) {
 			// If cancel button clicked 
 			if ((mouseY > (bdrSize + y)) && (mouseY <= y + cnxSize + bdrSize)) {

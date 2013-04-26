@@ -153,16 +153,15 @@ public class InfoPane {
 			icons.draw(x, y + picSize + itemBuffer * 2);
 			radioButtons(token, x, y + picSize + itemBuffer * 2, icons.getWidth(), icons.getHeight(), g);
 		} else {
-			String testTitle = "TEST TITLE";
-			int strWidth = titleFont.getWidth(testTitle);
+			int strWidth = titleFont.getWidth(gameName);
 			//draw title (centered)
-			titleFont.drawString(x + (width - strWidth)/2, y + itemBuffer, testTitle, Color.white);
+			titleFont.drawString(x + (width - strWidth)/2, y + itemBuffer, gameName, Color.white);
 			//draw time (centered)
 			titleFont.drawString(x + (width - titleFont.getWidth(time))/2, y + titleFont.getHeight() + itemBuffer, time, Color.white);
 			//show the IP
-			subFont.drawString(x + itemBuffer, height/2, "Game Hostname: " + hostname);
+			if(!(hostname == "" || hostname == null)) subFont.drawString(x + itemBuffer, height/2, "Game Hostname: " + hostname);
 			//how many players are connected
-			subFont.drawString(x + itemBuffer, height/2 + itemBuffer + subFont.getHeight(), "Connected Players: " + "(" + "X" + ") " + "TestPlayer1");
+			if(!(hostname == "" || hostname == null)) subFont.drawString(x + itemBuffer, height/2 + itemBuffer + subFont.getHeight(), "Connected Players: " + "(" + "X" + ") " + "TestPlayer1");
 			
 		}
 	}

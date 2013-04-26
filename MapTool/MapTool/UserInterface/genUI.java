@@ -3,7 +3,6 @@ package UserInterface;
 import Backend.Control;
 import java.awt.Toolkit;
 
-import org.lwjgl.opengl.OpenGLException;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;

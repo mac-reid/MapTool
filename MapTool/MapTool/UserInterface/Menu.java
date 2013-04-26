@@ -124,7 +124,7 @@ public class Menu extends BasicGameState{
 			}
 			if (testMode.isActive()){
 				((genUI)sbg).setName("Test Mode");
-				((genUI)sbg).setAddress("---Testing with no host---");
+				((Editor)((genUI)sbg).getState(1)).infoPane.gameName = "Test Mode";
 				sbg.enterState(1);
 				((AppGameContainer) gc).setResizable(true);
 				testMode.deActivate();

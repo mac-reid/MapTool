@@ -37,6 +37,7 @@ public class Control {
 		// For the future, when clients will load maps based on the host
 	}
 
+
 	public void addToken(String fileName, int tileX, int tileY) throws IOException {
 
 		if (!gameLoaded()) { 
@@ -411,4 +412,27 @@ public class Control {
 		return null;
 	}
 
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	public Server getServer() {
+		return server;
+	}
+
+	public void setServer(Server server) {
+		this.server = server;
+	}
+
+	public Storage getStore() {
+		return store;
+	}
+
+	public void setStore(Storage store) {
+		this.store = store;
+	}
 }

@@ -79,15 +79,8 @@ public class MenuOptions {
 					//if joining
 				} else {
 					errorMessage = "Please enter a valid string in the IP Address and Avatar Name text boxes.\n"; 
-					//check the IP address field for inconsistent values
-					for(int i = 0; i < fields[0].value.length(); i++){
-						char letter = fields[0].value.charAt(i);
-						if(letter > 57 || letter < 46 || letter == 47){
-							errorMessage += "The IP address field can only contain the numbers 0-9 and '.'\n";
-							break;
-						}
-					}
-					errorMessage += "Click anywhere to continue";
+					errorMessage += "The IP address can only contain numbers and '.'/n"
+							+ "Click anywhere to continue";
 				}
 				Graphics g = gc.getGraphics();
 				int height = 70;
@@ -147,6 +140,7 @@ public class MenuOptions {
 							}
 
 						}
+						//joining a game
 						if(fields[0].label.equals("IP Address: ")){
 							//if one of the fields are empty
 							if(fields[0].value.equals("") || fields[1].value.equals("")){
@@ -157,12 +151,24 @@ public class MenuOptions {
 								}
 								return;
 							}
-
+							for(int i = 0; i < fields[0].value.length(); i++){
+								char letter = fields[0].value.charAt(i);
+								if(letter > 57 || letter < 46 || letter == 47){
+									showDialog = true;
+									//clear the fields
+									for(int j = 0; j < fields.length; j++){
+										fields[j].value = "";
+									}
+									return;
+								}
+							}
 							try{
 								control.joinGame(fields[1].value, fields[0].value);
 								((genUI)sbg).setName(fields[1].value);
 								sbg.enterState(1);
 								((AppGameContainer) gc).setResizable(true);
+								//trying to see if server is real
+								control.getServer();
 							} catch (IOException e){
 								System.out.println("JOIN FALIED");
 							}

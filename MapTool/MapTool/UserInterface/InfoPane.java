@@ -159,9 +159,9 @@ public class InfoPane {
 			//draw time (centered)
 			titleFont.drawString(x + (width - titleFont.getWidth(time))/2, y + titleFont.getHeight() + itemBuffer, time, Color.white);
 			//show the IP
-			subFont.drawString(x + itemBuffer, height/2, "Game Hostname: " + hostname);
+			if(!(hostname == "" || hostname == null)) subFont.drawString(x + itemBuffer, height/2, "Game Hostname: " + hostname);
 			//how many players are connected
-			subFont.drawString(x + itemBuffer, height/2 + itemBuffer + subFont.getHeight(), "Connected Players: " + "(" + "X" + ") " + "TestPlayer1");
+			if(!(hostname == "" || hostname == null)) subFont.drawString(x + itemBuffer, height/2 + itemBuffer + subFont.getHeight(), "Connected Players: " + "(" + "X" + ") " + "TestPlayer1");
 			
 		}
 	}

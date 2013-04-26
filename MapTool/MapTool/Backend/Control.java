@@ -47,7 +47,8 @@ public class Control {
 		}
 		String string = "AddToken~" + fileName + "~" + Integer.toString(tileX) 
 			+ "~" + Integer.toString(tileY);
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 	}
 
 	void addTokenB(String message) {
@@ -101,7 +102,8 @@ public class Control {
 		String string = "Hide~" + Integer.toString(startX) + "~" 
 			+ Integer.toString(startY) + "~" + Integer.toString(endX) 
 			+ "~" + Integer.toString(endY);
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 	}
 
 	void hideMapAreaB(int startX, int startY, int endX, int endY) {
@@ -140,7 +142,8 @@ public class Control {
 			return false;
 		}		
 		String string = "Move~" + startX + "~" + startY + "~" + endX + "~" + endY;
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 		return false;
 	}
 
@@ -155,7 +158,8 @@ public class Control {
 			return false;
 		}
 		String string = "Remove~" + x + "~" + y;
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 		return true;
 	}
 
@@ -200,7 +204,8 @@ public class Control {
 		}
 		String string = "Show~" + Integer.toString(startX) + "~" + Integer.toString(startY) 
 				+ "~" + Integer.toString(endX) + "~" + Integer.toString(endY);
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 	}
 	
 	void showMapAreaB(int startX, int startY, int endX, int endY) {

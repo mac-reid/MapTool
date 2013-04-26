@@ -59,7 +59,7 @@ public class genUI extends StateBasedGame{
 			//the original image was 1280/800 res, so thats what those numbers are for
 			int height = (int)(800*width/1280);
 			app = new AppGameContainer(new genUI(gamename));
-			app.setDisplayMode(width, height, false);
+			app.setDisplayMode(1400, 800, false);
 			app.setTargetFrameRate(60);
 			app.start();
 		}catch(SlickException e){

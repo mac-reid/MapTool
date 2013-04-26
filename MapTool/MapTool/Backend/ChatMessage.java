@@ -20,12 +20,19 @@ public class ChatMessage implements Serializable {
 			LOGOUT = 2, FILE = 3, WHISPER = 4;
 	
 	private int type;
+	private File file = null;
 	private String message;
 	
 	// constructor for a generic string message
 	ChatMessage(int type, String message) {
 		this.type = type;
 		this.message = message;
+	}
+
+	// constructor for file transfer (maybe?)
+	ChatMessage(int type, File file) {
+		this.type = type;
+		this.file = file;
 	}
 	
 	// getters
@@ -35,6 +42,10 @@ public class ChatMessage implements Serializable {
 
 	String getMessage() {
 		return message;
+	}
+
+	File getFile() {
+		return file;
 	}
 }
 

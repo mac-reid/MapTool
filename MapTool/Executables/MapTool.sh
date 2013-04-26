@@ -29,4 +29,4 @@ java -cp \
  .:$jar/org.eclipse.swt_3.100.0.v4236b.jar:$jar/org.eclipse.swt.gtk.linux.x86_3.100.1.v4236b.jar:$jar/slick.jar:$jar/lwjgl.jar:./UserInterface/:./Backend:$topdir/bin \
  -Djava.library.path=$topdir/lwjgl-2.8.5/native/linux $1
 
- echo "wa" 
+ echo "wa"

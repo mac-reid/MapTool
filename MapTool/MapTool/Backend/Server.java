@@ -64,13 +64,13 @@ public class Server extends Thread {
 	// kills the server connections
 	synchronized void kill() {
 		try {
+
 			// I was asked to stop
 			serverSocket.close();
-			for(int i = 0; i < al.size(); ++i) {
-				al.get(i).sInput.close();
-				al.get(i).sOutput.close();
-				al.get(i).socket.close();
-			}
+			keepGoing = false;
+			for(ClientThread c : al) 
+				c.close();
+			al.clear();
 		} catch (IOException ioe) {} // nothing I can do
 	}
 
@@ -91,9 +91,10 @@ public class Server extends Thread {
 		}
 	}
 
+
 	// To transfer a file to all Clients
-	synchronized void fileTransfer(String message, int id) {
-		
+	synchronized void fileTransfer(String message, int from, int to) {
+	
 		// Initialize new server socket, socket, thread, and thread list
 		ServerSocket servSock = null;
 		Socket socket = null;
@@ -110,7 +111,7 @@ public class Server extends Thread {
 		// For each of the clients, inform them that a file is incoming and what its size will be
 		for(int i = al.size(); --i >= 0;) {
 			
-			if (al.get(i).id != id) {
+			if (al.get(i).id == to) {
 
 				if(!al.get(i).writeMsg("File"))
 					al.remove(i);
@@ -148,6 +149,7 @@ public class Server extends Thread {
 		} catch (IOException e) {
 			System.out.println(e);
 		}
+
 	}
 
 	// for a client who log off using the LOGOUT message
@@ -237,7 +239,6 @@ public class Server extends Thread {
 					break;				
 				}
 
-				// the messaage part of the ChatMessage
 				String message = cm.getMessage();
 
 				// Switch on the type of message receive
@@ -262,7 +263,7 @@ public class Server extends Thread {
 					whisper(message);
 					break;
 				case ChatMessage.FILE:
-					fileTransfer(message, id);
+					fileTransfer(message, id, id);
 				}
 			}
 
@@ -300,6 +301,27 @@ public class Server extends Thread {
 			catch(IOException e) {
 				System.out.println("Error sending message to " + username);
 				System.out.println(e);
+				return false;
+			}
+			return true;
+		}
+		
+		public boolean sendFile(File f) {
+				
+			if(!socket.isConnected()) {
+				close();
+				return false;
+			}
+
+			// write the message to the stream
+			try {
+				sOutput.writeObject(f);
+			}
+			// if an error occurs, do not abort just inform the user
+			catch(IOException e) {
+				System.out.println("Error sending message to " + username);
+				System.out.println(e);
+				return false;
 			}
 			return true;
 		}

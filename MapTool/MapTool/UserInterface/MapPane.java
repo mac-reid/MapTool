@@ -378,33 +378,24 @@ public class MapPane {
 				// Shift/Control/Arrowkeys)
 				if (in.isKeyDown(in.KEY_LCONTROL)) {
 					mapScaling = true;
-					int scaleshift = Mouse.getDWheel();
-					Point2D.Float originshift = new Point2D.Float();
-
-					if (in.isKeyPressed(in.KEY_LEFT))
-						originshift.x--;
-					if (in.isKeyPressed(in.KEY_RIGHT))
-						originshift.x++;
-					if (in.isKeyPressed(in.KEY_UP))
-						originshift.y--;
-					if (in.isKeyPressed(in.KEY_DOWN))
-						originshift.y++;
-
-					if (scaleshift != 0)
-						scaleshift = (scaleshift / Math.abs(scaleshift));
-
-					if (in.isKeyDown(in.KEY_LSHIFT)) {
-						tokenScale += (float) (scaleshift / 10.0);
-						originshift.x /= 10.0f;
-						originshift.y /= 10.0f;
-					} else {
-						tokenScale += (float) (scaleshift);
+					int readWheel = Mouse.getDWheel();
+					
+					if (readWheel != 0) {
+						if (in.isKeyDown(in.KEY_LSHIFT)) {
+							if (readWheel > 0)
+								setScale(tokenScale + .05f);
+							else if (readWheel < 0)
+								setScale(tokenScale - .05f);
+						}
+						else {
+							if (readWheel > 0)
+								setScale(tokenScale + 1);
+							else if (readWheel <0)
+								setScale(tokenScale -= 1);
+						}
 					}
-
-					gridOrigin.x += originshift.x;
-					gridOrigin.y += originshift.y;
-					this.setScale(this.getScale() + scaleshift);
-				} else {
+				} 
+				else {
 					if (mapScaling == true) {
 						mapScaling = false;
 						// CONTROLLER.BROADCASTSCALECHANGE (this.getScale()) or

@@ -215,7 +215,6 @@ public class SlickFileChooser {
 		selX = (int)Math.floor((double)adjMouseX / gridWidth);
 		selY = (int)Math.floor((double)adjMouseY / gridHeight);
 		selIndex = selX + selY * gridColumns;
-		System.out.println(selX + " | " + selY + " | " + selIndex);
 		if (selX >= 0  &&  selX < gridColumns  &&  selY >= 0  &&  selY < gridRows  &&  selIndex >=0  &&  selIndex < fileNames.size())
 			hoverIndex = selIndex;
 		else

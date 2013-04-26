@@ -72,7 +72,8 @@ public class Control {
 	}
 	
 	void changeStatusB(boolean[] statuses, int x, int y) {
-		// add call to mapPane here
+		map.changeStatus(statuses, x, y);
+		System.out.println("B");
 	}
 
 	public String broadcastMessage(String message) throws IOException {

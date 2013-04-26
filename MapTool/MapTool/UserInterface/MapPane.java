@@ -92,6 +92,7 @@ public class MapPane {
     
     public MapPane(String maplocation, int sizex, int sizey, genUI genUI) throws SlickException {
     	loadMap(maplocation);
+    	genUI.control.setMap(this);
     	selectedToken = null;
     	this.genUI = genUI;
     	paneSizeX = sizex;
@@ -178,7 +179,6 @@ public class MapPane {
     		
     		// Otherwise, draw the map and grid based fully on the mouse-drag offset
     		else {
-    			System.out.println(pxOffsetX + " | (" + pxSizeX + " | " + paneSizeX + ")");
     			// Handles map overdraw during a window resize
     			if (pxOffsetX + paneSizeX > pxSizeX)
         			pxOffsetX = pxSizeX - paneSizeX;

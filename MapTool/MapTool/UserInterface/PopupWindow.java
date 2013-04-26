@@ -23,8 +23,10 @@ public class PopupWindow {
 
 		prepareYourself("All Files (*)", "*", SWT.OPEN | SWT.MULTI);	
 		
-		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)
-			dialog.setFilterPath("C:\\");
+		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0){
+			dialog.setFilterPath("C:\\"); 
+			System.out.println(dialog.getFilterPath());
+		}
 		else 
 			dialog.setFilterPath("/");
 		

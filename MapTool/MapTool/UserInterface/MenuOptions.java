@@ -1,6 +1,7 @@
 package UserInterface;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Color;
@@ -136,6 +137,9 @@ public class MenuOptions {
 							try{
 								control.joinGame(fields[2].value, "127.0.0.1");
 								((genUI)sbg).setName(fields[2].value);
+								((genUI)sbg).setAddress(InetAddress.getLocalHost().getHostAddress());
+								((Editor)((genUI)sbg).getState(1)).infoPane.gameName = fields[2].value;
+								((Editor)((genUI)sbg).getState(1)).infoPane.hostname = InetAddress.getLocalHost().getHostAddress();
 								sbg.enterState(1);
 								((AppGameContainer) gc).setResizable(true);
 							} catch (IOException e){

@@ -296,7 +296,7 @@ public class OptionField {
 				}
 				// Else, add pressed key to the entry line
 				else {
-					if (ttfont.getWidth(value) + 30 < XSize)
+					if (value.length() < 15)
 						value = value + Keyboard.getEventCharacter();
 				}	
 			}

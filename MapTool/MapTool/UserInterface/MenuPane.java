@@ -1,5 +1,8 @@
 package UserInterface;
 
+import java.awt.Toolkit;
+
+import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -135,6 +138,7 @@ public class MenuPane {
 			case 0:
 				break;
 			case 1:
+				//change map
 				editor.mapTool.fileChooser.setActive("Maps");
 				editor.mapTool.loadMode = 1;
 				break;
@@ -155,6 +159,9 @@ public class MenuPane {
 				editor.genUI.control.load();
 				break;
 			case 6:
+				//quit
+				//clear tokens
+				editor.mapTool.tokens.clearTokens();
 				editor.genUI.control.disconnect();
 				editor.genUI.enterState(0);
 				editor.genUI.control.disconnect();

@@ -34,7 +34,7 @@ public class MenuOptions {
 	public MenuButton button;
 	
 	String errorMessage;
-	
+	int messageType;
 	public Control control;
 	
 	public MenuOptions(int state, MenuButton button, GameContainer gc) throws SlickException{
@@ -78,9 +78,16 @@ public class MenuOptions {
 							"\t\tClick anywhere to continue";
 					//if joining
 				} else {
-					errorMessage = "Please enter a valid string in the IP Address and Avatar Name text boxes.\n"; 
-					errorMessage += "The IP address can only contain numbers and '.'/n"
+					errorMessage = "Both the IP Address and Avatar Name fields are required to join a game.\n";
+					if(messageType == 1) {
+						errorMessage += "The IP address can only contain numbers and '.'/n"
 							+ "Click anywhere to continue";
+					} else if (messageType == 2){
+						errorMessage += "It appears that the IP you entered was invalid. Please check it is correct." +
+								"\nClick anywhere to continue";
+					} else {
+						errorMessage += "Click anywhere to continue";
+					}
 				}
 				Graphics g = gc.getGraphics();
 				int height = 70;
@@ -142,6 +149,7 @@ public class MenuOptions {
 						}
 						//joining a game
 						if(fields[0].label.equals("IP Address: ")){
+							messageType = 0;
 							//if one of the fields are empty
 							if(fields[0].value.equals("") || fields[1].value.equals("")){
 								showDialog = true;
@@ -159,16 +167,19 @@ public class MenuOptions {
 									for(int j = 0; j < fields.length; j++){
 										fields[j].value = "";
 									}
+									messageType = 1;
 									return;
 								}
 							}
 							try{
-								control.joinGame(fields[1].value, fields[0].value);
+								if(control.joinGame(fields[1].value, fields[0].value)){;
 								((genUI)sbg).setName(fields[1].value);
 								sbg.enterState(1);
 								((AppGameContainer) gc).setResizable(true);
-								//trying to see if server is real
-								control.getServer();
+								} else {
+									showDialog = true;
+									messageType = 2;
+								}
 							} catch (IOException e){
 								System.out.println("JOIN FALIED");
 							}

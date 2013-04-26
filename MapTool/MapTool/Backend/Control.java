@@ -59,9 +59,9 @@ public class Control {
 		map.addToken(message);
 	}
 	
-	public void changeStatus(boolean[] statuses) throws IOException {
+	public void changeStatus(boolean[] statuses, int x, int y) throws IOException {
 		
-		String message = "Change~";
+		String message = "Change~" + x + "~" + y + "~";
 		
 		for (int i = 0; i < statuses.length; i++)
 			if (statuses[i] == true)
@@ -71,8 +71,8 @@ public class Control {
 		broadcastMessage(message);
 	}
 	
-	void changeStatusB(boolean[] statuses) {
-		
+	void changeStatusB(boolean[] statuses, int x, int y) {
+		// add call to mapPane here
 	}
 
 	public String broadcastMessage(String message) throws IOException {

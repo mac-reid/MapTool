@@ -104,6 +104,7 @@ public class MapPane {
     	selectgrid = new Image("Resources/Redgrid.png");
     	options = new MapOptions(0, 0, this);
     	tokens = new Tokens(tokenScale);
+    	genUI.control.setMap(this);
     }
     
     

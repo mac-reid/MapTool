@@ -282,6 +282,7 @@ public class Client  {
 						c.showMapAreaB(startX, startY, endX, endY);
 					} else if (splits[0].equals("Change")) {
 						
+						// Get the parameters
 						boolean[] bools = new boolean[8];
 						int x = Integer.parseInt(splits[1]);
 						int y = Integer.parseInt(splits[2]);
@@ -289,8 +290,9 @@ public class Client  {
 						for (int i = 0; i < 8; i++)
 							if (splits[i + 3].equals("t"))
 								bools[i] = true;
-						c.changeStatusB(bools, x, y);
 						
+						// Call the function
+						c.changeStatusB(bools, x, y);	
 					}
 						
 

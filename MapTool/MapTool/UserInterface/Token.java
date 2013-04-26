@@ -9,19 +9,33 @@ public class Token implements Comparable<Token> {
     public int x;  
     public int y;
     public int size;
+    public float scale;
     //initialize all the statuses to false;
-    //public boolean[] status = {true, false, false, false, false, false, false, false};
-    public boolean[] status = {true, true, true, true, true, true, true, true};
+    public boolean[] status = {false, false, false, false, false, false, false, false};
     
     
-    public Token (String name, String imglocation, int x, int y, int size, float scale) {
     
+    public Token (String name, String imgLocation, int x, int y, int size, float scale, boolean[] status) {
+    	
+    	// Copy status values
+    	if (status != null) {
+	    	for (int i = 0; (i < status.length  &&  i < this.status.length); i++) {
+	    		this.status[i] = status[i];
+	    	}
+    	}
+    	
     	this.name = name;
     	this.x = x;
     	this.y = y;
     	this.size = size;
-    	try { this.tokenImage = new Image(imglocation).getScaledCopy((int)scale, (int)scale); }
+    	this.scale = scale;
+    	try { this.tokenImage = new Image(imgLocation).getScaledCopy((int)scale, (int)scale); }
 		catch (SlickException se){System.out.println("Token constructor (Image creation) failed");}
+    }
+    
+    
+    public Token (String name, String imgLocation, int x, int y, int size, float scale) {
+    	this(name, imgLocation, x, y, size, scale, new boolean[6]);
     }
     
     
@@ -32,6 +46,23 @@ public class Token implements Comparable<Token> {
     public String getName() {
     	return name;
     }
+    
+    
+    // Returns a boolean vector of status
+    public boolean[] getStatus() {
+    	return status;
+    }
+    
+    
+    public void setStatus(boolean[] stats) {
+    	for (int i = 0; i < status.length && i < stats.length; i++)
+    		status[i] = stats[i];
+    }
+    
+    
+    public void setStatus(boolean bool, int index){
+		status[index] = bool;
+	}
     
     
     // Returns true if a portion of the token is visible, based on given coordinates
@@ -112,8 +143,16 @@ public class Token implements Comparable<Token> {
 		return(name.compareToIgnoreCase(O.name));
 	}
 	
-	public void setStatus(boolean bool, int index){
-		status[index] = bool;
+	
+	
+	public String toString() {
+		String returnString = "";
+		
+		returnString = name + "~" + tokenImage + "~" + x + "~" + y + "~" + size + "~" + scale + "~";
+		for (int i = 0; i < status.length; i++) {
+			returnString = returnString + status[i]; 
+		}
+		return(returnString);
 	}
 }
 	

@@ -57,6 +57,7 @@ public class Editor extends BasicGameState{
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
 		genUI = ((genUI)sbg);
+		gc.setAlwaysRender(true);
 		menuPaneMin = gc.getHeight()/5;
 		//find the best height and width of the map
 		mapTileWidth = (gc.getWidth() - BUFFER*3 - CHAT_WIDTH_MIN)/48;

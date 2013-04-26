@@ -111,4 +111,18 @@ public class genUI extends StateBasedGame{
 		}
 	}
 
+	
+	public void forceQuit() throws SlickException{
+		control.disconnect();
+		enterState(menu);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		int width = (int)(.8*kit.getScreenSize().getWidth());
+		//the original image was 1280/800 res, so thats what those numbers are for
+		int height = (int)(800*width/1280);
+		//make sure it isnt drawn huge
+		if(width > 1280) width = 1280;
+		if(height > 800) height = 800;
+		((AppGameContainer) this.getContainer()).setDisplayMode(width, height, false);
+		((Menu)getState(menu)).disconnected();
+	}
 }

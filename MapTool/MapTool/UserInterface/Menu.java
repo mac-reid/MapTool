@@ -1,5 +1,6 @@
 package UserInterface;
 import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -22,7 +23,8 @@ public class Menu extends BasicGameState{
 	private String sourceIP;
 	private Image bkgnd;
 	private Image selectionGlow;
-
+	private boolean recentlyDisconnected;
+	private float dcTime;
 	public Control control;
 	
 	public Menu(int state){
@@ -83,11 +85,21 @@ public class Menu extends BasicGameState{
 				}
 			}
 		}
+		if (recentlyDisconnected){
+			g.setColor(Color.black);
+			g.drawString("THE HOST DISCONNECTED", 50, 50);
+		}
 	}
 
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException {
+		if(recentlyDisconnected){
+			float time = System.currentTimeMillis() - dcTime;
+			if(time > 100000){
+				recentlyDisconnected = false;
+			}
+		}
 		Input input = gc.getInput();
 		((AppGameContainer) gc).setResizable(false);
 		if(hostOptions.showDialog || joinOptions.showDialog){
@@ -124,4 +136,8 @@ public class Menu extends BasicGameState{
 		return 0;
 	}
 
+	public void disconnected(){
+		recentlyDisconnected = true;
+		dcTime = System.currentTimeMillis();
+	}
 }

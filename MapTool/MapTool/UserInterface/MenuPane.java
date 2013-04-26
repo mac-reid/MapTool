@@ -156,6 +156,20 @@ public class MenuPane {
 				break;
 			case 6:
 				editor.genUI.enterState(0);
+				editor.genUI.control.disconnect();
+				Toolkit kit = Toolkit.getDefaultToolkit();
+				int width = (int)(.8*kit.getScreenSize().getWidth());
+				//the original image was 1280/800 res, so thats what those numbers are for
+				int height = (int)(800*width/1280);
+				//make sure it isnt drawn huge
+				if(width > 1280) width = 1280;
+				if(height > 800) height = 800;
+				try {
+					((AppGameContainer) gc).setDisplayMode(width, height, false);
+				} catch (SlickException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

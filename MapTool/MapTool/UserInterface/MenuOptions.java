@@ -24,7 +24,7 @@ public class MenuOptions {
 	private String targetIP;
 	private String name;
 	//the possible option fields that can be generated
-	private OptionField[] fields;
+	public OptionField[] fields;
 	private Image cancelContinue;
 	
 	private double scale;
@@ -73,13 +73,20 @@ public class MenuOptions {
 			if(showDialog){
 				//if hosting
 				if(state == 0){
-					errorMessage = "Please enter a valid string in the Game Name and Avatar Name text boxes./n" + 
-							"/t/tClick anywhere to continue";
+					errorMessage = "Please enter a valid string in the Game Name and Avatar Name text boxes.\n" + 
+							"\t\tClick anywhere to continue";
+					//if joining
 				} else {
-					errorMessage = "Please enter a valid string in the IP Address and Avatar Name text boxes./n"; 
-					if(fields[0].value.contains(" ")){
-						
+					errorMessage = "Please enter a valid string in the IP Address and Avatar Name text boxes.\n"; 
+					//check the IP address field for inconsistent values
+					for(int i = 0; i < fields[0].value.length(); i++){
+						char letter = fields[0].value.charAt(i);
+						if(letter > 57 || letter < 46 || letter == 47){
+							errorMessage += "The IP address field can only contain the numbers 0-9 and '.'\n";
+							break;
+						}
 					}
+					errorMessage += "Click anywhere to continue";
 				}
 				Graphics g = gc.getGraphics();
 				int height = 70;
@@ -93,7 +100,7 @@ public class MenuOptions {
 				//add the text
 				g.setColor(Color.black);
 				g.drawString(errorMessage, (gc.getWidth()/2 - width/2 + 10), (gc.getHeight()/2 - height/2 + 10));
-				
+
 			}
 		}catch (NullPointerException e){		}
 
@@ -104,7 +111,7 @@ public class MenuOptions {
 			for(int i = 0; i < fields.length; i++){
 				fields[i].update(gc, gc.getInput(), sbg);
 			}
-			
+
 			int mouseX = in.getMouseX();
 			int mouseY = in.getMouseY();
 			int continueTop = gc.getHeight() - cancelContinue.getHeight() - 15;
@@ -118,29 +125,40 @@ public class MenuOptions {
 						if(fields[0].label.equals("Game Name: ")){
 							if(fields[0].value.equals("") || fields[2].value.equals("")){
 								showDialog = true;
+								//clear the fields
+								for(int i = 0; i < fields.length; i++){
+									fields[i].value = "";
+								}
 								return;
+
 							}
 							control.hostGame();
 							try{
 								control.joinGame(fields[2].value, "127.0.0.1");
 								((genUI)sbg).setName(fields[2].value);
 								sbg.enterState(1);
+								((AppGameContainer) gc).setResizable(true);
 							} catch (IOException e){
 								System.out.println("Fail");
 							}
+
 						}
 						if(fields[0].label.equals("IP Address: ")){
 							//if one of the fields are empty
 							if(fields[0].value.equals("") || fields[1].value.equals("")){
 								showDialog = true;
+								//clear the fields
+								for(int i = 0; i < fields.length; i++){
+									fields[i].value = "";
+								}
 								return;
 							}
-							//scrub down the IP address field
-							
+
 							try{
 								control.joinGame(fields[1].value, fields[0].value);
 								((genUI)sbg).setName(fields[1].value);
 								sbg.enterState(1);
+								((AppGameContainer) gc).setResizable(true);
 							} catch (IOException e){
 								System.out.println("JOIN FALIED");
 							}
@@ -149,11 +167,15 @@ public class MenuOptions {
 					//cancel
 					if (mouseY <= cancelBot && mouseY > separation){
 						button.deActivate();
+						//clear the fields
+						for(int i = 0; i < fields.length; i++){
+							fields[i].value = "";
+						}
 					}
 				}
 			}
 		}catch (NullPointerException e){		}
 	}
 
-	
+
 }

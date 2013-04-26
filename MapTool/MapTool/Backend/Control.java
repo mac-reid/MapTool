@@ -3,7 +3,6 @@ package Backend;
 import java.io.*;
 import java.util.*;
 import UserInterface.*;
-import org.newdawn.slick.*;
 import java.lang.StringBuffer;
 
 /* The controller class that interacts between the GUI elements,
@@ -58,6 +57,22 @@ public class Control {
 			return;
 		}
 		map.addToken(message);
+	}
+	
+	public void changeStatus(boolean[] statuses) throws IOException {
+		
+		String message = "Change~";
+		
+		for (int i = 0; i < statuses.length; i++)
+			if (statuses[i] == true)
+				message += "t~";
+			else 
+				message += "f~";
+		broadcastMessage(message);
+	}
+	
+	void changeStatusB(boolean[] statuses) {
+		
 	}
 
 	public String broadcastMessage(String message) throws IOException {

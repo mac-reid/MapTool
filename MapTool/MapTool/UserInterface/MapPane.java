@@ -160,23 +160,26 @@ public class MapPane {
     	
     	// Otherwise, render whatever else
     	else {
-    		// If the window size is larger than one or both map dimensions, center the map and grid
+    		// If the window size is larger than one or both map dimensions, center the map, grid, and tokens appropriately
     		if (paneSizeX >= pxSizeX  ||  paneSizeY >= pxSizeY) {
     			if (paneSizeX >= pxSizeX  &&  paneSizeY >= pxSizeY) {
     				map.draw(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2);
     				drawGrid(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2, g);
+    				tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2, 0, 0, paneSizeX, paneSizeY, genUI.getIcons());
     			}
     			else if (paneSizeX >= pxSizeX) {
     				map.draw(x + ((paneSizeX - pxSizeX) / 2), y - pxOffsetY);
     				drawGrid(x + (paneSizeX - pxSizeX) / 2, y, g);
+    				tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y, 0, pxOffsetY, paneSizeX, pxOffsetY + paneSizeY, genUI.getIcons());
     			}
     			else if (paneSizeY >= pxSizeY) {
     				map.draw(x - pxOffsetX, y + (paneSizeY - pxSizeY) / 2);
     				drawGrid(x, y + (paneSizeY - pxSizeY) / 2, g);
+    				tokens.renderTokens(x, y + (paneSizeY - pxSizeY) / 2, pxOffsetX, 0, pxOffsetX + paneSizeX, paneSizeY, genUI.getIcons());
     			}
     		}
     		
-    		// Otherwise, draw the map and grid based fully on the mouse-drag offset
+    		// Otherwise, draw the map grid and tokens based on the mouse-drag offset
     		else {
     			System.out.println(pxOffsetX + " | (" + pxSizeX + " | " + paneSizeX + ")");
     			// Handles map overdraw during a window resize
@@ -187,10 +190,9 @@ public class MapPane {
         		
 	    		map.draw(x - pxOffsetX, y - pxOffsetY);
 		    	drawGrid(x, y, g);
+		    	tokens.renderTokens(x, y, pxOffsetX, pxOffsetY, pxOffsetX + paneSizeX, pxOffsetY + paneSizeY, genUI.getIcons());
     		}
-	    	
-	    	// Only draw Tokens present in the current window
-	    	tokens.renderTokens(x, y, pxOffsetX, pxOffsetY, pxOffsetX + paneSizeX, pxOffsetY + paneSizeY, genUI.getIcons());
+    		
 	    	
 	    	// If a token is being dragged
 	    	if (dragMode == 2) {

@@ -2,6 +2,7 @@ package Backend;
 
 import java.io.*;
 import java.util.*;
+import java.nio.channels.FileChannel;
 
 import org.newdawn.slick.SlickException;
 
@@ -99,8 +100,9 @@ public class Control {
 	public String broadcastMessage(String message) throws IOException {
 
 		String tmp = parseInput(message);
-
-		if (client != null)
+		if (client != null && !tmp.equals("") && message.charAt(0) == '/')
+			client.sendCommand(tmp, true);
+		else if (client != null)
 			client.sendChatMessage(message);
 		return tmp;
 	}
@@ -111,6 +113,16 @@ public class Control {
 			client.disconnect();
 		if (server != null)
 			server.kill();
+	}
+	
+	public void displayRoll(String s) {
+
+		String[] data = s.split("~");
+		if (data.length != 3)
+			return;
+		((Editor)genUI.getCurrentState()).chatBox.addToChat(genUI.name + ": " + data[0]);
+		((Editor)genUI.getCurrentState()).chatBox.addToChat(data[1]);
+		((Editor)genUI.getCurrentState()).chatBox.addToChat(data[2]);
 	}
 
 	public void hideMapArea(int startX, int startY, int endX, int endY) throws IOException {
@@ -144,9 +156,7 @@ public class Control {
 	public boolean joinGame(String alias, String hostname) throws IOException {
 
 		client = new Client(hostname, 8192, alias, this);
-		boolean n = client.start();
-		System.out.println(n);
-		return n;
+		return client.start();
 	}
 
 	public void loadSave(File saveFile) {
@@ -157,7 +167,7 @@ public class Control {
 	}
 
 	void lostConnectionToHost() {
-		
+
 		// call some function in MapPane to notify the gui that there is no network
 		try {
 			genUI.forceQuit();
@@ -215,7 +225,7 @@ public class Control {
 	}
 
 	public void sendTextToGUI(String user, String message) throws IOException {
-		
+
 		genUI.receiveChat(user, message);
 	}
 
@@ -241,15 +251,15 @@ public class Control {
 	}
 
 	public void spamUser(String username) {
-		
+
 		// String mapname = getMap();
 		// (mapname);
 
 		String[] data = null;
 		ArrayList<String> tokens = map.tokens.getTokenStrings();
-		
+
 		for	(String line : tokens){
-			
+
 			data = line.split("~");
 			line = line.substring(line.indexOf("~") + 1);
 			line = line.substring(line.indexOf("~") + 1);
@@ -260,7 +270,7 @@ public class Control {
 					message += "t~";
 				else 
 					message += "f~";
-			
+
 			client.whisper(username, message);
 		}
 	}
@@ -277,9 +287,9 @@ public class Control {
 			return false;
 		return true;
 	} 
-	
+
 	public File selectMap() {
-		
+
 		PopupWindow popUp = new PopupWindow(genUI);
 		return  popUp.selectMap();
 	}
@@ -288,7 +298,8 @@ public class Control {
 
 		PopupWindow popUp = new PopupWindow(genUI);
 		File[] files = popUp.importTokens();
-		// this.moveFiles(files, "/Resources/Tokens/);
+		if (files != null)
+			moveFiles(files, "\\Resources\\Tokens\\");
 		return files;
 	}
 
@@ -296,7 +307,8 @@ public class Control {
 
 		PopupWindow popUp = new PopupWindow(genUI);
 		File[] files = popUp.importMaps();
-		// this.moveFiles(files, "/Resources/Maps/");
+		if (files != null)
+			moveFiles(files, "\\Resources\\Maps\\");
 		return files;
 	}
 
@@ -390,12 +402,40 @@ public class Control {
 		return ret;
 	}
 
-	/*
 	private void moveFiles(File[] files, String subdir) {
 
-		String dest = System.getProperty("user.dir");
-		System.out.println(dest + subdir);
-	}*/
+		String parentDir = System.getProperty("user.dir");
+		for (int i = 0; i < files.length; i++) {
+			try {
+				copyFile(files[i], new File(parentDir + subdir + files[i]
+						.getAbsolutePath().substring(files[i].getAbsolutePath()
+								.lastIndexOf("\\") + 1)));
+			} catch (IOException e) { System.out.println("failure");}
+		}
+	}
+
+	public static void copyFile(File sourceFile, File destFile) throws IOException {
+		
+		if(!destFile.exists()) {
+			destFile.createNewFile();
+		}
+
+		FileChannel source = null;
+		FileChannel destination = null;
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		}
+		finally {
+			if(source != null) {
+				source.close();
+			}
+			if(destination != null) {
+				destination.close();
+			}
+		}
+	}
 
 	private String rollDice(int numRolls, int nSides, int bonus) { 
 
@@ -404,7 +444,7 @@ public class Control {
 		String ret = "";
 		Random  r = new Random(); 
 
-		ret = "Rolling " + numRolls + "d" + nSides + " + " + bonus + '\n' + "(";
+		ret = "Rolling " + numRolls + "d" + nSides + " + " + bonus + '~' + "(";
 
 		for(int i = 0; i < numRolls; i++) { 
 
@@ -414,8 +454,7 @@ public class Control {
 			if (i != numRolls -1)
 				ret += " + ";
 		} 
-		ret += ")+" + bonus + '\n' + "= " + total; 
-		System.out.println(ret);
+		ret += ")+" + bonus + '~' + "= " + total; 
 		return ret;  
 	}
 

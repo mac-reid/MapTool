@@ -9,8 +9,6 @@ import org.newdawn.slick.Graphics;
 //import org.newdawn.slick.gui.TextField;
 import org.lwjgl.input.Keyboard;
 
-import Backend.Control;
-
 import java.awt.Font;
 import java.io.IOException;
 import java.util.*;
@@ -136,9 +134,13 @@ public class ChatPane {
     		// If ENTER, send message to log
     		if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
     			if (entryline.length() != 0) {
-    				chatlog.add(parseEntry(genUI.getName() +": " + entryline));
     				try {
-						genUI.control.broadcastMessage(entryline);
+						if (entryline.charAt(0) == '/')
+							genUI.control.broadcastMessage(entryline);
+						else {
+							chatlog.add(wrapText(genUI.name + ": " + entryline));
+							genUI.control.broadcastMessage(entryline);
+						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -258,5 +260,9 @@ public class ChatPane {
     
     public int getLineHeight(){
     	return lineheight;
+    }
+    
+    public void addToChat(String s) {
+    	chatlog.add(wrapText(s));
     }
 }

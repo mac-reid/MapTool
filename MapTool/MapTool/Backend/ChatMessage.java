@@ -17,7 +17,7 @@ public class ChatMessage implements Serializable {
 	// MESSAGE an ordinary message
 	// LOGOUT to disconnect from the Server
 	static final int WHOISIN = 0, MESSAGE = 1, 
-			LOGOUT = 2, FILE = 3, WHISPER = 4;
+			LOGOUT = 2, FILE = 3, WHISPER = 4, ROLL = 5;
 	
 	private int type;
 	private File file = null;

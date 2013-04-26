@@ -52,9 +52,12 @@ public class Server extends Thread {
 
 			String[] data = message.split("~");
 			// checks if this is the recipient
-			if (!data[0].equals("Change") && !data[0].equals("AddToken"))
+			if (!data[0].equals("Change") && !data[0].equals("AddToken") && !data[0].equals("Roll") && !data[0].equals("Whisper"))
 				message = message.substring(message.indexOf("~") + 1);
-			if (al.get(i).username.equals(data[0])) {
+			if (data[0].equals("Roll")) {
+				if(!al.get(i).writeMsg(message)) 
+					al.remove(i);				
+			} else if (al.get(i).username.equals(data[0])) {
 
 				// try to write to the Client if fail, remove from the list
 				if(!al.get(i).writeMsg(message)) 
@@ -184,11 +187,8 @@ public class Server extends Thread {
 					al.add(t);									// save it in the ArrayList
 					t.start();
 					for (ClientThread c : al)
-						if (c.id == 1) {
-							System.out.println("now ya done it");
+						if (c.id == 1) 
 							c.writeMsg("Send~" + t.username);
-						}
-
 				} catch (IOException ioe) {
 					System.out.println("failure at creating client thread");
 				}
@@ -271,6 +271,10 @@ public class Server extends Thread {
 					break;
 				case ChatMessage.FILE:
 					fileTransfer(message, id, id);
+					break;
+				case ChatMessage.ROLL:
+					whisper(message);
+					break;
 				}
 			}
 

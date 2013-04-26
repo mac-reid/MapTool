@@ -2,6 +2,7 @@ package Backend;
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 
 // The Client that can be run both as a console or a GUI 
 public class Client  {
@@ -155,6 +156,17 @@ public class Client  {
 		}		
 	}
 
+	public void sendCommand(String message, boolean roll) {
+		try {
+			if (roll)
+				sOutput.writeObject(new ChatMessage(ChatMessage.ROLL, "Roll~" + message));
+			else 
+				sOutput.writeObject(new ChatMessage(ChatMessage.WHISPER, "Whisper~" + message));
+		} catch (IOException ioe) {
+			System.out.println("Exception writing to server: " + ioe);
+		}
+	}
+
 	/*
 	 * When something goes wrong
 	 * Close the Input/Output streams and disconnect not 
@@ -177,10 +189,10 @@ public class Client  {
 		public void run() {
 
 			while(keepGoing) {
-
 				try {
-
+					
 					String msg = (String) sInput.readObject();
+					System.out.println(msg + " top of listen client");
 					String[] splits = msg.split("~");
 
 					// Incoming file
@@ -225,19 +237,14 @@ public class Client  {
 						} catch (IOException ex) {
 							System.out.println(ex);
 						}
-
-
-					}
-					else if (splits[0].equals("ChatMessage")) {
+					} else if (splits[0].equals("ChatMessage")) {
 
 						// Print the message
 						c.sendTextToGUI(splits[1], splits[2]);
-					}
-					else if (splits[0].equals("AddToken")) {
+					} else if (splits[0].equals("AddToken")) 
 
 						// Call the function
 						c.addTokenB(msg);
-					}
 					else if (splits[0].equals("Hide")) {
 
 						// Get the parameters
@@ -278,36 +285,35 @@ public class Client  {
 						// Call the function
 						c.showMapAreaB(startX, startY, endX, endY);
 					} else if (splits[0].equals("Change")) {
-						
+
 						// Get the parameters
 						boolean[] bools = new boolean[8];
 						int x = Integer.parseInt(splits[1]);
 						int y = Integer.parseInt(splits[2]);
-						
+
 						for (int i = 0; i < 8; i++)
 							if (splits[i + 3].equals("t"))
 								bools[i] = true;
-						
+
 						// Call the function
 						c.changeStatusB(bools, x, y);	
-					} else if (splits[0].equals("Clear")) {
-						
-						System.out.println("called clear on client side - " + msg);
+					} else if (splits[0].equals("Clear")) 
 						c.clearB();
-					} else if (splits[0].equals("Send")) {
-						System.out.println("called send in client");
+					else if (splits[0].equals("Send")) 
 						c.spamUser(splits[1]);
+					else if (splits[0].equals("Roll")) 
+						c.displayRoll(msg.substring(msg.indexOf("~") + 1));
+					else if (splits[0].equals("Whisper")) {
+						
 					}
-
-					// should be roll, whisper, setmap
-
+					
 				} catch(IOException e) {
 					System.out.println("Server has closed the connection." + e);
-					
+
 					// call the appropriate control function
 					disconnect();
 					c.lostConnectionToHost();
-					
+
 					break;
 				} catch(ClassNotFoundException e2) {
 					System.out.println("Ermac");

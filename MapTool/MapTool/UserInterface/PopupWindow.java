@@ -21,7 +21,7 @@ public class PopupWindow {
 	
 	public File[] importTokens() {
 
-		prepareYourself("PNG Files (.png)", ".png", SWT.OPEN | SWT.MULTI);	
+		prepareYourself("PNG Files (*.png)", "*.png", SWT.OPEN | SWT.MULTI);	
 		
 		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0){
 			dialog.setFilterPath("C:\\"); 
@@ -43,7 +43,7 @@ public class PopupWindow {
 	
 	public File[] importMaps() {
 		
-		prepareYourself("PNG Files (.png)", ".png", SWT.OPEN | SWT.MULTI);
+		prepareYourself("PNG Files (*.png)", "*.png", SWT.OPEN | SWT.MULTI);
 		
 		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)
 			dialog.setFilterPath("C:\\");
@@ -63,7 +63,7 @@ public class PopupWindow {
 	
 	public File loadGame() {
 		
-		prepareYourself("MapTool Save Files (.sav)", ".sav", SWT.OPEN);
+		prepareYourself("MapTool Save Files (*.sav)", "*.sav", SWT.OPEN);
 		
 		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)
 			dialog.setFilterPath(System.getProperty("user.dir") + "\\saves\\");
@@ -86,7 +86,7 @@ public class PopupWindow {
 	
 	public File saveGame() {
 		
-		prepareYourself("MapTool Save Files (.sav)", ".sav", SWT.SAVE);	
+		prepareYourself("MapTool Save Files (*.sav)", "*.sav", SWT.SAVE);	
 		
 		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)
 			dialog.setFilterPath(System.getProperty("user.dir") + "\\saves\\");
@@ -109,7 +109,7 @@ public class PopupWindow {
 	
 	public File selectMap() {
 		
-		prepareYourself("Map Files (.png)", ".png", SWT.OPEN);
+		prepareYourself("Map Files (*.png)", "*.png", SWT.OPEN);
 		
 		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)
 			dialog.setFilterPath(System.getProperty("user.dir") + "\\Resources\\Maps\\");

@@ -55,7 +55,7 @@ class Storage {
 					boolean[] statuses = new boolean[8];
 
 					for (int i = 0; i < 8; i++) 
-						if (data[i + 4].equals("true"))
+						if (data[i + 6].equals("true"))
 							statuses[i] = true;
 					c.changeStatusB(statuses, Integer.parseInt(data[2]), Integer.parseInt(data[3]));
 					c.addToken(System.getProperty("user.dir") + "/Resources/Tokens/" + data[0] + ".png", Integer.parseInt(data[2]), Integer.parseInt(data[3]));

@@ -94,7 +94,7 @@ public class Client  {
 	public void whisper(String recipient, String message) {
 
 		try {
-			sOutput.writeObject(new ChatMessage(ChatMessage.WHISPER, message));
+			sOutput.writeObject(new ChatMessage(ChatMessage.WHISPER, recipient + "~" + message));
 		} catch (IOException ioe) {}
 	}
 
@@ -181,7 +181,6 @@ public class Client  {
 				try {
 
 					String msg = (String) sInput.readObject();
-
 					String[] splits = msg.split("~");
 
 					// Incoming file
@@ -295,6 +294,9 @@ public class Client  {
 						
 						System.out.println("called clear on client side - " + msg);
 						c.clearB();
+					} else if (splits[0].equals("Send")) {
+						System.out.println("called send in client");
+						c.spamUser(splits[1]);
 					}
 
 					// should be roll, whisper, setmap

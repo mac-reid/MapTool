@@ -13,7 +13,7 @@ public class Server extends Thread {
 	ServerSocket serverSocket;
 
 	// a uniqueIdque ID for each connection
-	private static int uniqueId;
+	private static int uniqueId = 0;
 
 	// an ArrayList to keep the list of the Client
 	private ArrayList<ClientThread> al;
@@ -48,11 +48,13 @@ public class Server extends Thread {
 
 	synchronized void whisper(String message) {
 
-		String[] data = message.split("~");
 		for(int i = al.size(); --i >= 0;) {
 
+			String[] data = message.split("~");
 			// checks if this is the recipient
-			if (al.get(i).username == data[0]) {
+			if (!data[0].equals("Change") && !data[0].equals("AddToken"))
+				message = message.substring(message.indexOf("~") + 1);
+			if (al.get(i).username.equals(data[0])) {
 
 				// try to write to the Client if fail, remove from the list
 				if(!al.get(i).writeMsg(message)) 
@@ -181,6 +183,11 @@ public class Server extends Thread {
 					ClientThread t = new ClientThread(socket);  // make a thread of it
 					al.add(t);									// save it in the ArrayList
 					t.start();
+					for (ClientThread c : al)
+						if (c.id == 1) {
+							System.out.println("now ya done it");
+							c.writeMsg("Send~" + t.username);
+						}
 
 				} catch (IOException ioe) {
 					System.out.println("failure at creating client thread");

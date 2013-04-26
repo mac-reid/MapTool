@@ -240,6 +240,31 @@ public class Control {
 		map.unHideArea(startX, startY, endX, endY);
 	}
 
+	public void spamUser(String username) {
+		
+		// String mapname = getMap();
+		// (mapname);
+
+		String[] data = null;
+		ArrayList<String> tokens = map.tokens.getTokenStrings();
+		
+		for	(String line : tokens){
+			
+			data = line.split("~");
+			line = line.substring(line.indexOf("~") + 1);
+			line = line.substring(line.indexOf("~") + 1);
+			client.whisper(username, "AddToken~"  + System.getProperty("user.dir") + "/Resources/Tokens/" + data[0] + ".png~" + line);
+			String message = "Change~" + Integer.parseInt(data[2]) + "~" + Integer.parseInt(data[3]) + "~";
+			for (int i = 0; i < 8; i++) 
+				if (data[i + 6].equals("true"))
+					message += "t~";
+				else 
+					message += "f~";
+			
+			client.whisper(username, message);
+		}
+	}
+
 	protected String getMap() {
 		return map.getBackground();
 	}

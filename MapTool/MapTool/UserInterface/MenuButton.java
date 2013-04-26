@@ -1,6 +1,7 @@
 package UserInterface;
 
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
@@ -10,11 +11,12 @@ import Backend.Control;
 
 public class MenuButton {
 	
-	private Image img;
+	public Image img;
 	public int X;
 	public int Y;
 	public int XSize;
 	public int YSize;
+	public int mode;
 	private float imgScale = 1.0f;
 	private float growthScale = .00018f;
 	private boolean isDecreasing;
@@ -45,6 +47,10 @@ public class MenuButton {
 	
 	public void render(GameContainer gc){
 		img.draw(X - (imgScale*imgScale*100 - 100), Y - (imgScale*100 - 100), imgScale);
+	}
+	
+	public void render(Graphics g){
+		g.drawImage(img, X, Y);
 	}
 
 	public void update(Input in, int delta){
@@ -92,5 +98,29 @@ public class MenuButton {
 	
 	public double whenActivated(){
 		return whenActivated;
+	}
+	
+	/**
+	 * to set the differences between buttons on main menu, and buttons in editor
+	 * @param type
+	 */
+	public void setType(int type){
+		mode = type;
+	}
+	
+	public int getX(){
+		return X;
+	}
+	
+	public int getY(){
+		return Y;
+	}
+	
+	public void setX(int x){
+		X = x;
+	}
+	
+	public void setY(int y){
+		Y = y;
 	}
 }

@@ -47,13 +47,15 @@ public class MapOptions {
 	
 	private final int insertToken = 1;
 	private final int move = 2;
-	private final int ping = 3;
+	private final int lockgrid = 3;
 	private boolean active = false;
 	private boolean showOptions = true;
 	private MapPane map;
 
 	private JFileChooser fc;
 
+	protected boolean gridLocked = false;
+	protected String lockGrid = "Lock Grid";
 	public MapOptions(int x, int y, MapPane map){
 		this.map = map;
 		setX(x);
@@ -103,7 +105,7 @@ public class MapOptions {
 				//draw the option labels
 				g.drawString("Insert Token", x + 3, y + 3);
 				g.drawString("Move", x + 3, y + (height/3) + 3);
-				g.drawString("Ping", x + 3, y + (2*height/3) + 3);
+				g.drawString(lockGrid, x + 3, y + (2*height/3) + 3);
 			}
 			if(showminimap){
 				//check to make sure map is kept on screen (11 is size of buffers and borders)
@@ -206,8 +208,17 @@ public class MapOptions {
 			}
 			//third item
 			if(mouseY >= y + (2*height/3) && mouseY <= y + height){
-				hoverArea = ping;
-
+				hoverArea = lockgrid;
+				if(input.isMousePressed(0)){
+					gridLocked = !gridLocked;
+					if(gridLocked){
+						lockGrid = "Unlock Grid";
+						setActive(false);
+					} else {
+						lockGrid = "Lock Grid";
+						setActive(false);
+					}
+				}
 			}
 		}
 

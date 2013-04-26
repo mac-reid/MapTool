@@ -2,6 +2,7 @@ package UserInterface;
 
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -40,12 +41,12 @@ public class InfoPane {
 	Image icons;
 	//the selected token, if there is one
 	Token token;
-	
+	Control control;
 	
 	/**
 	 * Constructor to initialize necessary variables
 	 */
-	public InfoPane(String pGameName, float pX, float pY, float width, float height, String host){
+	public InfoPane(String pGameName, float pX, float pY, float width, float height, String host, Control control){
 		try {
 			background = new Image("Resources/chatpattern.png");
 			icons = new Image("Resources/icons.png");
@@ -53,6 +54,7 @@ public class InfoPane {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.control = control;
 		gameName = pGameName;
 		hostname = host;
 		time = getTime();
@@ -106,6 +108,12 @@ public class InfoPane {
 						int leftSide = (int) (panelX + itemBuffer + (60 * i));
 						if(mouseX >= leftSide && mouseX <= leftSide + 15){
 							token.status[i] = !token.status[i];
+							try {
+								control.changeStatus(token.status, token.x, token.y);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								System.out.println("error sending");
+							}
 						}
 					}
 				}
@@ -115,6 +123,12 @@ public class InfoPane {
 						int leftSide = (int) (panelX + itemBuffer + (60 * i));
 						if(mouseX >= leftSide && mouseX <= leftSide + 15){
 							token.status[i + 4] = !token.status[i + 4];
+							try {
+								control.changeStatus(token.status, token.x, token.y);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								System.out.println("error sending");
+							}
 						}
 					}
 				}

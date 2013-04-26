@@ -68,7 +68,8 @@ public class Control {
 				message += "t~";
 			else 
 				message += "f~";
-		broadcastMessage(message);
+		if (client != null)
+			client.broadcast(message);
 	}
 	
 	void changeStatusB(boolean[] statuses, int x, int y) {

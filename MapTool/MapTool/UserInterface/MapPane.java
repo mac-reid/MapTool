@@ -355,7 +355,7 @@ public class MapPane {
 				// [Right Click] - Check for token
 				if (in.isMousePressed(1)) {
 					if (tokens.isOccupied(currentGridX, currentGridY)) {
-						System.out.println("You have clicked on a token");
+						//System.out.println("You have clicked on a token");
 						return;
 					}
 
@@ -431,7 +431,6 @@ public class MapPane {
 		else if (change < 0 && tokenScale > 8)
 			tokenScale -= 0.1;
 		tokens.scaleTokens(tokenScale);
-		System.out.println("Changed scale: " + change);
 	}
 
 	// Don't ever use this thing

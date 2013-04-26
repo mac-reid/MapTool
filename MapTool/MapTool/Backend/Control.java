@@ -157,6 +157,7 @@ public class Control {
 	}
 
 	void lostConnectionToHost() {
+		
 		// call some function in MapPane to notify the gui that there is no network
 		try {
 			genUI.forceQuit();
@@ -213,8 +214,9 @@ public class Control {
 		client.sendFile(file, user);
 	}
 
-	public void sendTextToGUI(String message) throws IOException {
-		//genUI.receiveChat(message);
+	public void sendTextToGUI(String user, String message) throws IOException {
+		
+		genUI.receiveChat(user, message);
 	}
 
 	public void showMapArea(int startX, int startY, int endX, int endY) throws IOException {
@@ -250,6 +252,12 @@ public class Control {
 			return false;
 		return true;
 	} 
+	
+	public File selectMap() {
+		
+		PopupWindow popUp = new PopupWindow(genUI);
+		return  popUp.selectMap();
+	}
 
 	public File[] importTokens() {
 

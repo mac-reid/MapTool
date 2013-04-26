@@ -7,7 +7,7 @@ import java.net.*;
 public class Client  {
 
 	// for I/O
-	private Socket socket;
+	private Socket socket = new Socket();;
 	private ObjectInputStream sInput;		// to read from the socket
 	private ObjectOutputStream sOutput;		// to write on the socket
 
@@ -105,7 +105,7 @@ public class Client  {
 
 		// try to connect to the server
 		try {
-			socket = new Socket(server, port);
+			socket.connect(new InetSocketAddress(server, port), 1000);
 		} catch(Exception ec) {
 			return false;
 		}
@@ -232,7 +232,7 @@ public class Client  {
 					else if (splits[0].equals("ChatMessage")) {
 
 						// Print the message
-						c.sendTextToGUI(msg);
+						c.sendTextToGUI(splits[1], splits[2]);
 					}
 					else if (splits[0].equals("AddToken")) {
 

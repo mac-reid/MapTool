@@ -197,7 +197,7 @@ public class Server extends Thread {
 		ObjectInputStream sInput;
 		ObjectOutputStream sOutput;
 
-		// my unique id (easier for deconnection)
+		// my unique id (easier for disconnection)
 		int id;
 
 		// the Username of the Client

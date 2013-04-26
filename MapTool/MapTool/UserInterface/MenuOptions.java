@@ -16,7 +16,7 @@ import Backend.Control;
 
 
 public class MenuOptions {
-	
+
 	//decides which options (host or join) to load
 	private int state;
 	private int startX = 0;
@@ -27,23 +27,23 @@ public class MenuOptions {
 	//the possible option fields that can be generated
 	public OptionField[] fields;
 	private Image cancelContinue;
-	
+
 	private double scale;
-	
+
 	public boolean isActive, showDialog;
 	public MenuButton button;
-	
+
 	String errorMessage;
 	int messageType;
 	public Control control;
-	
+
 	public MenuOptions(int state, MenuButton button, GameContainer gc) throws SlickException{
 		this.control = button.control;
 		this.button = button;
 		this.state = state;
 		//make the cancelcontinue button different
 		cancelContinue = new Image("Resources/cancelORcontinue.png")
-			.getScaledCopy(gc.getWidth()/3, gc.getHeight()/6);
+		.getScaledCopy(gc.getWidth()/3, gc.getHeight()/6);
 		yChange = 60;
 		startX = gc.getWidth()*5/8;
 		startY = gc.getHeight()/2;
@@ -64,7 +64,7 @@ public class MenuOptions {
 		}
 		}
 	}
-	
+
 	public void render(GameContainer gc){
 		try{
 			for(int i = 0; i < fields.length; i++){
@@ -81,7 +81,7 @@ public class MenuOptions {
 					errorMessage = "Both the IP Address and Avatar Name fields are required to join a game.\n";
 					if(messageType == 1) {
 						errorMessage += "The IP address can only contain numbers and '.'/n"
-							+ "Click anywhere to continue";
+								+ "Click anywhere to continue";
 					} else if (messageType == 2){
 						errorMessage += "It appears that the IP you entered was invalid. Please check it is correct." +
 								"\nClick anywhere to continue";
@@ -172,10 +172,10 @@ public class MenuOptions {
 								}
 							}
 							try{
-								if(control.joinGame(fields[1].value, fields[0].value)){;
-								((genUI)sbg).setName(fields[1].value);
-								sbg.enterState(1);
-								((AppGameContainer) gc).setResizable(true);
+								if(control.joinGame(fields[1].value, fields[0].value)){
+									((genUI)sbg).setName(fields[1].value);
+									sbg.enterState(1);
+									((AppGameContainer) gc).setResizable(true);
 								} else {
 									showDialog = true;
 									messageType = 2;

@@ -100,15 +100,35 @@ public class PopupWindow {
 		importFiles();
 		
 		File ret = new File(dialog.getFileName());
-		System.out.println(dialog.getFileName() + " dat filename | dat length " + selectedFiles.length);
 		if (selectedFiles != null && selectedFiles.length >= 1)
 			ret = selectedFiles[0];
-		else
-			System.out.println("you're a towel");
 		
 		kill();
 		return ret;
-	}	
+	}
+	
+	public File selectMap() {
+		
+		prepareYourself("Map Files (.png)", ".png", SWT.OPEN);
+		
+		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)
+			dialog.setFilterPath(System.getProperty("user.dir") + "\\Resources\\Maps\\");
+		else 
+			dialog.setFilterPath(System.getProperty("user.dir") + "/Resources/Maps/");
+		
+		dialog.open();
+		selectedFileNames = dialog.getFileNames();
+		selectedFiles = new File[selectedFileNames.length];
+		filter = dialog.getFilterPath();
+		importFiles();
+		
+		File ret = new File(dialog.getFileName());
+		if (selectedFiles != null && selectedFiles.length >= 1)
+			ret = selectedFiles[0];
+		
+		kill();
+		return ret;
+	}
 	
 	private void prepareYourself(String filter, String extensions, int type) {
 		

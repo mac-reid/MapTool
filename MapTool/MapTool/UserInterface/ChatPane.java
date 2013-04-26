@@ -77,11 +77,7 @@ public class ChatPane {
     	chatlog.add("   /r is aliased to /roll");
     	chatlog.add("   To roll the dice, you can enter");
     	chatlog.add("   any formula that is");
-    	chatlog.add("   [# dice]d[# sides] + [modifiers]");
-    	chatlog.add("");
-    	chatlog.add(" - /w [name] [message]");
-    	chatlog.add("   Whisper a message to a player.");
-    	
+    	chatlog.add("   [# dice]d[# sides] + [modifiers]");    	
     }
     
     public void sendText() {}

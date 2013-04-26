@@ -13,8 +13,15 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.*;
 
+// added by Mac
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.io.IOException;
 
 public class MapPane {
+
+    // added by Mac
+    private static volatile List<String> changeBuffer = new CopyOnWriteArrayList<String>();
+    private static Object sharedLock = new Object();
 	 
 	Image map = null; 
 	Image mapgrid = null;
@@ -83,7 +90,6 @@ public class MapPane {
     MapOptions options;
     SlickFileChooser fileChooser = new SlickFileChooser();
     
-    
     public MapPane(String maplocation, int sizex, int sizey, genUI genUI) throws SlickException {
     	loadMap(maplocation);
     	selectedToken = null;
@@ -98,6 +104,7 @@ public class MapPane {
     	selectgrid = new Image("Resources/Redgrid.png");
     	options = new MapOptions(0, 0, this);
     	tokens = new Tokens(tokenScale);
+        genUI.control.setMap(this);
     }
     
     
@@ -201,7 +208,27 @@ public class MapPane {
      * @todo add character Token menu action
      */
     public void update(int mXoffset, int mYoffset, int mapXsize, int mapYsize, GameContainer gc, int delta) throws SlickException {
-    	Input in = gc.getInput();
+    	
+        // Added by Mac
+        // search for the update buffer
+        List<String> tempList;
+        synchronized (sharedLock) {
+            tempList = new ArrayList<String>(changeBuffer);
+        }
+
+        if (tempList.size() > 0) {
+            List<String> nealNeedsMoreWater = new ArrayList<String>();
+            for (String s : tempList) {
+                String[] data = s.split("~");
+                tokens.addToken(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
+                nealNeedsMoreWater.add(s);
+            }
+            synchronized (sharedLock) {
+                changeBuffer.removeAll(nealNeedsMoreWater);
+            }
+        }
+
+        Input in = gc.getInput();
     	
     	mouseX = in.getMouseX();
     	mouseY = in.getMouseY();
@@ -215,6 +242,11 @@ public class MapPane {
     	
         if (in.isKeyPressed(in.KEY_0))
             genUI.control.importFiles();
+
+        if (in.isKeyPressed(in.KEY_9)) {
+            genUI.control.sendFile("/temp/python/stuff.txt", "");
+            System.out.println("sendfilesmannananna");
+        }
     	
     	// If the file chooser is active, update
     	if (fileChooser.isActive()) {
@@ -274,7 +306,13 @@ public class MapPane {
 	    		else if(dragMode == 2) {
 	    			// Indicates the mouse was released from a token drag.  Attempt to move the token
 	    			tokens.moveToken((int)dragToken.getX(), (int)dragToken.getY(), currentGridX, currentGridY);
-	    			dragToken = null;
+                    
+                    // added by Mac
+                    try {
+                        genUI.control.moveToken((int)dragToken.getX(), (int)dragToken.getY(), currentGridX, currentGridY);
+                    } catch (IOException ioe) {}
+	    			
+                    dragToken = null;
 	    			dragImage = null;
 	    			dragMode = 0;
 	    		}
@@ -370,12 +408,22 @@ public class MapPane {
     // Add a Token by map coordinate
     public void addTokenCoord(String imglocation, int x, int y) throws SlickException {
     	this.addTokenGrid(imglocation, (int)((x + pxOffsetX) / tokenScale), (int)((y + pxOffsetY) / tokenScale));
+
+        // added by Mac
+        try {
+            genUI.control.addToken(imglocation, x, y);
+        } catch (IOException ioe) {}
     }
     
     
     // Add a Token by grid location
     public void addTokenGrid(String imglocation, int x, int y) throws SlickException {
     	tokens.addToken(imglocation, x, y);
+
+        // added by Mac
+        try {
+            genUI.control.addToken(imglocation, x, y);
+        } catch (IOException ioe) {}
     }
     
     
@@ -388,6 +436,11 @@ public class MapPane {
     // Remove a Token by grid location
     public void removeTokenGrid(int x, int y) {
     	tokens.removeToken(x, y);
+
+        // added by Mac
+        try {
+            genUI.control.removeToken(x, y);
+        } catch (IOException ioe) {}
     }
     
     
@@ -408,12 +461,19 @@ public class MapPane {
     
     // Add a token to this map with default size (1)
     public void addToken(String file, int x, int y, String tokenname) {
-    	tokens.addToken(tokenname, file, x, y);
+        tokens.addToken(tokenname, file, x, y);
     }
     
     // Add a token to this map with custom size
     public void addToken(String file, int x, int y, int size, String tokenname) {
     	tokens.addToken(tokenname, file, x, y, size);
+    }
+
+    // added by Mac - used for client adding
+    public void addToken(String message) {
+        synchronized (sharedLock) {
+            changeBuffer.add(message);
+        }
     }
     
     // Returns token at grid location X,Y
@@ -443,13 +503,15 @@ public class MapPane {
     }
     
     // Moves a token by name to X,Y
-    public boolean moveToken(String name, int x, int y) {
-    	return tokens.moveToken(name, x, y);
+    public boolean moveToken(int x1, int y1, int x2, int y2 ) {
+    	return tokens.moveToken(x1, y1, x2, y2);
     }
     
     // Removes a token by its given name
-    public boolean removeToken(String tokenname) {
-    	return tokens.removeToken(tokenname);
+    public boolean removeToken(int x, int y) {
+
+        // changed by Mac
+    	return tokens.removeToken(x, y);
     }
     
     public String getBackground() {

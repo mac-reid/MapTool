@@ -26,35 +26,37 @@ public class Control {
 	
 	public Control(genUI genUI) {
 		this.genUI = genUI;
+		store = new Storage(this);
 	}
 
 	public void setMap(MapPane getmap) {
 		map = getmap;
 		// Client broadcast code here, to support changing maps (as a DM option)
+		// client.broadcast("Map~" + getmap.getBackground());
 	}
 	
 	void setMapB (String mapname) {
 		// For the future, when clients will load maps based on the host
 	}
 
-	public void addToken(String fileName, int tileX, int tileY, String name) throws IOException {
+	public void addToken(String fileName, int tileX, int tileY) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
 		String string = "AddToken~" + fileName + "~" + Integer.toString(tileX) 
-			+ "~" + Integer.toString(tileY) + "~" + name;
+			+ "~" + Integer.toString(tileY);
 		client.broadcast(string);
 	}
 
-	void addTokenB(String fileName, int tileX, int tileY, String name) {
+	void addTokenB(String message) {
 	
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
-		map.addToken(fileName, tileX, tileY, name);
+		map.addToken(message);
 	}
 
 	public String broadcastMessage(String message) throws IOException {
@@ -64,6 +66,12 @@ public class Control {
 		if (client != null)
 			client.sendChatMessage(message);
 		return tmp;
+	}
+
+	public void disconnect() {
+
+		client.disconnect();
+		server.kill();
 	}
 
 	public Token getToken(int x, int y) {
@@ -107,7 +115,7 @@ public class Control {
 
 	public void hostGame() {
 		
-		Server server = new Server(8192);
+		server = new Server(8192);
 		server.start();
 	}
 	
@@ -125,40 +133,39 @@ public class Control {
 		store.readMapData(saveFilePath);
 	}
 	
-	public boolean moveToken(String s, int tileX, int tileY) throws IOException {
+	public boolean moveToken(int startX, int startY, int endX, int endY) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return false;
 		}		
-		String string = "Move~" + s + "~" + Integer.toString(tileX) + "~" + 
-			Integer.toString(tileY);
+		String string = "Move~" + startX + "~" + startY + "~" + endX + "~" + endY;
 		client.broadcast(string);
 		return false;
 	}
 
-	boolean moveTokenB(String s, int tileX, int tileY) {
-		return map.moveToken(s, tileX, tileY);
+	boolean moveTokenB(int startX, int startY, int endX, int endY) {
+		return map.moveToken(startX, startY, endX, endY);
 	}
 
-	public boolean removeToken(String name) throws IOException {
+	public boolean removeToken(int x, int y) throws IOException {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here");
 			return false;
 		}
-		String string = "Remove~" + name;
+		String string = "Remove~" + x + "~" + y;
 		client.broadcast(string);
 		return true;
 	}
 
-	boolean removeTokenB(String name) {
+	boolean removeTokenB(int x, int y) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return false;
 		}
-		return map.removeToken(name);
+		return map.removeToken(x, y);
 	}
 
 	public void saveGame() {
@@ -174,6 +181,10 @@ public class Control {
 			return;
 		}
 		store.writeMapData(saveFilePath);
+	}
+
+	public void sendFile(String file, String user) {
+		client.sendFile(file, user);
 	}
 
 	public void sendTextToGUI(String user, String message) throws IOException {
@@ -225,11 +236,12 @@ public class Control {
 
 	public String parseInput(String message) {
 
+		String ret = "";
+
 		// parse the message for command messages
 		if (message.charAt(0) == '/') {
 
 			int[] roll;
-			String ret = "";
 			String[] data = message.split(" ");
 
 			// case for no spaces in the input
@@ -336,8 +348,6 @@ public class Control {
 		roll[0] = Integer.parseInt(parts[0]);
 
 		if (parts[1].indexOf("+") != -1) {
-
-			System.out.println(parts[1].length() + " length of parts");
 			roll[1] = Integer.parseInt(parts[1].substring(0, 
 				parts[1].indexOf("+")));
 			roll[2] = Integer.parseInt(parts[1].substring(parts[1].indexOf("+")));

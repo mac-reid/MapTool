@@ -13,15 +13,8 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.*;
 
-// added by Mac
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.io.IOException;
 
 public class MapPane {
-
-    // added by Mac
-    private static volatile List<String> changeBuffer = new CopyOnWriteArrayList<String>();
-    private static Object sharedLock = new Object();
 	 
 	Image map = null; 
 	Image mapgrid = null;
@@ -37,6 +30,9 @@ public class MapPane {
 	// Holds the (X,Y) coordinates of the token being dragged
 	Point dragToken = new Point();
 	
+	// Hold the float (X,Y) coordinates of the 
+	Point2D.Float gridOrigin = new Point2D.Float();
+	
 	// Current token scale
 	float tokenScale = 48;
 	float mapScale = 1;
@@ -45,12 +41,6 @@ public class MapPane {
 	// Offset of map (from origin) in the display window
 	float pxOffsetX = 0;
     float pxOffsetY = 0;
-    int gridOffsetX = 0;
-    int gridOffsetY = 0;
-    
-    /* Size of map displayed width/height by tile count
-    int tileSizeX = 17;
-    int tileSizeY = 13;*/
     
     // Size of displayed map by pixel count
     int paneSizeX = 0;
@@ -82,6 +72,8 @@ public class MapPane {
     int dragMode = 0;
     // File loading mode (0: None, 1: Maps, 2: Tokens)
     int loadMode = 0;
+    // Map scaling is currently taking place
+    boolean mapScaling = false;
     
     genUI genUI;
     
@@ -89,6 +81,7 @@ public class MapPane {
     
     MapOptions options;
     SlickFileChooser fileChooser = new SlickFileChooser();
+    
     
     public MapPane(String maplocation, int sizex, int sizey, genUI genUI) throws SlickException {
     	loadMap(maplocation);
@@ -104,7 +97,6 @@ public class MapPane {
     	selectgrid = new Image("Resources/Redgrid.png");
     	options = new MapOptions(0, 0, this);
     	tokens = new Tokens(tokenScale);
-        genUI.control.setMap(this);
     }
     
     
@@ -113,8 +105,6 @@ public class MapPane {
     	//map.clampTexture();
     	pxOffsetX = 0;
     	pxOffsetY = 0;
-    	gridOffsetX = 0;
-    	gridOffsetY = 0;
     	pxSizeX = map.getWidth();
     	pxSizeY = map.getHeight();
     }
@@ -181,8 +171,15 @@ public class MapPane {
     		
     		// Otherwise, draw the map and grid based fully on the mouse-drag offset
     		else {
-    		map.draw(x - pxOffsetX, y - pxOffsetY);
-	    	drawGrid(x, y, g);
+    			System.out.println(pxOffsetX + " | (" + pxSizeX + " | " + paneSizeX + ")");
+    			// Handles map overdraw during a window resize
+    			if (pxOffsetX + paneSizeX > pxSizeX)
+        			pxOffsetX = pxSizeX - paneSizeX;
+        		if (pxOffsetY + paneSizeY > pxSizeY)
+        			pxOffsetY = pxSizeY - paneSizeY;
+        		
+	    		map.draw(x - pxOffsetX, y - pxOffsetY);
+		    	drawGrid(x, y, g);
     		}
 	    	
 	    	// Only draw Tokens present in the current window
@@ -208,27 +205,10 @@ public class MapPane {
      * @todo add character Token menu action
      */
     public void update(int mXoffset, int mYoffset, int mapXsize, int mapYsize, GameContainer gc, int delta) throws SlickException {
+    	Input in = gc.getInput();
     	
-        // Added by Mac
-        // search for the update buffer
-        List<String> tempList;
-        synchronized (sharedLock) {
-            tempList = new ArrayList<String>(changeBuffer);
-        }
-
-        if (tempList.size() > 0) {
-            List<String> nealNeedsMoreWater = new ArrayList<String>();
-            for (String s : tempList) {
-                String[] data = s.split("~");
-                tokens.addToken(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
-                nealNeedsMoreWater.add(s);
-            }
-            synchronized (sharedLock) {
-                changeBuffer.removeAll(nealNeedsMoreWater);
-            }
-        }
-
-        Input in = gc.getInput();
+    	if(in.isKeyDown(in.KEY_LSHIFT))
+    		System.out.println("SHIFT IS DOWN HELLA");
     	
     	mouseX = in.getMouseX();
     	mouseY = in.getMouseY();
@@ -237,20 +217,13 @@ public class MapPane {
     	
     	currentGridX = (int)((mouseX + pxOffsetX - mXoffset) / tokenScale);
     	currentGridY = (int)((mouseY + pxOffsetY - mYoffset) / tokenScale);
-    	gridOffsetX = (int)(pxOffsetX / tokenScale);
-    	gridOffsetY = (int)(pxOffsetY / tokenScale);
     	
         if (in.isKeyPressed(in.KEY_0))
             genUI.control.importFiles();
-
-        if (in.isKeyPressed(in.KEY_9)) {
-            genUI.control.sendFile("/temp/python/stuff.txt", "");
-            System.out.println("sendfilesmannananna");
-        }
     	
     	// If the file chooser is active, update
     	if (fileChooser.isActive()) {
-    		fileChooser.update(in, mXoffset, mYoffset, pxSizeX, pxSizeY);  //TODO: FIX FILECHOOSER
+    		fileChooser.update(in, mXoffset, mYoffset, paneSizeX, paneSizeY);  //TODO: FIX FILECHOOSER
     		// If the chooser returns a value, MapPane sets it inactive
     		if (!(fileChooser.getSelected().equals(""))) {
     			if (loadMode == 2)
@@ -306,13 +279,7 @@ public class MapPane {
 	    		else if(dragMode == 2) {
 	    			// Indicates the mouse was released from a token drag.  Attempt to move the token
 	    			tokens.moveToken((int)dragToken.getX(), (int)dragToken.getY(), currentGridX, currentGridY);
-                    
-                    // added by Mac
-                    try {
-                        genUI.control.moveToken((int)dragToken.getX(), (int)dragToken.getY(), currentGridX, currentGridY);
-                    } catch (IOException ioe) {}
-	    			
-                    dragToken = null;
+	    			dragToken = null;
 	    			dragImage = null;
 	    			dragMode = 0;
 	    		}
@@ -320,7 +287,7 @@ public class MapPane {
 		        
 // Modes have not been set, menus are not in use - addition click functions (right/middle) go here
 	    		
-	    		// For Right Click, check for token
+	    		// [Right Click] - Check for token
 		        if (in.isMousePressed(1)) {
 		        	if(tokens.isOccupied(currentGridX, currentGridY)) {
 		        		System.out.println("You have clicked on a token");
@@ -333,15 +300,49 @@ public class MapPane {
 			        options.setActive(true);
 			    }
 	    	
-		        // For a middle click, delete a Token
+		        // [Middle Click] - Delete a Token
 		        if (in.isMousePressed(2))
 		        	removeTokenCoord(mouseX - mXoffset, mouseY - mYoffset);
 		        
 		        
-		        // Sloppy MouseWheel Polling
-		        int wheel = Mouse.getDWheel();
-		        if (wheel != 0) {
-		        	this.changeScale(wheel);
+		        // [MouseWheel Polling] - Used to scale and orient the grid (via Shift/Control/Arrowkeys)
+		        if(in.isKeyDown(in.KEY_LCONTROL)) {
+		        	mapScaling = true;
+		        	int scaleshift = Mouse.getDWheel();
+		        	Point2D.Float originshift = new Point2D.Float();
+		        	
+		        	
+		        	if (in.isKeyDown(in.KEY_LEFT))
+		        		originshift.x--;
+		        	if (in.isKeyDown(in.KEY_RIGHT))
+		        		originshift.x++;
+		        	if (in.isKeyDown(in.KEY_UP))
+		        		originshift.y--;
+		        	if (in.isKeyDown(in.KEY_DOWN))
+		        		originshift.y++;
+		        	
+		        	if (scaleshift != 0)
+		        		scaleshift = (scaleshift / Math.abs(scaleshift));
+		        	
+		        	if(in.isKeyDown(in.KEY_LSHIFT)) {
+		        		tokenScale += (float)(scaleshift / 10.0);
+		        		originshift.x /= 10.0f;
+		        		originshift.y /= 10.0f;
+		        	}
+		        	else {
+		        		tokenScale += (float)(scaleshift);
+		        	}	
+		        	
+		        	gridOrigin.x += originshift.x;
+		        	gridOrigin.y += originshift.y;
+		        	this.setScale(this.getScale() + scaleshift);
+		        }
+		        else {
+		        	if (mapScaling == true) {
+		        		mapScaling = false;
+		        		// CONTROLLER.BROADCASTSCALECHANGE (this.getScale())  or 'tokenScale'
+		        	}
+		        		
 		        }
 	    	}
 	    }
@@ -357,6 +358,18 @@ public class MapPane {
     }
     
     
+    // Returns the Grid/Token scale
+    public float getScale() {
+    	return tokenScale;
+    }
+    
+    // Sets the Grid/Token scale
+    public void setScale(float tokenScale) {
+    	this.tokenScale = tokenScale;
+    	tokens.scaleTokens(tokenScale);
+    }
+    
+    // Increments/Decrements the Grid/Token scale (used in conjunction with live mousewheel input)
     public void changeScale(int change) {
     	if (change > 0  &&  tokenScale < 256)
     		tokenScale += 0.1;
@@ -408,22 +421,12 @@ public class MapPane {
     // Add a Token by map coordinate
     public void addTokenCoord(String imglocation, int x, int y) throws SlickException {
     	this.addTokenGrid(imglocation, (int)((x + pxOffsetX) / tokenScale), (int)((y + pxOffsetY) / tokenScale));
-
-        // added by Mac
-        try {
-            genUI.control.addToken(imglocation, x, y);
-        } catch (IOException ioe) {}
     }
     
     
     // Add a Token by grid location
     public void addTokenGrid(String imglocation, int x, int y) throws SlickException {
     	tokens.addToken(imglocation, x, y);
-
-        // added by Mac
-        try {
-            genUI.control.addToken(imglocation, x, y);
-        } catch (IOException ioe) {}
     }
     
     
@@ -436,11 +439,6 @@ public class MapPane {
     // Remove a Token by grid location
     public void removeTokenGrid(int x, int y) {
     	tokens.removeToken(x, y);
-
-        // added by Mac
-        try {
-            genUI.control.removeToken(x, y);
-        } catch (IOException ioe) {}
     }
     
     
@@ -461,19 +459,12 @@ public class MapPane {
     
     // Add a token to this map with default size (1)
     public void addToken(String file, int x, int y, String tokenname) {
-        tokens.addToken(tokenname, file, x, y);
+    	tokens.addToken(tokenname, file, x, y);
     }
     
     // Add a token to this map with custom size
     public void addToken(String file, int x, int y, int size, String tokenname) {
     	tokens.addToken(tokenname, file, x, y, size);
-    }
-
-    // added by Mac - used for client adding
-    public void addToken(String message) {
-        synchronized (sharedLock) {
-            changeBuffer.add(message);
-        }
     }
     
     // Returns token at grid location X,Y
@@ -503,15 +494,13 @@ public class MapPane {
     }
     
     // Moves a token by name to X,Y
-    public boolean moveToken(int x1, int y1, int x2, int y2 ) {
-    	return tokens.moveToken(x1, y1, x2, y2);
+    public boolean moveToken(String name, int x, int y) {
+    	return tokens.moveToken(name, x, y);
     }
     
     // Removes a token by its given name
-    public boolean removeToken(int x, int y) {
-
-        // changed by Mac
-    	return tokens.removeToken(x, y);
+    public boolean removeToken(String tokenname) {
+    	return tokens.removeToken(tokenname);
     }
     
     public String getBackground() {

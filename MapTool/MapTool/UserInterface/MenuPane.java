@@ -1,22 +1,17 @@
 package UserInterface;
 
-import java.awt.Toolkit;
-
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.gui.GUIContext;
 
 import Backend.Control;
 
 
 public class MenuPane {
 
-	private GameContainer game;
 	Image background;
 	int width, height, imgWidth, imgHeight;
 	int hoverarea = 0;
@@ -159,6 +154,7 @@ public class MenuPane {
 				editor.genUI.control.load();
 				break;
 			case 6:
+				editor.genUI.control.disconnect();
 				editor.genUI.enterState(0);
 			}
 		}

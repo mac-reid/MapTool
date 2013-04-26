@@ -39,7 +39,11 @@ public class Tokens {
 	
 	// Resets the tokens on the Map
 	public void clearTokens() {
-		tokens = null;
+		
+		// changed this to actually reset the list
+		// before it was throwing null pointers 
+		// after "clearing" the list - Mac
+		tokens = new ArrayList<Token>();
 	}
 	
 	

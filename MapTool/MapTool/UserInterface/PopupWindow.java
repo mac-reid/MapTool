@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.*;
 
 public class PopupWindow {
 
+	genUI genUI;
+	
 	Shell shell;
 	String filter;
 	Display display;
@@ -14,6 +16,8 @@ public class PopupWindow {
 	String[] filterNames;
 	String[] filterExtensions;
 	String[] selectedFileNames;
+	
+	public PopupWindow(genUI genUI) {this.genUI = genUI;}
 	
 	public File[] importTokens() {
 
@@ -25,6 +29,9 @@ public class PopupWindow {
 			dialog.setFilterPath("/");
 		
 		dialog.open();
+		selectedFileNames = dialog.getFileNames();
+		selectedFiles = new File[selectedFileNames.length];
+		filter = dialog.getFilterPath();
 		importFiles();
 		
 		// need to move the files to the proper dir
@@ -42,6 +49,9 @@ public class PopupWindow {
 			dialog.setFilterPath("/");
 		
 		dialog.open();
+		selectedFileNames = dialog.getFileNames();
+		selectedFiles = new File[selectedFileNames.length];
+		filter = dialog.getFilterPath();
 		importFiles();
 		
 		// need to move the files to the proper dir
@@ -59,7 +69,9 @@ public class PopupWindow {
 			dialog.setFilterPath(System.getProperty("user.dir") + "/saves/");
 		
 		dialog.open();
-		
+		selectedFileNames = dialog.getFileNames();
+		selectedFiles = new File[selectedFileNames.length];
+		filter = dialog.getFilterPath();
 		importFiles();
 		
 		File ret = null;
@@ -80,12 +92,17 @@ public class PopupWindow {
 			dialog.setFilterPath(System.getProperty("user.dir") + "/saves/");
 		
 		dialog.open();
-		
+		selectedFileNames = dialog.getFileNames();
+		selectedFiles = new File[selectedFileNames.length];
+		filter = dialog.getFilterPath();
 		importFiles();
 		
-		File ret = null;
+		File ret = new File(dialog.getFileName());
+		System.out.println(dialog.getFileName() + " dat filename | dat length " + selectedFiles.length);
 		if (selectedFiles != null && selectedFiles.length >= 1)
 			ret = selectedFiles[0];
+		else
+			System.out.println("you're a towel");
 		
 		kill();
 		return ret;
@@ -93,6 +110,7 @@ public class PopupWindow {
 	
 	private void prepareYourself(String filter, String extensions, int type) {
 		
+		genUI.setUpdatePaused(true);
 		display = new Display();
 		shell = new Shell(display); 
 		dialog = new FileDialog(shell, type);
@@ -100,18 +118,17 @@ public class PopupWindow {
 		filterExtensions = new String[] {extensions};
 		dialog.setFilterNames(filterNames);
 		dialog.setFilterExtensions(filterExtensions);
-		filter = dialog.getFilterPath();
-		selectedFileNames = dialog.getFileNames();
-		selectedFiles = new File[selectedFileNames.length];
+		dialog.setOverwrite(true);
 	}
 	
 	private void importFiles() {
 		
-		for (int i = 0; i < selectedFiles.length; i++) 
+		for (int i = 0; i < selectedFiles.length; i++) {
 			if(filter != null && filter.trim().length() > 0) 
 				selectedFiles[i] = new File(filter, selectedFileNames[i]);
 			else
 				selectedFiles[i] = new File(selectedFileNames[i]);
+		}
 	}
 	
 	private void kill() {
@@ -120,5 +137,6 @@ public class PopupWindow {
 			if (!display.readAndDispatch()) 
 				display.sleep();
 		display.dispose();
+		genUI.setUpdatePaused(false);
 	}
 }

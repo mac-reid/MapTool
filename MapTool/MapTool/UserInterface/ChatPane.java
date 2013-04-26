@@ -65,8 +65,24 @@ public class ChatPane {
     	fillpattern = new Image("Resources/crepepaper.png");
     	
     	chatlog = new ArrayList<String>();
-    	for(int i = 0; i<5; i++)
-    		chatlog.add(i + ":  bazooper!!!!1111 sampletext \n");
+    	
+    	chatlog.add("Welcome to MapTool!");
+    	chatlog.add("");
+    	chatlog.add("Here are the available");
+    	chatlog.add("chat commands you can use:");
+    	chatlog.add("");
+    	chatlog.add(" - Type any message and press");
+    	chatlog.add("   Enter and it will appear to all");
+    	chatlog.add("   other players");
+    	chatlog.add("");
+    	chatlog.add(" - /roll 2d6+4");
+    	chatlog.add("   /r is aliased to /roll");
+    	chatlog.add("   To roll the dice, you can enter");
+    	chatlog.add("   any formula that is");
+    	chatlog.add("   [# dice]d[# sides] + [modifiers]");
+    	chatlog.add("");
+    	chatlog.add(" - /w [name] [message]");
+    	chatlog.add("   Whisper a message to a player.");
     	
     }
     

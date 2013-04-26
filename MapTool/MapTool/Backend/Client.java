@@ -2,8 +2,6 @@ package Backend;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
-
 
 // The Client that can be run both as a console or a GUI 
 public class Client  {
@@ -234,7 +232,6 @@ public class Client  {
 
 						// Print the message
 						c.sendTextToGUI(splits[1], splits[2]);
-						System.out.println(splits[1] + ": " + splits[2]);
 					}
 					else if (splits[0].equals("AddToken")) {
 
@@ -258,7 +255,7 @@ public class Client  {
 						int endX = Integer.parseInt(splits[3]);
 						int endY = Integer.parseInt(splits[4]);
 
-						System.out.println(c.moveTokenB(startX, startY, endX, endY));
+						c.moveTokenB(startX, startY, endX, endY);
 					}
 					else if (splits[0].equals("Remove")) {
 
@@ -293,13 +290,16 @@ public class Client  {
 						
 						// Call the function
 						c.changeStatusB(bools, x, y);	
-					}
+					} else if (splits[0].equals("Clear")) {
 						
+						System.out.println("called clear on client side - " + msg);
+						c.clearB();
+					}
 
 					// should be roll, whisper, setmap
 
 				} catch(IOException e) {
-					System.out.println("Server has closed the connection.");
+					System.out.println("Server has closed the connection." + e);
 					
 					// call the appropriate control function
 					c.lostConnectionToHost();

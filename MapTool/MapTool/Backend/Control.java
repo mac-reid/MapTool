@@ -3,7 +3,6 @@ package Backend;
 import java.io.*;
 import java.util.*;
 import UserInterface.*;
-import java.lang.StringBuffer;
 
 /* The controller class that interacts between the GUI elements,
  * the network elements, and the file i/o elements.
@@ -22,7 +21,7 @@ public class Control {
 	private Client client;
 	private Server server;
 	private Storage store;
-	
+
 	public Control(genUI genUI) {
 		this.genUI = genUI;
 		store = new Storage(this);
@@ -33,7 +32,7 @@ public class Control {
 		// Client broadcast code here, to support changing maps (as a DM option)
 		// client.broadcast("Map~" + getmap.getBackground());
 	}
-	
+
 	void setMapB (String mapname) {
 		// For the future, when clients will load maps based on the host
 	}
@@ -45,24 +44,41 @@ public class Control {
 			return;
 		}
 		String string = "AddToken~" + fileName + "~" + Integer.toString(tileX) 
-			+ "~" + Integer.toString(tileY);
+				+ "~" + Integer.toString(tileY);
 		if (client != null)
 			client.broadcast(string);
 	}
 
 	void addTokenB(String message) {
-	
+
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
 		map.addToken(message);
 	}
-	
+
+	void addTokenL(String s, int x, int y) {
+
+		if (!gameLoaded()) { 
+			System.out.println("Some error here"); 
+			return;
+		}
+		map.tokens.addToken(s, x, y);
+	}
+
+	void clear() {
+		client.broadcast("Clear~a");
+	} 
+
+	void clearB() {
+		map.tokens.clearTokens();
+	}
+
 	public void changeStatus(boolean[] statuses, int x, int y) throws IOException {
-		
+
 		String message = "Change~" + x + "~" + y + "~";
-		
+
 		for (int i = 0; i < statuses.length; i++)
 			if (statuses[i] == true)
 				message += "t~";
@@ -71,10 +87,9 @@ public class Control {
 		if (client != null)
 			client.broadcast(message);
 	}
-	
+
 	void changeStatusB(boolean[] statuses, int x, int y) {
 		map.changeStatus(statuses, x, y);
-		System.out.println("B");
 	}
 
 	public String broadcastMessage(String message) throws IOException {
@@ -101,8 +116,8 @@ public class Control {
 			return;
 		}
 		String string = "Hide~" + Integer.toString(startX) + "~" 
-			+ Integer.toString(startY) + "~" + Integer.toString(endX) 
-			+ "~" + Integer.toString(endY);
+				+ Integer.toString(startY) + "~" + Integer.toString(endX) 
+				+ "~" + Integer.toString(endY);
 		if (client != null)
 			client.broadcast(string);
 	}
@@ -117,29 +132,29 @@ public class Control {
 	}
 
 	public void hostGame() {
-		
+
 		server = new Server(8192);
 		server.start();
 	}
-	
+
 	public void joinGame(String alias, String hostname) throws IOException {
 
 		client = new Client(hostname, 8192, alias, this);
 		client.start();
-		System.out.println(hostname);
 	}
-	
-	public void loadSave(String saveFilePath) {
+
+	public void loadSave(File saveFile) {
 
 		// Should call an appropriate MapPane function, such as map.setMap(String mapname)
-		store.readMapData(saveFilePath);
+		map.tokens.clearTokens();
+		store.readMapData(saveFile);
 	}
-	
+
 	void lostConnectionToHost() {
 		// call some function in MapPane to notify the gui that there is no network
 		// genUI.forceQuit();
 	}
-	
+
 	public boolean moveToken(int startX, int startY, int endX, int endY) throws IOException {
 
 		if (!gameLoaded()) { 
@@ -177,19 +192,13 @@ public class Control {
 		return map.removeToken(x, y);
 	}
 
-	public void saveGame() {
-
-		String mydir = System.getProperty("user.dir");
-		store.writeMapData(mydir + "/saves/default.sav");
-	}
-
-	public void saveMap(String saveFilePath) {
+	public void saveGame(File saveFile) {
 
 		if (!gameLoaded()) { 
 			System.out.println("Some error here"); 
 			return;
 		}
-		store.writeMapData(saveFilePath);
+		store.writeMapData(saveFile);
 	}
 
 	public void sendFile(String file, String user) {
@@ -198,7 +207,6 @@ public class Control {
 
 	public void sendTextToGUI(String user, String message) throws IOException {
 		genUI.receiveChat(user, message);
-		System.out.println(user + "   " + message);
 	}
 
 	public void showMapArea(int startX, int startY, int endX, int endY) throws IOException {
@@ -212,7 +220,7 @@ public class Control {
 		if (client != null)
 			client.broadcast(string);
 	}
-	
+
 	void showMapAreaB(int startX, int startY, int endX, int endY) {
 
 		if (!gameLoaded()) { 
@@ -225,7 +233,7 @@ public class Control {
 	protected String getMap() {
 		return map.getBackground();
 	}
-	
+
 	private boolean gameLoaded() {
 
 		if (map == null)
@@ -233,49 +241,46 @@ public class Control {
 		if (store == null)
 			return false;
 		return true;
-	}
+	} 
 
 	public File[] importTokens() {
 
-		PopupWindow popUp = new PopupWindow();
-		//File[] files = 
-		popUp.importTokens();
-		//moveFiles(files, "/Resources/Tokens");
-		//return files;
-		return null;
-	}
-	
-	public File[] importMaps() {
-		
-		PopupWindow popUp = new PopupWindow();
-		//File[] files = 
-		popUp.importMaps();
-		//moveFiles(files, "/Resources/Tokens");
-		//return files;
-		return null;
+		PopupWindow popUp = new PopupWindow(genUI);
+		File[] files = popUp.importTokens();
+		// this.moveFiles(files, "/Resources/Tokens/);
+		return files;
 	}
 
-	public File[] save() {
-		
-		PopupWindow popUp = new PopupWindow();
-		//File[] files = 
-		popUp.saveGame();
-		//moveFiles(files, "/Resources/Tokens");
-		//return files;
-		return null;
+	public File[] importMaps() {
+
+		PopupWindow popUp = new PopupWindow(genUI);
+		File[] files = popUp.importMaps();
+		// this.moveFiles(files, "/Resources/Maps/");
+		return files;
 	}
-	
-	public File[] load() {
-		
-		PopupWindow popUp = new PopupWindow();
-		//File[] files = 
-		popUp.loadGame();
-		//moveFiles(files, "/Resources/Tokens");
-		//return files;
-		return null;
+
+	public File save() {
+
+		PopupWindow popUp = new PopupWindow(genUI);
+		File f = popUp.saveGame();
+		if (f != null)
+			this.saveGame(f);
+		return f;
 	}
-	
-	public String parseInput(String message) {
+
+	public File load() {
+
+		if ((server != null) || (server == null && client == null)) {
+			PopupWindow popUp = new PopupWindow(genUI);
+			File f = popUp.loadGame();
+			if (f != null)
+				this.loadSave(f);
+			return f;
+		} else 
+			return null;
+	}
+
+	private String parseInput(String message) {
 
 		String ret = "";
 
@@ -288,7 +293,7 @@ public class Control {
 			// case for no spaces in the input
 			if (data.length == 1)
 				return "Unrecognized command: " + message;
-		
+
 			if (message.length() > 2) {
 
 				// section for /r
@@ -306,12 +311,12 @@ public class Control {
 
 					parseWhisper(message, data);
 				}
-			
+
 			} else if (message.length() > 6) {
 
 				// section for /roll
 				if (message.substring(0, 4).equalsIgnoreCase("/roll")
-				    	&& message.charAt(5) == ' ') {
+						&& message.charAt(5) == ' ') {
 					roll = parseRoll(message, data);
 				} 
 
@@ -319,7 +324,7 @@ public class Control {
 
 				// section for /gmroll
 				if (message.substring(0,6).equalsIgnoreCase("/gmroll") 
-				    	&& message.charAt(7) == ' ') {
+						&& message.charAt(7) == ' ') {
 					roll = parseRoll(message, data);					
 					if (roll == null) {
 						// improperly formatted roll
@@ -330,25 +335,26 @@ public class Control {
 
 				//section for /whisper
 				if (message.substring(0,7).equalsIgnoreCase("/whisper") 
-				    	&& message.charAt(8) == ' ') {
+						&& message.charAt(8) == ' ') {
 					parseWhisper(message, data);
 				}
-			
+
 			} else 
 
 				// section for returning an error message stating the given
 				// command is improperly formatted e.g. /r (no trailing characters)
 				return "Unrecognized command: " + message;
 		}
-		
+
 		return ret;
 	}
 
+	/*
 	private void moveFiles(File[] files, String subdir) {
 
 		String dest = System.getProperty("user.dir");
 		System.out.println(dest + subdir);
-	}
+	}*/
 
 	private String rollDice(int numRolls, int nSides, int bonus) { 
 
@@ -370,17 +376,16 @@ public class Control {
 		ret += ")+" + bonus + '\n' + "= " + total; 
 		System.out.println(ret);
 		return ret;  
-    }
+	}
 
 	private int[] parseRoll(String message, String[] data) {
-		
+
 		int d = message.indexOf("d");
 		if (d == -1) {
 			// no d in message, improper formatted /roll
 			return null;
 		}
 
-		StringBuffer str = new StringBuffer();
 		int[] roll = new int[3];
 		String sub = message.substring(message.indexOf(" ") + 1, message.length());
 		sub = sub.replaceAll(" ", "");
@@ -390,7 +395,7 @@ public class Control {
 
 		if (parts[1].indexOf("+") != -1) {
 			roll[1] = Integer.parseInt(parts[1].substring(0, 
-				parts[1].indexOf("+")));
+					parts[1].indexOf("+")));
 			roll[2] = Integer.parseInt(parts[1].substring(parts[1].indexOf("+")));
 		}
 

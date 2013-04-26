@@ -568,5 +568,14 @@ public class MapPane {
     public String getBackground() {
     	return map.getResourceReference();
     }
+    
+    //change the token's statuses
+    public void changeStatus(boolean[] statuses, int xLocation, int yLocation){
+    	for(Token t : tokens.tokens){
+    		if(t.x == xLocation && t.y == yLocation){
+    			t.status = statuses;
+    		}
+    	}
+    }
 }
 

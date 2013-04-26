@@ -72,7 +72,7 @@ public class Editor extends BasicGameState{
 		//draw the video chat box
 		menuPane = new MenuPane(this);
 		//TODO Replace "" with game name
-		infoPane = new InfoPane("", gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, "192.92.1");
+		infoPane = new InfoPane("", gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, genUI.getAddress(), genUI.control);
 		loadImages();
 		
 		frame(gc, gc.getGraphics());

@@ -1,5 +1,7 @@
 package UserInterface;
 
+import org.lwjgl.input.Mouse;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
@@ -40,6 +42,8 @@ public class SlickFileChooser {
 	
 	int maxX = 0;
 	int maxY = 0;
+	
+	int rowOffset = 0;
 	
 	
 	// Tracks the displayable rows and columns of resource icons	
@@ -179,11 +183,25 @@ public class SlickFileChooser {
 	
 	// Updates via mouse input
 	public void update(Input in, int x, int y, int paneSizeX, int paneSizeY) {
+		// Store the last mousewheel change (if any)
+		int mouseWheel = Mouse.getDWheel();
+		
 		maxX = x + paneSizeX;
 		maxY = y + paneSizeY;
 		
-		gridColumns = paneSizeX / gridWidth;
-		gridRows = paneSizeY / gridHeight;
+		gridColumns = (paneSizeX - bdrSize * 2) / gridWidth;
+		gridRows = (paneSizeY - bdrSize * 2 - cnxSize - cnxSpacing)  / gridHeight;
+		
+		// Adjust the displayed icons based on mousewheel input
+		if (mouseWheel < 0)
+			rowOffset++;
+		if (mouseWheel > 0  &&  rowOffset > 0)
+			rowOffset--;
+		
+		// Prevent over-scrolling the file display
+		while (((fileNames.size() - ((gridRows + rowOffset - 1) * gridColumns)) < 0)  &&  rowOffset > 0) {
+			rowOffset--;
+		}
 		
 		// Adjust for x-coord render area on screen, border 
 		int mouseX = in.getMouseX();
@@ -197,6 +215,7 @@ public class SlickFileChooser {
 		selX = (int)Math.floor((double)adjMouseX / gridWidth);
 		selY = (int)Math.floor((double)adjMouseY / gridHeight);
 		selIndex = selX + selY * gridColumns;
+		System.out.println(selX + " | " + selY + " | " + selIndex);
 		if (selX >= 0  &&  selX < gridColumns  &&  selY >= 0  &&  selY < gridRows  &&  selIndex >=0  &&  selIndex < fileNames.size())
 			hoverIndex = selIndex;
 		else
@@ -213,8 +232,8 @@ public class SlickFileChooser {
 			}
 			
 			// If clicked area is a token, stores token path, sets display to inactive
-			if ((hoverIndex >= 0)  &&  (hoverIndex < fileNames.size())) {
-				fileSelected = currentPath + (fileNames.get(hoverIndex) + ".png");
+			if ((hoverIndex >= 0)  &&  ((hoverIndex + rowOffset * gridColumns) < fileNames.size())) {
+				fileSelected = currentPath + (fileNames.get(hoverIndex + rowOffset * gridColumns) + ".png");
 				this.setInactive();
 			}
 		}
@@ -224,14 +243,17 @@ public class SlickFileChooser {
 	
 	// Draw loaded token Resources
 	public void render(float getX, float getY, Graphics g) {
+		g.setColor(Color.gray);
 		int pos = 0;
+		// Offset of displayed resources, based on mousewheel scrolling
+		int fileOffset = rowOffset * gridColumns;
 		float x = getX + bdrSize;
 		float y = getY + bdrSize;
 		
 		// Draw the cancel button 10px from upper-right edge
 		canx.draw((maxX - cnxSize - bdrSize), y);
 		
-		while (pos < fileImages.size()  &&  pos < (gridRows * gridColumns)) {
+		while ((pos + fileOffset) < fileImages.size()  &&  pos < (gridRows * gridColumns)) {
 			x = getX + bdrSize + gridWidth * (pos % gridColumns); 
 			y = getY + bdrSize + gridHeight * (pos / gridColumns) + (cnxSize + cnxSpacing) + 10;
 			
@@ -239,41 +261,16 @@ public class SlickFileChooser {
 				g.fillRoundRect(x, y - sboxVOff, gridWidth, gridHeight, 5);
 			
 			if (displayMode == 1) {
-				fileImages.get(pos).draw(x + ((gridWidth - resDispSize) / 2), y);
-				ttTokenFont.drawString((x + ((gridWidth - ttTokenFont.getWidth(fileNames.get(pos))) / 2)), (y + gridHeight - 24), fileNames.get(pos));
+				fileImages.get(pos + fileOffset).draw(x + ((gridWidth - resDispSize) / 2), y);
+				ttTokenFont.drawString((x + ((gridWidth - ttTokenFont.getWidth(fileNames.get(pos + fileOffset))) / 2)), (y + gridHeight - 24), fileNames.get(pos + fileOffset));
 			}
 			
 			else if (displayMode == 2) {
-				fileImages.get(pos).draw((x + ((gridWidth - fileImages.get(pos).getWidth()) / 2)), y + ((gridHeight - fileImages.get(pos).getHeight()) / 2));
-				ttTokenFont.drawString((x + ((gridWidth - ttTokenFont.getWidth(fileNames.get(pos))) / 2)), (y + gridHeight - 16), fileNames.get(pos));
+				fileImages.get(pos + fileOffset).draw((x + ((gridWidth - fileImages.get(pos + fileOffset).getWidth()) / 2)), y + ((gridHeight - fileImages.get(pos + fileOffset).getHeight()) / 2));
+				ttTokenFont.drawString((x + ((gridWidth - ttTokenFont.getWidth(fileNames.get(pos + fileOffset))) / 2)), (y + gridHeight - 16), fileNames.get(pos + fileOffset));
 			}
-			
 			pos++;
-		/* Messy, but gets the job done - Displays the loaded resources
-		 y = y + cnxSize + cnxSpacing;
-		oloop:
-		while (y <= (maxY - gridHeight - bdrSize)) {
-			while (x <= (maxX - gridWidth - bdrSize)) {
-				if (fileImages.size() <= pos)
-					break oloop;
-				// If this is the mouseover token, draw a box
-				if (pos == hoverIndex)
-					g.fillRoundRect(x, y - sboxVOff, gridWidth, gridHeight, 5);
-				// Draws the resource, appropriately centered in the gridbox
-				if (displayMode == 1) {
-					fileImages.get(pos).draw((x + ((gridWidth - resDispSize) / 2)), y);
-					ttTokenFont.drawString((x + ((gridWidth - ttTokenFont.getWidth(fileNames.get(pos))) / 2)), (y + gridHeight - 24), fileNames.get(pos));
-				}
-				if (displayMode == 2) {
-					fileImages.get(pos).draw((x + ((gridWidth - fileImages.get(pos).getWidth()) / 2)), y + ((gridHeight - fileImages.get(pos).getHeight()) / 2));
-					ttTokenFont.drawString((x + ((gridWidth - ttTokenFont.getWidth(fileNames.get(pos))) / 2)), (y + gridHeight - 16), fileNames.get(pos));
-					
-				}
-				x += gridWidth;
-				pos++;
-			}
-			y += gridHeight;
-			x = (getX + bdrSize); */
 		}
 	}
+	
 }

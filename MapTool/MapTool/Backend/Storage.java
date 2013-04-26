@@ -27,10 +27,9 @@ class Storage {
 		String mapname = c.getMap();
 		out.println(mapname);
 
-		ArrayList<Token> t = c.getTokenList();
-		//for (Token token : t)
-		//	out.println(token.getFileName() + "|" + token.getName());
-
+		ArrayList<String> tokens = c.map.tokens.getTokenStrings();
+		for	(String s : tokens)
+			out.println(s);
 		out.close();
 	}
 

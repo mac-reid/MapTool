@@ -115,6 +115,7 @@ public class Client  {
 			sInput  = new ObjectInputStream(socket.getInputStream());
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
 		} catch (IOException ioe) {
+			disconnect();
 			return false;
 		}
 

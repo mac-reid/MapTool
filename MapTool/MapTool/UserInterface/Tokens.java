@@ -219,4 +219,15 @@ public class Tokens {
 		}
 		return false;
 	}
+	
+	
+	public ArrayList<String> getTokenStrings() {
+		ArrayList<String> returnList = new ArrayList<String>();
+		if (tokens != null)
+			for (int i = 0; i < tokens.size(); i++) {
+				returnList.add(tokens.get(i).toString());
+			}
+		return returnList;
+	}
+	
 }

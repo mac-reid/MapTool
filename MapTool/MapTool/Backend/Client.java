@@ -230,7 +230,7 @@ public class Client  {
 
 
 					}
-					if (splits[0].equals("ChatMessage")) {
+					else if (splits[0].equals("ChatMessage")) {
 
 						// Print the message
 						c.sendTextToGUI(splits[1], splits[2]);
@@ -280,7 +280,17 @@ public class Client  {
 
 						// Call the function
 						c.showMapAreaB(startX, startY, endX, endY);
+					} else if (splits[0].equals("Change")) {
+						
+						boolean[] bools = new boolean[8];
+						
+						for (int i = 1; i < 9; i++)
+							if (splits[i].equals("t"))
+								bools[i] = true;
+						c.changeStatusB(bools);
+						
 					}
+						
 
 					// should be roll, whisper, setmap
 

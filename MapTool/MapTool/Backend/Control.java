@@ -3,7 +3,6 @@ package Backend;
 import java.io.*;
 import java.util.*;
 import UserInterface.*;
-import org.newdawn.slick.*;
 import java.lang.StringBuffer;
 
 /* The controller class that interacts between the GUI elements,
@@ -47,7 +46,8 @@ public class Control {
 		}
 		String string = "AddToken~" + fileName + "~" + Integer.toString(tileX) 
 			+ "~" + Integer.toString(tileY);
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 	}
 
 	void addTokenB(String message) {
@@ -57,6 +57,22 @@ public class Control {
 			return;
 		}
 		map.addToken(message);
+	}
+	
+	public void changeStatus(boolean[] statuses) throws IOException {
+		
+		String message = "Change~";
+		
+		for (int i = 0; i < statuses.length; i++)
+			if (statuses[i] == true)
+				message += "t~";
+			else 
+				message += "f~";
+		broadcastMessage(message);
+	}
+	
+	void changeStatusB(boolean[] statuses) {
+		
 	}
 
 	public String broadcastMessage(String message) throws IOException {
@@ -101,7 +117,8 @@ public class Control {
 		String string = "Hide~" + Integer.toString(startX) + "~" 
 			+ Integer.toString(startY) + "~" + Integer.toString(endX) 
 			+ "~" + Integer.toString(endY);
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 	}
 
 	void hideMapAreaB(int startX, int startY, int endX, int endY) {
@@ -140,7 +157,8 @@ public class Control {
 			return false;
 		}		
 		String string = "Move~" + startX + "~" + startY + "~" + endX + "~" + endY;
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 		return false;
 	}
 
@@ -155,7 +173,8 @@ public class Control {
 			return false;
 		}
 		String string = "Remove~" + x + "~" + y;
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 		return true;
 	}
 
@@ -200,7 +219,8 @@ public class Control {
 		}
 		String string = "Show~" + Integer.toString(startX) + "~" + Integer.toString(startY) 
 				+ "~" + Integer.toString(endX) + "~" + Integer.toString(endY);
-		client.broadcast(string);
+		if (client != null)
+			client.broadcast(string);
 	}
 	
 	void showMapAreaB(int startX, int startY, int endX, int endY) {

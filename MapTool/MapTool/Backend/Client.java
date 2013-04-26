@@ -305,6 +305,8 @@ public class Client  {
 						c.displayRoll(msg.substring(msg.indexOf("~") + 1));
 					else if (splits[0].equals("Whisper")) {
 						
+					} else if(splits[0].equals("Scale")) {
+						c.map.setScale(Float.parseFloat(splits[1]));
 					}
 					
 				} catch(IOException e) {

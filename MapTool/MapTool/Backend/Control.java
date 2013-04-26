@@ -311,6 +311,11 @@ public class Control {
 			moveFiles(files, "\\Resources\\Maps\\");
 		return files;
 	}
+	
+	public void setScale(String message) {
+		if (client != null)
+			client.broadcast(message);
+	}
 
 	public File save() {
 
@@ -336,6 +341,7 @@ public class Control {
 	private String parseInput(String message) {
 
 		String ret = "";
+		try {
 
 		// parse the message for command messages
 		if (message.charAt(0) == '/') {
@@ -399,6 +405,9 @@ public class Control {
 				return "Unrecognized command: " + message;
 		}
 
+		} catch (Exception e) {
+			return "Unrecognized command: " + message;
+		}
 		return ret;
 	}
 

@@ -270,11 +270,6 @@ public class MapPane {
 			currentGridY = (int) ((mouseY + pxOffsetY - mYoffset) / tokenScale);
 		}
 		
-		
-		if (in.isKeyPressed(in.KEY_0))
-			System.out.println(System.getProperty("os.name").toLowerCase()
-					.indexOf("win"));
-
 		// If the file chooser is active, update
 		if (fileChooser.isActive()) {
 			fileChooser.update(in, mXoffset, mYoffset, paneSizeX, paneSizeY); // TODO:
@@ -399,7 +394,7 @@ public class MapPane {
 					if (mapScaling == true) {
 						mapScaling = false;
 						// CONTROLLER.BROADCASTSCALECHANGE (this.getScale()) or
-						// 'tokenScale'
+						genUI.control.setScale("Scale~" + tokenScale);
 					}
 
 				}
@@ -422,6 +417,8 @@ public class MapPane {
 
 	// Sets the Grid/Token scale
 	public void setScale(float tokenScale) {
+		
+		// changed by Mac
 		this.tokenScale = tokenScale;
 		tokens.scaleTokens(tokenScale);
 	}

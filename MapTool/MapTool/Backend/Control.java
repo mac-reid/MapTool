@@ -17,7 +17,7 @@ import java.lang.StringBuffer;
  */
 public class Control {
 
-	private MapPane map;
+	protected MapPane map;
 	private genUI genUI;
 	private Client client;
 	private Server server;
@@ -94,24 +94,6 @@ public class Control {
 			server.kill();
 	}
 
-	public Token getToken(int x, int y) {
-
-		if (!gameLoaded()) { 
-			System.out.println("Some error here"); 
-			return null;
-		}
-		return map.getToken(x,y);
-	}
-
-	public ArrayList<Token> getTokenList() {
-
-		if (!gameLoaded()) { 
-			System.out.println("Some error here"); 
-			return null;
-		}
-		return map.getTokens();
-	}
-	
 	public void hideMapArea(int startX, int startY, int endX, int endY) throws IOException {
 
 		if (!gameLoaded()) { 
@@ -150,8 +132,12 @@ public class Control {
 	public void loadSave(String saveFilePath) {
 
 		// Should call an appropriate MapPane function, such as map.setMap(String mapname)
-		store = new Storage(this);
 		store.readMapData(saveFilePath);
+	}
+	
+	void lostConnectionToHost() {
+		// call some function in MapPane to notify the gui that there is no network
+		// genUI.forceQuit();
 	}
 	
 	public boolean moveToken(int startX, int startY, int endX, int endY) throws IOException {
@@ -249,15 +235,46 @@ public class Control {
 		return true;
 	}
 
-	public File[] importFiles() {
+	public File[] importTokens() {
 
 		PopupWindow popUp = new PopupWindow();
-		popUp.start();
-		File[] files = popUp.importFiles();
-		moveFiles(files, "/Resources/Tokens");
-		return files;
+		//File[] files = 
+		popUp.importTokens();
+		//moveFiles(files, "/Resources/Tokens");
+		//return files;
+		return null;
+	}
+	
+	public File[] importMaps() {
+		
+		PopupWindow popUp = new PopupWindow();
+		//File[] files = 
+		popUp.importMaps();
+		//moveFiles(files, "/Resources/Tokens");
+		//return files;
+		return null;
 	}
 
+	public File[] save() {
+		
+		PopupWindow popUp = new PopupWindow();
+		//File[] files = 
+		popUp.saveGame();
+		//moveFiles(files, "/Resources/Tokens");
+		//return files;
+		return null;
+	}
+	
+	public File[] load() {
+		
+		PopupWindow popUp = new PopupWindow();
+		//File[] files = 
+		popUp.loadGame();
+		//moveFiles(files, "/Resources/Tokens");
+		//return files;
+		return null;
+	}
+	
 	public String parseInput(String message) {
 
 		String ret = "";

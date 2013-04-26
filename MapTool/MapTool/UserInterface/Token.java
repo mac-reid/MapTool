@@ -148,9 +148,9 @@ public class Token implements Comparable<Token> {
 	public String toString() {
 		String returnString = "";
 		
-		returnString = name + "~" + tokenImage + "~" + x + "~" + y + "~" + size + "~" + scale + "~";
+		returnString = name + "~" + tokenImage + "~" + x + "~" + y + "~" + size + "~" + scale;
 		for (int i = 0; i < status.length; i++) {
-			returnString = returnString + status[i]; 
+			returnString += "~" + status[i]; 
 		}
 		return(returnString);
 	}

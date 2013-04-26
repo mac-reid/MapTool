@@ -144,15 +144,19 @@ public class MenuPane {
 				break;
 			case 2:
 				//TODO import token
+				editor.genUI.control.importTokens();
 				break;
 			case 3:
 				//TODO import map
+				editor.genUI.control.importMaps();
 				break;
 			case 4:
 				//TODO save
+				editor.genUI.control.save();
 				break;
 			case 5:
 				//TODO load
+				editor.genUI.control.load();
 				break;
 			case 6:
 				editor.genUI.enterState(0);

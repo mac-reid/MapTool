@@ -300,6 +300,10 @@ public class Client  {
 
 				} catch(IOException e) {
 					System.out.println("Server has closed the connection.");
+					
+					// call the appropriate control function
+					c.lostConnectionToHost();
+					
 					break;
 				} catch(ClassNotFoundException e2) {
 					System.out.println("Ermac");

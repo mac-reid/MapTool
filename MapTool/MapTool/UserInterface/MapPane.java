@@ -32,7 +32,7 @@ public class MapPane {
 	boolean visible[][];
 	
 	//ArrayList of all tokens on the map
-	Tokens tokens;	
+	public Tokens tokens;	
 	
 	// Holds the (X,Y) coordinates of the token being dragged
 	Point dragToken = new Point();
@@ -249,12 +249,7 @@ public class MapPane {
     	currentGridY = (int)((mouseY + pxOffsetY - mYoffset) / tokenScale);
     	
         if (in.isKeyPressed(in.KEY_0))
-            genUI.control.importFiles();
-
-        if (in.isKeyPressed(in.KEY_9)) {
-            genUI.control.sendFile("/temp/python/stuff.txt", "");
-            System.out.println("sendfilesmannananna");
-        }
+            genUI.control.importTokens();
     	
     	// If the file chooser is active, update
     	if (fileChooser.isActive()) {

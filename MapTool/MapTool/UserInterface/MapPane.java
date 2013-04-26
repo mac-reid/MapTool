@@ -157,31 +157,29 @@ public class MapPane {
 		if (fileChooser.isActive())
 			fileChooser.render(x, y, g);
 
-		// Otherwise, render whatever else
+		// else if (somethingelse.isActive())
+		
+		// Otherwise, render Map/Grid/Tokens
 		else {
-			// If the window size is larger than one or both map dimensions,
-			// center the map, grid, and tokens appropriately
+			// If the window size is larger than one or both map dimensions, center the map, grid, and tokens appropriately
 			if (paneSizeX >= pxSizeX || paneSizeY >= pxSizeY) {
 				if (paneSizeX >= pxSizeX && paneSizeY >= pxSizeY) {
 					map.draw(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2);
 					drawGrid(x + ((paneSizeX - pxSizeX) / 2), y	+ (paneSizeY - pxSizeY) / 2, g);
-					// tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y +
-					// (paneSizeY - pxSizeY) / 2, 0, 0, paneSizeX, paneSizeY,
-					// genUI.getIcons());
-					tokens.renderTokens(0, 0, 0, 0, paneSizeX,
-							paneSizeY, genUI.getIcons());
+					tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2, 0, 0, pxSizeX, pxSizeY, genUI.getIcons());
+					
 				} else if (paneSizeX >= pxSizeX) {
 					map.draw(x + ((paneSizeX - pxSizeX) / 2), y - pxOffsetY);
 					drawGrid(x + (paneSizeX - pxSizeX) / 2, y, g);
 					tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y, 0,
-							pxOffsetY, paneSizeX, pxOffsetY + paneSizeY,
+							pxOffsetY, pxSizeX, pxOffsetY + pxSizeY,
 							genUI.getIcons());
 
 				} else if (paneSizeY >= pxSizeY) {
 					map.draw(x - pxOffsetX, y + (paneSizeY - pxSizeY) / 2);
 					drawGrid(x, y + (paneSizeY - pxSizeY) / 2, g);
 					tokens.renderTokens(x, y + (paneSizeY - pxSizeY) / 2,
-							pxOffsetX, 0, pxOffsetX + paneSizeX, paneSizeY,
+							pxOffsetX, 0, pxOffsetX + paneSizeX, pxSizeY,
 							genUI.getIcons());
 				}
 			}
@@ -203,7 +201,7 @@ public class MapPane {
 
 			// If a token is being dragged
 			if (dragMode == 2) {
-				dragImage.draw(mouseX, mouseY);
+				dragImage.draw(mouseX - (tokenScale / 2), mouseY - (tokenScale / 2));
 			}
 
 			// If Active, draw the options menu
@@ -250,10 +248,29 @@ public class MapPane {
 		mouseY = in.getMouseY();
 		paneSizeX = mapXsize;
 		paneSizeY = mapYsize;
-
-		currentGridX = (int) ((mouseX + pxOffsetX - mXoffset) / tokenScale);
-		currentGridY = (int) ((mouseY + pxOffsetY - mYoffset) / tokenScale);
-
+		
+		
+		// Adjust cursor input based on map-centering mode (vertically/horizontally centered, or none)
+		// If the map is width-smaller than the pane
+		if (pxSizeX < paneSizeX) {
+			currentGridX = (int)Math.floor(((mouseX - mXoffset - ((paneSizeX - pxSizeX) / 2.0)) / tokenScale));
+		}
+		// If the map is width-larger than the pane
+		else {
+			currentGridX = (int) ((mouseX + pxOffsetX - mXoffset) / tokenScale);
+		}
+		
+		// If the map is height-smaller than the pane
+		if (pxSizeY < paneSizeY) {
+			currentGridY = (int)Math.floor(((mouseY - mYoffset - ((paneSizeY - pxSizeY) / 2.0)) / tokenScale));
+		}
+		
+		// If the map height-larger than the pane
+		else {
+			currentGridY = (int) ((mouseY + pxOffsetY - mYoffset) / tokenScale);
+		}
+		
+		
 		if (in.isKeyPressed(in.KEY_0))
 			System.out.println(System.getProperty("os.name").toLowerCase()
 					.indexOf("win"));
@@ -361,33 +378,24 @@ public class MapPane {
 				// Shift/Control/Arrowkeys)
 				if (in.isKeyDown(in.KEY_LCONTROL)) {
 					mapScaling = true;
-					int scaleshift = Mouse.getDWheel();
-					Point2D.Float originshift = new Point2D.Float();
-
-					if (in.isKeyPressed(in.KEY_LEFT))
-						originshift.x--;
-					if (in.isKeyPressed(in.KEY_RIGHT))
-						originshift.x++;
-					if (in.isKeyPressed(in.KEY_UP))
-						originshift.y--;
-					if (in.isKeyPressed(in.KEY_DOWN))
-						originshift.y++;
-
-					if (scaleshift != 0)
-						scaleshift = (scaleshift / Math.abs(scaleshift));
-
-					if (in.isKeyDown(in.KEY_LSHIFT)) {
-						tokenScale += (float) (scaleshift / 10.0);
-						originshift.x /= 10.0f;
-						originshift.y /= 10.0f;
-					} else {
-						tokenScale += (float) (scaleshift);
+					int readWheel = Mouse.getDWheel();
+					
+					if (readWheel != 0) {
+						if (in.isKeyDown(in.KEY_LSHIFT)) {
+							if (readWheel > 0)
+								setScale(tokenScale + .05f);
+							else if (readWheel < 0)
+								setScale(tokenScale - .05f);
+						}
+						else {
+							if (readWheel > 0)
+								setScale(tokenScale + 1);
+							else if (readWheel <0)
+								setScale(tokenScale -= 1);
+						}
 					}
-
-					gridOrigin.x += originshift.x;
-					gridOrigin.y += originshift.y;
-					this.setScale(this.getScale() + scaleshift);
-				} else {
+				} 
+				else {
 					if (mapScaling == true) {
 						mapScaling = false;
 						// CONTROLLER.BROADCASTSCALECHANGE (this.getScale()) or

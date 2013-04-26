@@ -283,11 +283,13 @@ public class Client  {
 					} else if (splits[0].equals("Change")) {
 						
 						boolean[] bools = new boolean[8];
+						int x = Integer.parseInt(splits[1]);
+						int y = Integer.parseInt(splits[2]);
 						
-						for (int i = 1; i < 9; i++)
-							if (splits[i].equals("t"))
+						for (int i = 0; i < 8; i++)
+							if (splits[i + 3].equals("t"))
 								bools[i] = true;
-						c.changeStatusB(bools);
+						c.changeStatusB(bools, x, y);
 						
 					}
 						

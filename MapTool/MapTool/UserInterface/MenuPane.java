@@ -141,6 +141,7 @@ public class MenuPane {
 				break;
 			case 1:
 				editor.mapTool.fileChooser.setActive("Maps");
+				editor.mapTool.loadMode = 1;
 				break;
 			case 2:
 				//TODO import token

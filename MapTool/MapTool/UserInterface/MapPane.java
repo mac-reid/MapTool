@@ -167,12 +167,15 @@ public class MapPane {
     			if (paneSizeX >= pxSizeX  &&  paneSizeY >= pxSizeY) {
     				map.draw(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2);
     				drawGrid(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2, g);
+    				//tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2, 0, 0, paneSizeX, paneSizeY, genUI.getIcons());
     				tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y + (paneSizeY - pxSizeY) / 2, 0, 0, paneSizeX, paneSizeY, genUI.getIcons());
+    				System.out.println(pxOffsetX + " " + pxOffsetY);
     			}
     			else if (paneSizeX >= pxSizeX) {
     				map.draw(x + ((paneSizeX - pxSizeX) / 2), y - pxOffsetY);
     				drawGrid(x + (paneSizeX - pxSizeX) / 2, y, g);
     				tokens.renderTokens(x + ((paneSizeX - pxSizeX) / 2), y, 0, pxOffsetY, paneSizeX, pxOffsetY + paneSizeY, genUI.getIcons());
+    				
     			}
     			else if (paneSizeY >= pxSizeY) {
     				map.draw(x - pxOffsetX, y + (paneSizeY - pxSizeY) / 2);
@@ -249,7 +252,7 @@ public class MapPane {
     	currentGridY = (int)((mouseY + pxOffsetY - mYoffset) / tokenScale);
     	
         if (in.isKeyPressed(in.KEY_0))
-            genUI.control.importTokens();
+            loadMap("Resources/Maps/Dwarfort.png");
     	
     	// If the file chooser is active, update
     	if (fileChooser.isActive()) {
@@ -348,13 +351,13 @@ public class MapPane {
 		        	Point2D.Float originshift = new Point2D.Float();
 		        	
 		        	
-		        	if (in.isKeyDown(in.KEY_LEFT))
+		        	if (in.isKeyPressed(in.KEY_LEFT))
 		        		originshift.x--;
-		        	if (in.isKeyDown(in.KEY_RIGHT))
+		        	if (in.isKeyPressed(in.KEY_RIGHT))
 		        		originshift.x++;
-		        	if (in.isKeyDown(in.KEY_UP))
+		        	if (in.isKeyPressed(in.KEY_UP))
 		        		originshift.y--;
-		        	if (in.isKeyDown(in.KEY_DOWN))
+		        	if (in.isKeyPressed(in.KEY_DOWN))
 		        		originshift.y++;
 		        	
 		        	if (scaleshift != 0)

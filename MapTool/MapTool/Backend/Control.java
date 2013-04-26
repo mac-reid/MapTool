@@ -137,10 +137,12 @@ public class Control {
 		server.start();
 	}
 
-	public void joinGame(String alias, String hostname) throws IOException {
+	public boolean joinGame(String alias, String hostname) throws IOException {
 
 		client = new Client(hostname, 8192, alias, this);
-		client.start();
+		boolean n = client.start();
+		System.out.println(n);
+		return n;
 	}
 
 	public void loadSave(File saveFile) {

@@ -22,7 +22,7 @@ public class Editor extends BasicGameState{
 	private int ID;
 	public MapPane mapTool;
 	public ChatPane chatBox;
-	public VideoChatPane videoChat;
+	public MenuPane menuPane;
 	public InfoPane infoPane;
 	
 	//int values used to determine object positioning
@@ -30,8 +30,8 @@ public class Editor extends BasicGameState{
 	public final int CHAT_WIDTH_MIN = 250;
 	public final int INFO_PANE_HEIGHT = 150;
 	public int chatWidth;
-	public int vidChatMin = 0;
-	public int vidChatHeight = 200;
+	public int menuPaneMin = 0;
+	public final int MENU_PANE_HEIGHT = 150;
 	//mapTool specific values
 	private int mapTopX = 0;
 	private int mapTopY = 0;
@@ -57,10 +57,10 @@ public class Editor extends BasicGameState{
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
 		genUI = ((genUI)sbg);
-		vidChatMin = gc.getHeight()/5;
+		menuPaneMin = gc.getHeight()/5;
 		//find the best height and width of the map
 		mapTileWidth = (gc.getWidth() - BUFFER*3 - CHAT_WIDTH_MIN)/48;
-		mapTileHeight = (gc.getHeight() - BUFFER*3 - vidChatMin)/48;
+		mapTileHeight = (gc.getHeight() - BUFFER*3 - menuPaneMin)/48;
 		chatWidth = (gc.getWidth() - BUFFER * 3 - mapTileWidth*48);
 		mapTool = new MapPane("Resources/Maps/losttemple.png", mapTileWidth, mapTileHeight, genUI);
 		mapTool.renderMap(BUFFER, BUFFER, gc.getGraphics());
@@ -70,7 +70,7 @@ public class Editor extends BasicGameState{
 		chatBox = new ChatPane(chatWidth, gc.getHeight() - BUFFER*2 - INFO_PANE_HEIGHT, CHAT_WIDTH_MIN, genUI);
 		//chatBox.renderChat(gc.getWidth() - CHAT_WIDTH - BUFFER, BUFFER, gc.getGraphics());
 		//draw the video chat box
-		videoChat = new VideoChatPane(gc);
+		menuPane = new MenuPane(this);
 		//TODO Replace "" with game name
 		infoPane = new InfoPane("", gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, "192.92.1");
 		loadImages();
@@ -98,15 +98,13 @@ public class Editor extends BasicGameState{
 		frame(gc, g);
 		//get chat height and width
 		chatWidth = (gc.getWidth() - BUFFER * 3 - getMapWidth(gc));
-		vidChatHeight = (gc.getHeight() - BUFFER * 3 - getMapHeight(gc));
 		//makes chat, remeber that CHAT_WIDTH is standard chat width
 		chatBox.renderChat(getMapWidth(gc) + BUFFER * 2, BUFFER * 2 + INFO_PANE_HEIGHT, 
 				chatWidth, gc.getHeight() - BUFFER*3 - INFO_PANE_HEIGHT, g);
 		//render the info pane
 		infoPane.render(gc.getWidth() - chatWidth - BUFFER, BUFFER, chatWidth, INFO_PANE_HEIGHT, g);
 		//makes video chat pane, remember videoChatHeight is final int, standard height
-		videoChat.renderVideoPane(BUFFER, gc.getHeight() - vidChatHeight - BUFFER,
-				gc.getWidth() - 3*BUFFER - chatWidth, vidChatHeight, g);
+		menuPane.renderMenuPane(BUFFER, gc.getHeight() - BUFFER - MENU_PANE_HEIGHT, g);
 		
 	}
 
@@ -165,6 +163,8 @@ public class Editor extends BasicGameState{
         chatBox.updateChat(input);
         
         infoPane.update(gc, mapTool.getSelectedToken());
+        
+        menuPane.update(gc, gc.getGraphics());
 	}
 	
 	
@@ -195,7 +195,7 @@ public class Editor extends BasicGameState{
 	public int[] mapBottomRight(GameContainer gc){
 		int[] coords = new int[2];
 		coords[0] = gc.getWidth() - 2*BUFFER - CHAT_WIDTH_MIN;
-		coords[1] = gc.getHeight() - 2*BUFFER - vidChatHeight;
+		coords[1] = gc.getHeight() - 2*BUFFER - MENU_PANE_HEIGHT;
 		
 		return coords;
 	}
@@ -206,7 +206,7 @@ public class Editor extends BasicGameState{
 	 * 48 pixel tiles
 	 */
 	public int getMapHeight(GameContainer gc){
-		return (gc.getHeight() - vidChatHeight - BUFFER * 3);
+		return (gc.getHeight() - MENU_PANE_HEIGHT - BUFFER * 3);
 	}
 	
 	/**
@@ -272,4 +272,5 @@ public class Editor extends BasicGameState{
 		botA = new Image("Resources/Frame/FrameBotA.png");
 		} catch (SlickException e){System.out.print("load img error");}
 	}
+	
 }

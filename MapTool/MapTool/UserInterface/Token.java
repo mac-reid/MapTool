@@ -10,8 +10,8 @@ public class Token implements Comparable<Token> {
     public int y;
     public int size;
     //initialize all the statuses to false;
-    //public boolean[] status = {true, false, false, false, false, false, false, false};
-    public boolean[] status = {true, true, true, true, true, true, true, true};
+    public boolean[] status = {false, false, false, false, false, false, false, false};
+    //public boolean[] status = {true, true, true, true, true, true, true, true};
     
     
     public Token (String name, String imglocation, int x, int y, int size, float scale) {

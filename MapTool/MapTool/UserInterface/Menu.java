@@ -115,6 +115,7 @@ public class Menu extends BasicGameState{
 				((genUI)sbg).setAddress("---Testing with no host---");
 				sbg.enterState(1);
 				((AppGameContainer) gc).setResizable(true);
+				testMode.deActivate();
 			}
 		}
 	}

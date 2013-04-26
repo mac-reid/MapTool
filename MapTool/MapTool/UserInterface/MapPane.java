@@ -302,7 +302,7 @@ public class MapPane {
 		        
 		        // Sloppy MouseWheel Polling
 		        int wheel = Mouse.getDWheel();
-		        if (wheel != 0) {
+		        if (wheel != 0 && !options.gridLocked) {
 		        	this.changeScale(wheel);
 		        }
 	    	}
